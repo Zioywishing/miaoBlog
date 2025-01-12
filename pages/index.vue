@@ -20,7 +20,8 @@
             <div class="content-item-description">{{ cItem.description }}</div>
             <div class="content-item-link-warp">
               <div>link:</div>
-              <a v-for="link in cItem.links" :href="link.url" target="_blank">{{ link.name }}</a>
+              <a v-for="link in (cItem.links ?? [])" :href="link.url" target="_blank">{{ link.name }}</a>
+              <NuxtLink v-for="link in (cItem.nuxtLinks ?? [])" :to="link.to">{{ link.name }}</NuxtLink>
             </div>
           </div>
         </div>
@@ -42,9 +43,13 @@ type PageContent = {
 type ContentItem = {
   name: string,
   description: string,
-  links: {
+  links?: {
     name: string,
     url: string
+  }[],
+  nuxtLinks?: {
+    name: string,
+    to: string
   }[]
 }
 
@@ -104,6 +109,21 @@ const PageContent = reactive<PageContent[]>([
         ]
       },
     ]
+  }, {
+    subTitle: '小工具',
+    show: true,
+    content: [
+      {
+        name: 'genshin-gacha',
+        description: '通过模拟来计算抽卡成功率的小工具',
+        nuxtLinks: [
+          {
+            name: 'demo',
+            to: 'tool/genshin-gacha'
+          }
+        ]
+      },
+    ]
   }
 ])
 
@@ -120,7 +140,8 @@ const switchItemShow = (item: PageContent) => {
 <style lang="scss" scoped>
 .main {
   box-sizing: border-box;
-  min-height: calc(100vh - 60px);
+  // min-height: calc(100vh - 60px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   padding: 20px 10px;
@@ -255,6 +276,7 @@ const switchItemShow = (item: PageContent) => {
             font-weight: 300;
             text-decoration: none;
             transition: color .15s linear;
+            cursor: pointer;
 
             &:hover {
               color: #15aa87;

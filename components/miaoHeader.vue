@@ -70,6 +70,7 @@ onMounted(() => {
     position: relative;
     background-color: #fff;
     user-select: none;
+    z-index: 70582140;
 
     #miao-header {
         box-sizing: border-box;
