@@ -1,11 +1,11 @@
 <template>
-    <section id="miao-header-warpper">
+    <section id="miao-header-wrapper">
         <header id="miao-header">
             <div class="miao-header-title">
                 <a href="https://nj.miaospring.top:3001/" target="_blank" title="喵"><span
                         style="color: #15aa87; margin-right: 1px;">杪</span>Blog</a>
             </div>
-            <div class="header-right-warp">
+            <div class="header-right-wrap">
                 <ul class="miao-header-nav">
                     <li v-for="(item) in navList" :key="item.path"
                         :class="['miao-header-nav-item', isActive(item) ? 'miao-header-nav-item-active' : '']">
@@ -57,8 +57,9 @@ const isActive = (navItem: NavItem) => {
     return false
 }
 
-onMounted(() => {
-    // console.log(route)
+onMounted(async () => {
+    // const data = await $fetch('/api/test')
+    // console.log(data)
 })
 </script>
 
@@ -66,7 +67,7 @@ onMounted(() => {
 // @use '/style/miaoStyle.scss';
 
 
-#miao-header-warpper {
+#miao-header-wrapper {
     position: relative;
     background-color: #fff;
     user-select: none;
@@ -102,7 +103,7 @@ onMounted(() => {
             }
         }
 
-        .header-right-warp {
+        .header-right-wrap {
             flex: 1;
             height: 100%;
             margin-left: auto;

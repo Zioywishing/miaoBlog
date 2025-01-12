@@ -1,5 +1,5 @@
 <template>
-    <div class="iframe-warpper">
+    <div class="iframe-wrapper">
         <iframe src="/iframe-source/genshin-gacha/index.html" frameborder="0"></iframe>
     </div>
 </template>
@@ -9,7 +9,7 @@
 </script>
 
 <style scoped>
-.iframe-warpper {
+.iframe-wrapper {
     width: 100%;
     min-height: inherit;
     padding: 0;

@@ -1,16 +1,17 @@
 <template>
-  <div class="main-warpper">
+  <div class="main-wrapper">
     <miao-header></miao-header>
-    <miao-content-warpper>
+    <miao-content-wrapper>
       <NuxtPage />
-    </miao-content-warpper>
+    </miao-content-wrapper>
   </div>
 </template>
 
 <script lang="ts" setup>
 import miaoHeader from './components/miaoHeader.vue';
-import miaoContentWarpper from './components/miaoContentWarpper.vue';
+import miaoContentWrapper from './components/miaoContentWrapper.vue';
 
+// @ts-ignore
 useHead({
   title: '杪 Blog',
   meta: [
@@ -21,7 +22,7 @@ useHead({
 </script>
 
 <style lang="scss" scoped>
-.main-warpper {
+.main-wrapper {
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -31,4 +32,16 @@ useHead({
 
 <style lang="scss">
 @use '/style/default.scss';
+</style>
+
+<style>
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.15s ease;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(1rem);
+}
 </style>

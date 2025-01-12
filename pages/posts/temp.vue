@@ -1,5 +1,6 @@
 <template>
-    <div class="post-wrapper">
+    <div class="temp">
+        其实<br>一篇文章都还没写
         <NuxtPage />
     </div>
 </template>
@@ -9,13 +10,12 @@
 </script>
 
 <style lang="scss" scoped>
-.post-wrapper {
+.temp {
+    height: calc(100vh - 60px);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
-    max-width: 800px;
-    padding: 0;
+    font-size: 35px;
+    font-family: PT Serif, Serif;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <main id="miao-main">
         <n-scrollbar>
-            <div class="miao-main-slot-warpper">
+            <div class="miao-main-slot-wrapper">
                 <slot></slot>
             </div>
         </n-scrollbar>
@@ -20,7 +20,7 @@
     padding: 0;
     box-sizing: border-box;
 
-    .miao-main-slot-warpper {
+    .miao-main-slot-wrapper {
         position: relative;
         min-height: calc(100vh - 60px);
     }

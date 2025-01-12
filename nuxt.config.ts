@@ -5,25 +5,36 @@ import Components from "unplugin-vue-components/vite";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // @ts-ignore
 export default defineNuxtConfig({
-								devtools: { enabled: true },
-								alias: {
-																"@": "/"
-								},
-								vite: {
-																server: {},
-																plugins: [
-																								AutoImport({
-																																imports: [
-																																								{
-																																																"naive-ui": ["useDialog", "useMessage", "useNotification", "useLoadingBar"]
-																																								}
-																																]
-																								}),
-																								Components({
-																																resolvers: [NaiveUiResolver()]
-																								})
-																]
-								},
-								modules: ["nuxtjs-naive-ui", "@pinia/nuxt"],
-								compatibilityDate: "2025-01-12"
+	devtools: { enabled: false },
+	alias: {
+		"@": "/"
+	},
+	app: {
+		pageTransition: {
+			name: 'page',
+			mode: 'out-in'
+		}
+	},
+	vite: {
+		server: {},
+		plugins: [
+			AutoImport({
+				imports: [
+					{
+						"naive-ui": ["useDialog", "useMessage", "useNotification", "useLoadingBar"]
+					}
+				]
+			}),
+			Components({
+				resolvers: [NaiveUiResolver()]
+			})
+		]
+	},
+	modules: ["nuxtjs-naive-ui", "@pinia/nuxt"],
+	compatibilityDate: "2025-01-12",
+	build: {
+		// 开启打包分析
+		analyze: true,
+	},
+	experimental: { appManifest: false },
 });

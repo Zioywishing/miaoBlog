@@ -1,9 +1,14 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
-  "exclude": [
-    ".output",
-    "node_modules",
-    ".nuxt",
+  "include": [
+    "pages/**/*",
+    "hooks/**/*",
+    "components/**/*",
+    "server/**/*",
+    "style/**/*",
+    "utils/**/*",
+    ".nuxt/**/*",
+    "types/**/*"
   ]
 }

@@ -3,22 +3,24 @@
     <div class="title">
       <span>导航</span>
     </div>
-    <div class="content-warp">
+    <div class="content-wrap">
       <div v-for="(item) in PageContent" :key="item.subTitle" class="content">
         <div class="sub-title">
           <n-divider title-placement="left">
-            <div class="sub-title-text">{{ item.subTitle }}</div>
-            <div :class="['sub-title-chevron', item.show ? '' : 'sub-title-chevron-hide']"
-              @click="switchItemShow(item)">
-              <ChevronDown />
+            <div class="sub-title-wrapper">
+              <div class="sub-title-text">{{ item.subTitle }}</div>
+              <div :class="['sub-title-chevron', item.show ? '' : 'sub-title-chevron-hide']"
+                @click="switchItemShow(item)">
+                <ChevronDown />
+              </div>
             </div>
           </n-divider>
         </div>
-        <div :class="['content-items-warp', item.show ? '' : 'content-items-warp-hide']">
+        <div :class="['content-items-wrap', item.show ? '' : 'content-items-wrap-hide']">
           <div v-for="(cItem) in item.content" :key="cItem.name" class="content-item">
             <div class="content-item-name">{{ cItem.name }}</div>
             <div class="content-item-description">{{ cItem.description }}</div>
-            <div class="content-item-link-warp">
+            <div class="content-item-link-wrap">
               <div>link:</div>
               <a v-for="link in (cItem.links ?? [])" :href="link.url" target="_blank">{{ link.name }}</a>
               <NuxtLink v-for="link in (cItem.nuxtLinks ?? [])" :to="link.to">{{ link.name }}</NuxtLink>
@@ -94,6 +96,21 @@ const PageContent = reactive<PageContent[]>([
       }
     ]
   }, {
+    subTitle: '小工具',
+    show: true,
+    content: [
+      {
+        name: 'genshin-gacha',
+        description: '通过模拟来计算抽卡成功率的小工具',
+        nuxtLinks: [
+          {
+            name: 'demo',
+            to: 'tool/genshin-gacha'
+          }
+        ]
+      },
+    ]
+  }, {
     subTitle: '学习资料',
     show: true,
     content: [
@@ -109,22 +126,7 @@ const PageContent = reactive<PageContent[]>([
         ]
       },
     ]
-  }, {
-    subTitle: '小工具',
-    show: true,
-    content: [
-      {
-        name: 'genshin-gacha',
-        description: '通过模拟来计算抽卡成功率的小工具',
-        nuxtLinks: [
-          {
-            name: 'demo',
-            to: 'tool/genshin-gacha'
-          }
-        ]
-      },
-    ]
-  }
+  },
 ])
 
 const switchItemShow = (item: PageContent) => {
@@ -140,14 +142,13 @@ const switchItemShow = (item: PageContent) => {
 <style lang="scss" scoped>
 .main {
   box-sizing: border-box;
-  // min-height: calc(100vh - 60px);
   height: 100%;
   display: flex;
   flex-direction: column;
   padding: 20px 10px;
   background: rgba(21, 170, 135, .02);
 
-  .content-warp {
+  .content-wrap {
     box-sizing: border-box;
     width: 100%;
     padding: 0 15px;
@@ -156,9 +157,16 @@ const switchItemShow = (item: PageContent) => {
 
       .sub-title {
         display: flex;
+        height: 80px;
         margin-bottom: 10px;
         letter-spacing: 2px;
         user-select: none;
+
+        .sub-title-wrapper {
+          height: 80px;
+          display: flex;
+          align-items: center;
+        }
 
         .sub-title-text {
           font-size: 20px;
@@ -193,14 +201,14 @@ const switchItemShow = (item: PageContent) => {
         }
       }
 
-      .content-items-warp {
-        max-height: 200vh;
+      .content-items-wrap {
+        max-height: 400vh;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         justify-content: center;
         gap: 20px;
         // overflow: hidden;
-        transition: max-height 0.25s ease, opacity 0.3s ease;
+        transition: max-height 0.25s ease, opacity 0.25s ease;
         opacity: 1;
 
         // margin: 0 -20px;
@@ -248,9 +256,10 @@ const switchItemShow = (item: PageContent) => {
           font-size: 14px;
           font-weight: 300;
           padding: 0 10px;
+          min-height: 40px;
         }
 
-        .content-item-link-warp {
+        .content-item-link-wrap {
           flex: 1;
           width: 100%;
           box-sizing: border-box;
@@ -291,6 +300,7 @@ const switchItemShow = (item: PageContent) => {
     width: 100%;
     display: flex;
     justify-content: center;
+    user-select: none;
     // margin-bottom: 10px;
 
     &>span {
