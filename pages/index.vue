@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 import { reactive } from 'vue';
 // @ts-ignore
-import { ChevronDown } from "@vicons/ionicons5"
+import ChevronDown from "@vicons/ionicons5/ChevronDown"
 
 type PageContent = {
   subTitle: string,
