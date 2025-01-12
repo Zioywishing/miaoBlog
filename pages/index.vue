@@ -6,14 +6,22 @@
     <div class="content-warp">
       <div v-for="(item) in PageContent" :key="item.subTitle" class="content">
         <div class="sub-title">
-          <span>{{ item.subTitle }}</span>
+          <n-divider title-placement="left">
+            <div class="sub-title-text">{{ item.subTitle }}</div>
+            <div :class="['sub-title-chevron', item.show ? '' : 'sub-title-chevron-hide']"
+              @click="switchItemShow(item)">
+              <ChevronDown />
+            </div>
+          </n-divider>
         </div>
-        <div v-for="(cItem) in item.content" :key="cItem.name" class="content-item">
-          <div class="content-item-name">{{ cItem.name }}</div>
-          <div class="content-item-description">{{ cItem.description }}</div>
-          <div class="content-item-link-warp">
-            <div>link:</div>
-            <a v-for="link in cItem.links" :href="link.url" target="_blank">{{ link.name }}</a>
+        <div :class="['content-items-warp', item.show ? '' : 'content-items-warp-hide']">
+          <div v-for="(cItem) in item.content" :key="cItem.name" class="content-item">
+            <div class="content-item-name">{{ cItem.name }}</div>
+            <div class="content-item-description">{{ cItem.description }}</div>
+            <div class="content-item-link-warp">
+              <div>link:</div>
+              <a v-for="link in cItem.links" :href="link.url" target="_blank">{{ link.name }}</a>
+            </div>
           </div>
         </div>
       </div>
@@ -22,10 +30,28 @@
 </template>
 
 <script lang="ts" setup>
+import { reactive } from 'vue';
+// @ts-ignore
+import { ChevronDown } from "@vicons/ionicons5"
 
-const PageContent = [
+type PageContent = {
+  subTitle: string,
+  show: boolean,
+  content: ContentItem[]
+}
+type ContentItem = {
+  name: string,
+  description: string,
+  links: {
+    name: string,
+    url: string
+  }[]
+}
+
+const PageContent = reactive<PageContent[]>([
   {
     subTitle: '个人项目',
+    show: true,
     content: [
       {
         name: 'miaoDirectory',
@@ -50,20 +76,51 @@ const PageContent = [
             url: "https://nj.miaospring.top:3001/539943419/miaoShare"
           }
         ]
+      },
+      {
+        name: 'miaoBlog',
+        description: '施工中，不过不要抱有太大期待',
+        links: [
+          {
+            name: "github",
+            url: "https://github.com/Zioywishing/miaoBlog"
+          }
+        ]
       }
     ]
+  }, {
+    subTitle: '学习资料',
+    show: true,
+    content: [
+      {
+        name: 'vue3',
+        description: 'vue3官方文档',
+        links: [
+          {
+            name: 'vue3',
+
+            url: 'https://cn.vuejs.org/'
+          }
+        ]
+      },
+    ]
   }
-]
+])
+
+const switchItemShow = (item: PageContent) => {
+  item.show = !item.show
+}
 
 </script>
 
 <style lang="scss" scoped>
 .main {
   box-sizing: border-box;
-  height: 100%;
+  min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   padding: 20px 10px;
+  background: rgba(21, 170, 135, .02);
 
   .content-warp {
     box-sizing: border-box;
@@ -71,44 +128,112 @@ const PageContent = [
     padding: 0 15px;
 
     .content {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
-      gap: 20px;
-      /* 可选，设置子元素之间的间距 */
 
       .sub-title {
-        font-size: 20px;
+        display: flex;
         margin-bottom: 10px;
         letter-spacing: 2px;
-        grid-row: 1 / span 1;
-        grid-column: 1 / -1;
+        user-select: none;
+
+        .sub-title-text {
+          font-size: 20px;
+          // font-weight: 500;
+          letter-spacing: 2px;
+          margin-right: 10px;
+          // width: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .sub-title-chevron {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          transition: color .15s linear,
+            transform 0.3s ease;
+          cursor: pointer;
+          color: #535353;
+
+          // &:hover {
+          //   color: #000000;
+          // }
+
+          &-hide {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      .content-items-warp {
+        max-height: 200vh;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        justify-content: center;
+        gap: 20px;
+        // overflow: hidden;
+        transition: max-height 0.25s ease, opacity 0.3s ease;
+        opacity: 1;
+
+        // margin: 0 -20px;
+        &-hide {
+          max-height: 0;
+          opacity: 0;
+        }
       }
 
       .content-item {
-        border: 1px solid #000;
+        // border: 1px solid #000;
         display: flex;
         flex-direction: column;
         align-items: baseline;
-        // margin-bottom: 10px;
-        padding: 5px 10px 10px 10px;
+        padding-bottom: 10px;
         border-radius: 10px;
+        overflow: hidden;
+        transition: scale 0.15s ease;
+        user-select: none;
+
+        background-color: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(19px);
+        border: .5px solid rgba(255, 255, 255, 0.18);
+        box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+        -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+
+        &:hover {
+          scale: 1.01;
+        }
 
         .content-item-name {
+          width: 100%;
           font-size: 20px;
           padding-bottom: 5px;
+          background-color: #15aa87ce;
+          color: #fff;
+          margin-bottom: 10px;
+          padding-left: 10px;
+          letter-spacing: 0px;
+          // font-family: PT Serif, Serif;
+          // font-weight: 600;
         }
 
         .content-item-description {
           font-size: 14px;
           font-weight: 300;
+          padding: 0 10px;
         }
 
         .content-item-link-warp {
+          flex: 1;
           width: 100%;
+          box-sizing: border-box;
           display: flex;
           justify-content: flex-end;
-          margin-top: 10px;
+          align-items: flex-end;
           user-select: none;
+          padding-right: 10px;
 
           &>div {
             font-size: 14px;
@@ -140,7 +265,7 @@ const PageContent = [
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    // margin-bottom: 10px;
 
     &>span {
       font-size: 30px;
