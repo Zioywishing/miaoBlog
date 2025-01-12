@@ -105,7 +105,17 @@ const PageContent = reactive<PageContent[]>([
         nuxtLinks: [
           {
             name: 'demo',
-            to: 'tool/genshin-gacha'
+            to: `/iframe/${encodeURIComponent('/iframe-source/genshin-gacha/index.html')}`
+          }
+        ]
+      },
+      {
+        name: 'miaoTracker',
+        description: '仅仅是个接口而已，用来查询开发者的位置记录',
+        nuxtLinks: [
+          {
+            name: 'demo',
+            to: `/iframe/${encodeURIComponent('https://nj.miaospring.top:17582/api/getAllPositions')}`
           }
         ]
       },
@@ -115,12 +125,11 @@ const PageContent = reactive<PageContent[]>([
     show: true,
     content: [
       {
-        name: 'vue3',
+        name: 'VUE',
         description: 'vue3官方文档',
         links: [
           {
             name: 'vue3',
-
             url: 'https://cn.vuejs.org/'
           }
         ]

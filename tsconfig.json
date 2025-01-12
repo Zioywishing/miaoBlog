@@ -8,7 +8,7 @@
     "server/**/*",
     "style/**/*",
     "utils/**/*",
-    ".nuxt/**/*",
+    ".nuxt/*.d.ts",
     "types/**/*"
   ]
 }

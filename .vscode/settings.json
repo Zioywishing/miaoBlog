@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
+        "linkify",
+        "Markdownit",
+        "mdit",
         "unplugin"
     ],
     "vue3snippets.enable-compile-vue-file-on-did-save-code": false

@@ -33,8 +33,12 @@ export default defineNuxtConfig({
 	modules: ["nuxtjs-naive-ui", "@pinia/nuxt"],
 	compatibilityDate: "2025-01-12",
 	build: {
-		// 开启打包分析
-		analyze: true,
+		analyze: {
+			filename: "stats.html",
+		},
+	},
+	nitro: {
+	  compressPublicAssets: true,
 	},
 	experimental: { appManifest: false },
 });

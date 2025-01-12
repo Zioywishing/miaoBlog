@@ -1,11 +1,16 @@
 <template>
     <div class="iframe-wrapper">
-        <iframe src="/iframe-source/genshin-gacha/index.html" frameborder="0"></iframe>
+        <iframe :src="decodeURIComponent(route.params.url as string)" frameborder="0"></iframe>
     </div>
 </template>
 
 <script setup lang="ts">
 
+const route = useRoute();
+
+// onMounted(() => {
+//     console.log(route.params.url);
+// })
 </script>
 
 <style scoped>

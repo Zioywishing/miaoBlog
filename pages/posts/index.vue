@@ -2,7 +2,7 @@
     <div class="posts-wrapper">
         <article class="posts-item" v-for="post in postsData" :key="post.id">
             <header class="post-title">
-                <a href="">{{ post.title }}</a>
+                <nuxt-link :to="`/posts/post-${post.id}`">{{ post.title }}</nuxt-link>
             </header>
             <p class="post-summary">{{ post.summary }}...</p>
             <footer class="post-footer">
@@ -32,10 +32,10 @@ const postsData = ref<postItem[]>([])
 
 onMounted(async () => {
     // router.push('/posts/temp')
-    await sleep(1000)
-    postsData.value = await $fetch('/api/posts/getPosts')
+    // await sleep(1000)
+    postsData.value = await $fetch('/api/posts/getPostList')
     isInit.value = true
-    console.log(postsData.value)
+    // console.log(postsData.value)
 })
 
 </script>
