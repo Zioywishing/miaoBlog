@@ -1,6 +1,10 @@
 <template>
-    <div class="md-render">
-        <div v-if="isInit" v-html="renderedData"></div>
+    <div class="md-wrapper">
+        <div class="md" v-if="isInit">
+            <div class="md-title">{{ title }}</div>
+            <n-divider />
+            <div v-html="renderedData"></div>
+        </div>
         <div v-else class="md-skeleton-item">
             <n-skeleton text style="height: 40px; width: 60%" />
             <n-skeleton text :repeat="2" />
@@ -12,20 +16,39 @@
 
 <script setup lang="ts">
 import useMarkdownit from '~/hooks/useMarkdownit';
+import usePostStore from '~/hooks/pinia/usePostStore';
+import type { postContent } from '~/types/post';
+
+const postStore = usePostStore()
 
 const route = useRoute()
 
 const isInit = ref(false)
 
+const title = ref('')
+
 const renderedData = ref('')
 
 onMounted(async () => {
-    const id = route.params.id
+    const id = route.params.id as string
 
-    const _p = $fetch('/api/posts/getPostContent', {
-        method: 'POST',
-        body: {
-            id
+    const _p = new Promise<postContent>(async (resolve, reject) => {
+        try {
+            const cache = postStore.getPostCache(id)
+            if (cache) {
+                resolve(cache)
+                return
+            }
+            const res = await $fetch('/api/posts/getPostContent', {
+                method: 'POST',
+                body: {
+                    id
+                }
+            }) as postContent
+            postStore.setPostCache(id, res)
+            resolve(res)
+        } catch (error) {
+            reject(error)
         }
     })
 
@@ -35,6 +58,8 @@ onMounted(async () => {
 
     renderedData.value = markdownIt.render(postsData.data)
 
+    title.value = postsData.title
+
     isInit.value = true
 
 })
@@ -42,7 +67,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.md-render {
+.md-wrapper {
     width: 100%;
     padding: 10px 20px 30px;
 
@@ -54,5 +79,16 @@ onMounted(async () => {
     flex-direction: column;
     gap: 30px;
     padding-top: 30px;
+}
+
+.md {
+    font-family: fangsong;
+}
+
+.md-title {
+    display: flex;
+    justify-content: center;
+    font-size: 42px;
+    margin-bottom: -10px;
 }
 </style>

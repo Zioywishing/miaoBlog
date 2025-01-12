@@ -2,8 +2,9 @@
     <section id="miao-header-wrapper">
         <header id="miao-header">
             <div class="miao-header-title">
-                <a href="https://nj.miaospring.top:3001/" target="_blank" title="喵"><span
-                        style="color: #15aa87; margin-right: 1px;">杪</span>Blog</a>
+                <a href="https://nj.miaospring.top:3001/" target="_blank" title="喵">
+                    <span class="miao-header-title-miao">杪</span>
+                    <span class="miao-header-title-blog">Blog</span></a>
             </div>
             <div class="header-right-wrap">
                 <ul class="miao-header-nav">
@@ -92,7 +93,7 @@ onMounted(async () => {
             font-size: 30px;
             margin: 0;
             letter-spacing: 2px;
-            text-transform: uppercase;
+            // text-transform: uppercase;
 
             &>a {
                 color: #000;
@@ -100,6 +101,17 @@ onMounted(async () => {
                 letter-spacing: 4px;
                 text-decoration: none;
                 font-family: PT Serif, Serif;
+            }
+
+            &-miao {
+                color: #15aa87;
+                margin-right: 3px;
+            }
+
+            &-blog {
+                font-family: auto;
+                font-weight: 300;
+                letter-spacing: 0px;
             }
         }
 

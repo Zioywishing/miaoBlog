@@ -7,3 +7,8 @@ export type postItem = {
     type: 'markdown';
     url: string;
 };
+
+export type postContent = {
+    title: string;
+    data: string;
+};

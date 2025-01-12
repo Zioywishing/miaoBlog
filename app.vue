@@ -1,10 +1,12 @@
 <template>
-  <div class="main-wrapper">
-    <miao-header></miao-header>
-    <miao-content-wrapper>
-      <NuxtPage />
-    </miao-content-wrapper>
-  </div>
+  <!-- <n-config-provider inline-theme-disabled> -->
+    <div class="main-wrapper">
+      <miao-header></miao-header>
+      <miao-content-wrapper>
+        <NuxtPage />
+      </miao-content-wrapper>
+    </div>
+  <!-- </n-config-provider> -->
 </template>
 
 <script lang="ts" setup>
@@ -39,6 +41,7 @@ useHead({
 .page-leave-active {
   transition: all 0.15s ease;
 }
+
 .page-enter-from,
 .page-leave-to {
   opacity: 0;

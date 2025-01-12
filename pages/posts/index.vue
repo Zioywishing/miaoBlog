@@ -6,7 +6,7 @@
             </header>
             <p class="post-summary">{{ post.summary }}...</p>
             <footer class="post-footer">
-                <div class="post-date">{{ post.date }}</div>
+                <div class="post-date">{{ formatDate(post.date, 'yy-MM-dd HH:mm:ss') }}</div>
                 <div class="post-tags">
                     <div v-for="tag in post.tags">{{ tag }}</div>
                 </div>
@@ -22,18 +22,28 @@
 </template>
 
 <script setup lang="ts">
+import useDefaultStore from '~/hooks/pinia/useDefaultStore';
 import type { postItem } from '~/types/post';
 
-
-// const router = useRouter()
+const store = useDefaultStore()
 const isInit = ref(false)
 
 const postsData = ref<postItem[]>([])
 
+const getData = async () => {
+    const cache = store.getCache('posts')
+    if (cache) {
+        return cache as postItem[]
+    }
+    const res = await $fetch('/api/posts/getPostList')
+    store.setCache('posts', res)
+    return res
+}
+
 onMounted(async () => {
     // router.push('/posts/temp')
     // await sleep(1000)
-    postsData.value = await $fetch('/api/posts/getPostList')
+    postsData.value = await getData()
     isInit.value = true
     // console.log(postsData.value)
 })
@@ -45,6 +55,7 @@ onMounted(async () => {
     // height: 50vh;
     width: 100%;
     padding-top: 10px;
+
     // background-color: #15aa87;
     .posts-item {
         margin: 10px 20px;
@@ -102,6 +113,7 @@ onMounted(async () => {
                 &>div {
                     cursor: pointer;
                     transition: color .2s linear;
+
                     &:hover {
                         color: #15aa87;
                     }
