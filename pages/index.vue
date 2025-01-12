@@ -111,6 +111,10 @@ const switchItemShow = (item: PageContent) => {
   item.show = !item.show
 }
 
+// useHead({
+//   title: '杪 Blog | 首页',
+// })
+
 </script>
 
 <style lang="scss" scoped>
