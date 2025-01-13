@@ -42,7 +42,8 @@ const getData = async () => {
     if (cache) {
         return cache as postItem[]
     }
-    const res = await $fetch('/api/posts/getPostList')
+    const response = await $fetch('/api/posts/getPostList')
+    const res = response.data
     store.setCache('posts', res)
     return res
 }

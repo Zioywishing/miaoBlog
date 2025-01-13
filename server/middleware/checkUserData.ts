@@ -1,4 +1,4 @@
 export default defineEventHandler((event) => {
-    checkUserData()
+    initUserData()
     // console.log('New request: ' + getRequestURL(event))
 })

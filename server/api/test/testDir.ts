@@ -1,5 +1,5 @@
 import fs from 'fs';
-import checkUserData from '~/server/utils/checkUserData';
+import checkUserData from '~/server/utils/initUserData';
 
 export default defineEventHandler((event) => {
     checkUserData()
