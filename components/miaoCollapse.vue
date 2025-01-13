@@ -36,6 +36,8 @@ const handleHide = () => {
     cwStyle.value = {
         maxHeight: 0,
         opacity: 0,
+        transition: "all 0.2s ease-in-out, opacity 0.1s ease-out",
+        pointerEvents: 'none',
     }
     timer.push(setTimeout(() => {
         cwStyle.value = {
@@ -56,6 +58,7 @@ const handleShow = () => {
         cwStyle.value = {
             maxHeight: `${originHeight}px`,
             opacity: 1,
+            transition: "all 0.2s ease-in-out, opacity 0.3s ease-in"
         }
     }))
 }
@@ -85,7 +88,7 @@ onMounted(() => {
     flex-direction: column;
     justify-content: end;
     opacity: 1;
-    transition: all 0.3s ease-in-out, opacity 0.2s ease-in-out;
+    // transition: all 0.3s ease-in-out, opacity 0.15s linear;
 
     .miao-collapse {
         position: relative;
