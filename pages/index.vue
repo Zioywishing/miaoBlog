@@ -16,17 +16,19 @@
             </div>
           </miao-divider-left>
         </div>
-        <div :class="['content-items-wrap', item.show ? '' : 'content-items-wrap-hide']">
-          <div v-for="(cItem) in item.content" :key="cItem.name" class="content-item">
-            <div class="content-item-name">{{ cItem.name }}</div>
-            <div class="content-item-description">{{ cItem.description }}</div>
-            <div class="content-item-link-wrap">
-              <div class="content-item-link-wrap-icon"> <link-icon /></div>
-              <a v-for="link in (cItem.links ?? [])" :href="link.url" target="_blank">{{ link.name }}</a>
-              <NuxtLink v-for="link in (cItem.nuxtLinks ?? [])" :to="link.to">{{ link.name }}</NuxtLink>
+        <miao-collapse :show="item.show">
+          <div :class="['content-items-wrap']">
+            <div v-for="(cItem) in item.content" :key="cItem.name" class="content-item">
+              <div class="content-item-name">{{ cItem.name }}</div>
+              <div class="content-item-description">{{ cItem.description }}</div>
+              <div class="content-item-link-wrap">
+                <div class="content-item-link-wrap-icon"> <link-icon /></div>
+                <a v-for="link in (cItem.links ?? [])" :href="link.url" target="_blank">{{ link.name }}</a>
+                <NuxtLink v-for="link in (cItem.nuxtLinks ?? [])" :to="link.to">{{ link.name }}</NuxtLink>
+              </div>
             </div>
           </div>
-        </div>
+        </miao-collapse>
       </div>
     </div>
   </div>
@@ -38,6 +40,7 @@ import miaoDividerLeft from '~/components/miaoDivider-left.vue';
 // @ts-ignore
 import ChevronDown from "~/components/icons/chevronDown.vue";
 import linkIcon from '~/components/icons/link.vue';
+import miaoCollapse from '~/components/miaoCollapse.vue';
 
 type PageContent = {
   subTitle: string,
@@ -239,6 +242,7 @@ const switchItemShow = (item: PageContent) => {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         justify-content: center;
+        // align-items: end;
         gap: 20px;
         // overflow: hidden;
         transition: max-height 0.25s ease, opacity 0.25s ease;
@@ -247,7 +251,7 @@ const switchItemShow = (item: PageContent) => {
         // margin: 0 -20px;
         &-hide {
           max-height: 0;
-          opacity: 0;
+          // opacity: 0;
         }
       }
 
