@@ -36,7 +36,7 @@
 import { reactive } from 'vue';
 import miaoDividerLeft from '~/components/miaoDivider-left.vue';
 // @ts-ignore
-import ChevronDown from "~/components/icons/ChevronDown.vue";
+import ChevronDown from "~/components/icons/chevronDown.vue";
 import linkIcon from '~/components/icons/link.vue';
 
 type PageContent = {
