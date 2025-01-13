@@ -1,6 +1,6 @@
-import AutoImport from "unplugin-auto-import/vite";
-import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
-import Components from "unplugin-vue-components/vite";
+// import AutoImport from "unplugin-auto-import/vite";
+// import Components from "unplugin-vue-components/vite";
+// import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // @ts-ignore
@@ -8,6 +8,7 @@ export default defineNuxtConfig({
 	devtools: { enabled: false },
 	alias: {
 		"@": "/"
+		// 'dayjs': 'dayjs/esm/'
 	},
 	app: {
 		pageTransition: {
@@ -18,19 +19,20 @@ export default defineNuxtConfig({
 	vite: {
 		server: {},
 		plugins: [
-			AutoImport({
-				imports: [
-					{
-						"naive-ui": ["useDialog", "useMessage", "useNotification", "useLoadingBar"]
-					}
-				]
-			}),
-			Components({
-				resolvers: [NaiveUiResolver()]
-			})
-		]
+			// AutoImport({
+			// 	resolvers: [ElementPlusResolver()],
+			// }),
+			// Components({
+			// 	resolvers: [ElementPlusResolver()],
+			// })
+		],
+		test: {
+			deps: {
+				inline: ['element-plus']
+			}
+		},
 	},
-	modules: ["nuxtjs-naive-ui", "@pinia/nuxt"],
+	modules: ["@pinia/nuxt", '@element-plus/nuxt'],
 	compatibilityDate: "2025-01-12",
 	build: {
 		analyze: {
@@ -38,7 +40,7 @@ export default defineNuxtConfig({
 		},
 	},
 	nitro: {
-	  compressPublicAssets: true,
+		compressPublicAssets: true,
 	},
 	experimental: { appManifest: false },
 });

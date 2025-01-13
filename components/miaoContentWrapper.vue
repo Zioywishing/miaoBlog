@@ -1,10 +1,10 @@
 <template>
     <main id="miao-main">
-        <n-scrollbar>
+        <el-scrollbar height="calc( 100vh - 60px )">
             <div class="miao-main-slot-wrapper">
                 <slot></slot>
             </div>
-        </n-scrollbar>
+        </el-scrollbar>
     </main>
 </template>
 

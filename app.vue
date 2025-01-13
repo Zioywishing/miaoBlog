@@ -1,11 +1,11 @@
 <template>
   <!-- <n-config-provider inline-theme-disabled> -->
-    <div class="main-wrapper">
-      <miao-header></miao-header>
-      <miao-content-wrapper>
-        <NuxtPage />
-      </miao-content-wrapper>
-    </div>
+  <div class="main-wrapper">
+    <miao-header></miao-header>
+    <miao-content-wrapper>
+      <NuxtPage />
+    </miao-content-wrapper>
+  </div>
   <!-- </n-config-provider> -->
 </template>
 

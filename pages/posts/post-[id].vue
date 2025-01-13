@@ -6,10 +6,7 @@
             <div v-html="renderedData"></div>
         </div>
         <div v-else class="md-skeleton-item">
-            <n-skeleton text style="height: 40px; width: 60%" />
-            <n-skeleton text :repeat="2" />
-            <n-skeleton text style="height: 40px; width: 60%" />
-            <n-skeleton text :repeat="6" />
+            <el-skeleton :rows="12" />
         </div>
     </div>
 </template>

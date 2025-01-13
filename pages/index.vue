@@ -6,7 +6,7 @@
     <div class="content-wrap">
       <div v-for="(item) in PageContent" :key="item.subTitle" class="content">
         <div class="sub-title">
-          <n-divider title-placement="left">
+          <miao-divider-left>
             <div class="sub-title-wrapper">
               <div class="sub-title-text">{{ item.subTitle }}</div>
               <div :class="['sub-title-chevron', item.show ? '' : 'sub-title-chevron-hide']"
@@ -14,7 +14,7 @@
                 <ChevronDown />
               </div>
             </div>
-          </n-divider>
+          </miao-divider-left >
         </div>
         <div :class="['content-items-wrap', item.show ? '' : 'content-items-wrap-hide']">
           <div v-for="(cItem) in item.content" :key="cItem.name" class="content-item">
@@ -34,6 +34,7 @@
 
 <script lang="ts" setup>
 import { reactive } from 'vue';
+import miaoDividerLeft from '~/components/miaoDivider-left.vue';
 // @ts-ignore
 import ChevronDown from "@vicons/ionicons5/ChevronDown"
 
@@ -155,7 +156,7 @@ const switchItemShow = (item: PageContent) => {
   display: flex;
   flex-direction: column;
   padding: 20px 10px;
-  background: rgba(21, 170, 135, .02);
+  background: #fff;
 
   .content-wrap {
     box-sizing: border-box;
@@ -163,6 +164,8 @@ const switchItemShow = (item: PageContent) => {
     padding: 0 15px;
 
     .content {
+
+      padding-bottom: 20px;
 
       .sub-title {
         display: flex;

@@ -14,8 +14,7 @@
         </article>
         <div class="posts-skeleton" v-if="!isInit">
             <div class="posts-skeleton-item" v-for="_ in range(5)">
-                <n-skeleton text style="height: 40px; width: 60%" />
-                <n-skeleton text :repeat="2" />
+                <el-skeleton :rows="5" />
             </div>
         </div>
     </div>
