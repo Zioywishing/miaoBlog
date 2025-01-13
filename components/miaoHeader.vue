@@ -38,7 +38,10 @@ const navList: NavItem[] = [
     {
         title: '文章',
         path: '/posts',
-        otherPath: ['/post']
+    },
+    {
+        title: '后台',
+        path: '/user',
     },
     // {
     //     title: '测试',

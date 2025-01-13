@@ -9,6 +9,7 @@
     "style/**/*",
     "utils/**/*",
     ".nuxt/*.d.ts",
-    "types/**/*"
+    "types/**/*",
+    "plugins/**/*",
   ]
 }

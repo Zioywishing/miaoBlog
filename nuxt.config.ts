@@ -8,7 +8,6 @@ export default defineNuxtConfig({
 	devtools: { enabled: false },
 	alias: {
 		"@": "/"
-		// 'dayjs': 'dayjs/esm/'
 	},
 	app: {
 		pageTransition: {
@@ -18,14 +17,7 @@ export default defineNuxtConfig({
 	},
 	vite: {
 		server: {},
-		plugins: [
-			// AutoImport({
-			// 	resolvers: [ElementPlusResolver()],
-			// }),
-			// Components({
-			// 	resolvers: [ElementPlusResolver()],
-			// })
-		],
+		plugins: [],
 		test: {
 			deps: {
 				inline: ['element-plus']
@@ -34,11 +26,6 @@ export default defineNuxtConfig({
 	},
 	modules: ["@pinia/nuxt", '@element-plus/nuxt'],
 	compatibilityDate: "2025-01-12",
-	build: {
-		analyze: {
-			filename: "stats.html",
-		},
-	},
 	nitro: {
 		compressPublicAssets: true,
 	},
