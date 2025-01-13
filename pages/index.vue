@@ -14,14 +14,14 @@
                 <ChevronDown />
               </div>
             </div>
-          </miao-divider-left >
+          </miao-divider-left>
         </div>
         <div :class="['content-items-wrap', item.show ? '' : 'content-items-wrap-hide']">
           <div v-for="(cItem) in item.content" :key="cItem.name" class="content-item">
             <div class="content-item-name">{{ cItem.name }}</div>
             <div class="content-item-description">{{ cItem.description }}</div>
             <div class="content-item-link-wrap">
-              <div>link:</div>
+              <div class="content-item-link-wrap-icon"> <link-icon /></div>
               <a v-for="link in (cItem.links ?? [])" :href="link.url" target="_blank">{{ link.name }}</a>
               <NuxtLink v-for="link in (cItem.nuxtLinks ?? [])" :to="link.to">{{ link.name }}</NuxtLink>
             </div>
@@ -36,7 +36,8 @@
 import { reactive } from 'vue';
 import miaoDividerLeft from '~/components/miaoDivider-left.vue';
 // @ts-ignore
-import ChevronDown from "@vicons/ionicons5/ChevronDown"
+import ChevronDown from "~/components/icons/ChevronDown.vue";
+import linkIcon from '~/components/icons/link.vue';
 
 type PageContent = {
   subTitle: string,
@@ -62,7 +63,7 @@ const PageContent = reactive<PageContent[]>([
     show: true,
     content: [
       {
-        name: 'miaoDirectory',
+        name: 'MiaoDirectory',
         description: '有个插件功能的单文件文件托管服务',
         links: [
           {
@@ -76,7 +77,7 @@ const PageContent = reactive<PageContent[]>([
         ]
       },
       {
-        name: 'miaoShare',
+        name: 'MiaoShare',
         description: '多了个加密环节的文件分享平台',
         links: [
           {
@@ -86,7 +87,7 @@ const PageContent = reactive<PageContent[]>([
         ]
       },
       {
-        name: 'miaoBlog',
+        name: 'MiaoBlog',
         description: '施工中，不过不要抱有太大期待',
         links: [
           {
@@ -101,7 +102,7 @@ const PageContent = reactive<PageContent[]>([
     show: true,
     content: [
       {
-        name: 'genshin-gacha',
+        name: 'Genshin-Gacha',
         description: '通过模拟来计算抽卡成功率的小工具',
         nuxtLinks: [
           {
@@ -111,7 +112,7 @@ const PageContent = reactive<PageContent[]>([
         ]
       },
       {
-        name: 'miaoTracker',
+        name: 'MiaoTracker',
         description: '仅仅是个接口而已，用来查询开发者的位置记录',
         nuxtLinks: [
           {
@@ -135,6 +136,26 @@ const PageContent = reactive<PageContent[]>([
           }
         ]
       },
+      {
+        name: 'Nuxt',
+        description: 'Nuxt官方文档',
+        links: [
+          {
+            name: 'Nuxt',
+            url: 'https://nuxt.com/'
+          }
+        ]
+      },
+      {
+        name: 'Element-plus',
+        description: 'element-plus官方文档',
+        links: [
+          {
+            name: 'element-plus',
+            url: 'https://element-plus.org/zh-CN/guide/design.html'
+          }
+        ]
+      }
     ]
   },
 ])
@@ -252,14 +273,15 @@ const switchItemShow = (item: PageContent) => {
         }
 
         .content-item-name {
+          box-sizing: border-box;
           width: 100%;
           font-size: 20px;
           padding-bottom: 5px;
           background-color: #15aa87ce;
           color: #fff;
-          margin-bottom: 10px;
-          padding-left: 10px;
+          padding: 3px 10px 5px;
           letter-spacing: 0px;
+          margin-bottom: 10px;
           // font-family: PT Serif, Serif;
           // font-weight: 600;
         }
@@ -281,10 +303,14 @@ const switchItemShow = (item: PageContent) => {
           user-select: none;
           padding-right: 10px;
 
-          &>div {
-            font-size: 14px;
-            font-weight: 300;
+          &-icon {
+            // font-size: 14px;
+            // font-weight: 300;
             margin-right: 10px;
+            height: 16px;
+            aspect-ratio: 1;
+            transform: translateY(0px) rotate(-45deg);
+            opacity: .7;
           }
 
           &>a {
@@ -319,6 +345,12 @@ const switchItemShow = (item: PageContent) => {
       font-size: 30px;
       letter-spacing: 10px;
     }
+  }
+}
+
+@media screen and (max-width: 999px) {
+  .main .content-wrap .content .content-items-wrap {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
 }
 </style>

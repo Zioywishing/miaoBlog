@@ -2,7 +2,7 @@
     <div class="md-wrapper">
         <div class="md" v-if="isInit">
             <div class="md-title">{{ title }}</div>
-            <n-divider />
+            <div class="md-divider"></div>
             <div v-html="renderedData"></div>
         </div>
         <div v-else class="md-skeleton-item">
@@ -87,5 +87,12 @@ onMounted(async () => {
     justify-content: center;
     font-size: 42px;
     margin-bottom: -10px;
+}
+
+.md-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #e8e8e8;
+    margin: 30px 0;
 }
 </style>

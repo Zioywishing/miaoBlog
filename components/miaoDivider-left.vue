@@ -25,10 +25,12 @@
 
 .left-line {
   flex: 1;
+  min-width: 25px;
 }
 
 .right-line {
   flex: 32;
+  min-width: 25px;
 }
 
 .miao-divider-text {

@@ -6,15 +6,21 @@
             </header>
             <p class="post-summary">{{ post.summary }}...</p>
             <footer class="post-footer">
-                <div class="post-date">{{ formatDate(post.date, 'yy-MM-dd HH:mm:ss') }}</div>
+                <div class="post-date">
+                    <time-icon class="post-date-icon" />
+                    <span>
+                        {{ formatDate(post.date, 'yy-MM-dd HH:mm:ss') }}
+                    </span>
+                </div>
                 <div class="post-tags">
+                    <bookmark class="post-tags-icon" />
                     <div v-for="tag in post.tags">{{ tag }}</div>
                 </div>
             </footer>
         </article>
         <div class="posts-skeleton" v-if="!isInit">
             <div class="posts-skeleton-item" v-for="_ in range(5)">
-                <el-skeleton :rows="5" />
+                <el-skeleton :rows="3" />
             </div>
         </div>
     </div>
@@ -22,6 +28,8 @@
 
 <script setup lang="ts">
 import useDefaultStore from '~/hooks/pinia/useDefaultStore';
+import timeIcon from '~/components/icons/time.vue'
+import bookmark from '~/components/icons/tag.vue'
 import type { postItem } from '~/types/post';
 
 const store = useDefaultStore()
@@ -43,7 +51,11 @@ onMounted(async () => {
     // router.push('/posts/temp')
     // await sleep(1000)
     postsData.value = await getData()
-    isInit.value = true
+    isInit.value = true;
+    (async () => {
+        const res = await $fetch('/api/test/testDir')
+        console.log(res)
+    })()
     // console.log(postsData.value)
 })
 
@@ -52,12 +64,13 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .posts-wrapper {
     // height: 50vh;
+    box-sizing: border-box;
     width: 100%;
-    padding-top: 10px;
+    padding: 10px 20px;
 
     // background-color: #15aa87;
     .posts-item {
-        margin: 10px 20px;
+        margin: 10px 0px;
         padding-bottom: 20px;
 
         &:not(:last-child) {
@@ -97,17 +110,28 @@ onMounted(async () => {
             font-weight: 200;
 
             .post-date {
+                display: flex;
                 font-size: 12px;
+                &-icon {
+                    height: 16px;
+                    margin-right: 5px;
+                }
             }
 
             .post-tags {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                gap: 10px;
+                gap: 6px;
                 font-size: 12px;
                 color: rgba(0, 0, 0, .54);
                 font-weight: 200;
+
+                &-icon {
+                    height: 10px;
+                    transform: rotate(-90deg) translate(-1px, -1px);
+                    // margin-right: -3px;
+                }
 
                 &>div {
                     cursor: pointer;
@@ -124,6 +148,7 @@ onMounted(async () => {
     .posts-skeleton {
         &-item {
             padding: 10px 20px;
+            // border-bottom: 1px solid #e8e8e8;
         }
     }
 }
