@@ -10,11 +10,11 @@
                 <el-input class="login-form-input" v-model="password" placeholder="密码" type="password" show-password />
                 <div :class="['login-form-message', `login-form-message-${message.type}`]">
                     <span>{{ message.message }}</span>
-                    <nuxt-link to="/user/register">注册账户</nuxt-link>
+                    <nuxt-link to="/user/login">登录账户</nuxt-link>
                 </div>
                 <div class="login-form-button-warpper">
-                    <el-button class="login-form-button" @click="handleLogin">
-                        登 录
+                    <el-button class="login-form-button" @click="handleRegister">
+                        注 册
                     </el-button>
                 </div>
             </div>
@@ -27,7 +27,7 @@ import useUserStore from '~/hooks/pinia/useUserStore';
 import cat from '~/components/icons/cat.vue';
 import useMiaoFetch from '~/hooks/useMiaoFetch';
 
-const { user: { login } } = useMiaoFetch()
+const { user: { register } } = useMiaoFetch()
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -48,7 +48,7 @@ watch(() => username.value + password.value, () => {
     }
 })
 
-const handleLogin = async () => {
+const handleRegister = async () => {
     if (isLogining) return
     if (username.value === '' || password.value === '') {
         message.value = {
@@ -61,46 +61,28 @@ const handleLogin = async () => {
 
     message.value = {
         type: 'default',
-        message: '登录中...'
+        message: '注册中...'
     }
     try {
-        const res = await login({
+        const res = await register({
             username: username.value,
             password: password.value
         })
-        isLogining = false
         message.value = {
             type: 'default',
-            message: '登录成功'
+            message: '注册成功'
         }
         userStore.setLoginStatus(true)
         userStore.setToken(res.token)
         userStore.setTokenExpireTime(res.expiresIn)
         router.push('/user')
     } catch (e) {
-        isLogining = false
-        // @ts-ignore
-        const code = e.statusCode ?? undefined
-        console.log(code, code === 401)
-        if (code === 401) {
-            message.value = {
-                type: 'warning',
-                message: '用户名或密码错误'
-            }
-        } else {
-            message.value = {
-                type: 'warning',
-                message: '登录失败'
-            }
+        message.value = {
+            type: 'warning',
+            message: '注册失败'
         }
     }
 }
-
-onBeforeMount(() => {
-    if (userStore.isLogin === true) {
-        return router.push('/user')
-    }
-})
 </script>
 
 <style lang="scss" scoped>
@@ -161,7 +143,7 @@ onBeforeMount(() => {
                     color: #15aa87;
                 }
 
-                & > a {
+                &>a {
                     color: #15aa87;
                     text-decoration: none;
                 }
@@ -186,39 +168,5 @@ onBeforeMount(() => {
             }
         }
     }
-
-    // &::before {
-    //     content: '';
-    //     display: block;
-    //     width: 20vw;
-    //     aspect-ratio: 1;
-    //     border-radius: 50%;
-    //     background-color: aqua;
-    //     position: absolute;
-    //     top: 0;
-    //     left: 40%;
-    // }
-
-    // &::after {
-    //     content: '';
-    //     display: block;
-    //     width: 20vw;
-    //     aspect-ratio: 1;
-    //     border-radius: 50%;
-    //     background-color: rgb(35, 191, 79);
-    //     position: absolute;
-    //     bottom: 0;
-    //     left: 40%;
-    // }
 }
-</style>
-
-
-<style>
-/* .login-form-input .el-input__wrapper {
-    transition: box-shadow .3s ease;
-}
-.login-form-input .el-input__wrapper.is-focus {
-    box-shadow: 0 0 0 1px #15aa87 !important;
-} */
 </style>

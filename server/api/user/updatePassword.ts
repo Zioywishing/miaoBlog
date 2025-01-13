@@ -2,6 +2,8 @@
 import bcrypt from 'bcryptjs';
 import BetterSqlite3 from 'better-sqlite3';
 
+// 暂未实现
+
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const { oldPassword, newPassword } = body;
@@ -23,7 +25,7 @@ export default defineEventHandler(async (event) => {
     userDB.prepare('UPDATE user SET password = ? WHERE id = ?').run(hashedPassword, userId);
 
     // 生成新的 JWT
-    const token = createToken(userId);
+    const token = createToken({ userId, password: user.password, username: user.username });
 
     userDB.close();
 

@@ -35,6 +35,14 @@ export const useUserStore = defineStore("user", () => {
         _token.value = value;
         localStorage.setItem("miao-token", value);
     };
+
+    const logout = () => {
+        setLoginStatus(false);
+        _token.value = undefined;
+        _tokenExpireTime.value = undefined;
+        localStorage.removeItem("miao-token");
+        localStorage.removeItem("miao-token-expire-time");
+    };
     return {
         isLogin,
         setLoginStatus,
@@ -43,7 +51,8 @@ export const useUserStore = defineStore("user", () => {
         tokenExpireTime,
         setTokenExpireTime,
         _tokenExpireTime,
-        _token
+        _token,
+        logout
     };
 });
 

@@ -53,10 +53,6 @@ onMounted(async () => {
     // await sleep(1000)
     postsData.value = await getData()
     isInit.value = true;
-    (async () => {
-        const res = await $fetch('/api/test/testDir')
-        console.log(res)
-    })()
     // console.log(postsData.value)
 })
 

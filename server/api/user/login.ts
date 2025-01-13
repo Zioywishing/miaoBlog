@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     userDB.prepare('UPDATE user SET lastLoginTime = ? WHERE id = ?').run(Date.now(), user.id);
 
     // 生成 JWT
-    const token = createToken(user.id);
+    const token = createToken({ userId: user.id, password: user.password, username: user.username });
 
     userDB.close();
 

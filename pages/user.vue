@@ -15,7 +15,7 @@
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    max-width: 800px;
+    // max-width: 800px;
     padding: 0;
 }
 </style>
