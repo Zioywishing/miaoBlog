@@ -1,6 +1,7 @@
 // @ts-ignore
 import testData from "~/public/testData/test.md"
 import DB from 'better-sqlite3';
+import { postItem } from "~/types/post";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -13,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const db = new DB('./userData/db/posts.db');
-  const post: any = db.prepare('SELECT * FROM posts WHERE id = ?').get(Number(id));
+  const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(Number(id)) as postItem;
   const content: any = db.prepare('SELECT content FROM postContent WHERE id = ?').get(Number(id));
   db.close();
 
@@ -34,6 +35,6 @@ export default defineEventHandler(async (event) => {
   return {
     code: 200,
     data: content.content,
-    title: post.title
+    ...post
   };
 })

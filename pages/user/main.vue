@@ -2,8 +2,8 @@
     <div :class="['user-main', showSidebar ? '' : 'hide-sidebar']">
         <div class="user-sidebar">
             <!-- <el-button @click="handleHideSidebar">hide</el-button> -->
-            <div class="sidebar-item" @click="handleHideSidebar">
-                <div class="sidebar-item-icon">
+            <div class="sidebar-item" @click="handleHideSidebar" style="justify-content: center;">
+                <div class="sidebar-item-icon" style="transform: translateX(3px);">
                     <component class="sidebar-item-icon-noFill" :is="chevronDown"
                         :style="{ transform: showSidebar ? '' : 'rotate(-90deg)' }"></component>
                 </div>

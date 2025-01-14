@@ -37,8 +37,11 @@ export default function useFetch() {
                     'Authorization': `Bearer ${userStore.token}`
                 }
             }),
-            getPost: (id: number) => $fetch(`/api/posts/getPost?id=${id}`, {
-                method: 'GET',
+            getPost: (id: number) => $fetch(`/api/posts/getPostContent`, {
+                method: 'post',
+                body: {
+                    id
+                },
                 headers: {
                     'Authorization': `Bearer ${userStore.token}`
                 }
