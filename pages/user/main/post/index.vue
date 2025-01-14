@@ -4,46 +4,54 @@
             文章列表
         </div>
         <div class="post-index-list">
-            <div class="post-index-list-item">
-                上传文章
-            </div>
-            <div v-for="post in postList" :key="post.id" class="post-item post-index-list-item">
-                <div class="post-item-header">
-                    <div class="post-item-header-title">
-                        {{ post.title }}
+            <el-card class="post-index-list-create" @click="handleNewPost">
+                <create class="post-index-list-create-icon"></create>
+                <div class="post-index-list-create-text">新建文章</div>
+            </el-card>
+            <el-card class="post-index-list-card" v-for="post in postList" :key="post.id">
+                <template #header>
+                    <div class="post-index-list-card-header">
+                        <el-text line-clamp="2">{{ post.title }}</el-text>
+                        <el-button @click="handleClickEditBtn(post.id)">
+                            编辑
+                        </el-button>
                     </div>
-                    <!-- <div class="post-item-header-date">
-                        {{ formatDate(post.date, 'yy-MM-dd HH:mm:ss') }}
-                    </div> -->
-                </div>
-                <div class="post-item-content">
-                    <span>
-                        {{ post.summary }}
-                    </span>
-                </div>
-                <div class="post-item-footer">
-                    <div class="post-item-footer-info">
-                        <div class="post-item-footer-info-date">
-                            {{ formatDate(post.date, 'yy-MM-dd HH:mm:ss') }}
-                        </div>
-                        <div class="post-item-footer-info-tags">
-                            <span v-for="tag in post.tags" :key="tag">{{ tag }}</span>
-                        </div>
+                </template>
+                <div class="post-index-list-card-content">
+                    <div class="post-index-list-card-content-summary">
+                        <el-text line-clamp="2">
+                            {{ post.summary }}
+                        </el-text>
                     </div>
-                    <el-button class="post-item-footer-btn" @click="handleClickEditBtn(post.id)">
-                        编辑
-                    </el-button>
+                    <el-text line-clamp="1">
+                        <el-tag size="small" class="post-index-list-card-content-tag" v-for="tag in post.tags"
+                            :key="tag" style="user-select: none;">
+                            {{ tag }}
+                        </el-tag>
+                    </el-text>
                 </div>
-            </div>
+                <template #footer>
+                    <div class="post-index-list-card-footer">
+                        {{ formatDate(post.date, 'yyyy-MM-dd HH:mm:ss') }}
+                    </div>
+                </template>
+            </el-card>
+
+            <el-card v-if="isLoading" v-for="_ in 6">
+                <el-skeleton :rows="5" />
+            </el-card>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import type { postItem } from '~/types/post';
+import create from '~/components/icons/create.vue';
 import getPostList from '~/utils/getPost';
 
 const router = useRouter()
+
+const isLoading = ref(true);
 
 const postList = ref<postItem[]>([]);
 
@@ -51,8 +59,13 @@ const handleClickEditBtn = (id: number) => {
     router.push(`/user/main/post/edit-${id}`)
 }
 
+const handleNewPost = () => {
+    router.push('/user/main/post/edit-new')
+}
+
 onMounted(async () => {
     postList.value = await getPostList();
+    isLoading.value = false;
 })
 </script>
 
@@ -85,65 +98,99 @@ onMounted(async () => {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1rem;
 
-        &-item {
-            // height: 100px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+        &-create {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+
+            &-text {
+                letter-spacing: 2px;
+                transform: translateX(-2px);
+                user-select: none;
+            }
         }
 
-        .post-item {
-            box-sizing: border-box;
-            overflow: hidden;
-            padding-bottom: 5px;
-
-            // padding: 10px;
+        &-card {
             &-header {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-
-                &-title {
-                    width: 100%;
-                    box-sizing: border-box;
-                    text-align: center;
-                    letter-spacing: 4px;
-                    text-decoration: none;
-                    font-size: large;
-                    background-color: #15aa87;
-                    color: #fff;
-                    padding: 3px 0 5px;
-                    // font-family: PT Serif, Serif;
-                }
-            }
-
-            &-content {
-                max-height: 45px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                text-indent: 2em;
-                color: #363636;
-            }
-
-            &-footer {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-top: 5px;
+            }
 
-                &-info {
-                    padding: 0 5px;
-
-                    &>div {
-                        font-size: 10px;
-                    }
+            &-content {
+                &-tags {
+                    display: flex;
+                    height: 25px;
+                    max-width: calc(100% - 0px);
+                    user-select: none;
                 }
 
-                &-btn {
-                    height: 25px;
-                    margin-right: 10px;
+                &-tag:not(:first-child) {
+                    margin: 0 5px;
                 }
             }
+
+            &-footer {
+                font-size: smaller;
+                color: #686868;
+            }
         }
+
+        // .post-item {
+        //     box-sizing: border-box;
+        //     overflow: hidden;
+        //     padding-bottom: 5px;
+
+        //     // padding: 10px;
+        //     &-header {
+        //         display: flex;
+        //         flex-direction: column;
+        //         justify-content: space-between;
+
+        //         &-title {
+        //             width: 100%;
+        //             box-sizing: border-box;
+        //             text-align: center;
+        //             letter-spacing: 4px;
+        //             text-decoration: none;
+        //             font-size: large;
+        //             background-color: #15aa87;
+        //             color: #fff;
+        //             padding: 3px 0 5px;
+        //             // font-family: PT Serif, Serif;
+        //         }
+        //     }
+
+        //     &-content {
+        //         max-height: 45px;
+        //         overflow: hidden;
+        //         text-overflow: ellipsis;
+        //         text-indent: 2em;
+        //         color: #363636;
+        //     }
+
+        //     &-footer {
+        //         display: flex;
+        //         justify-content: space-between;
+        //         align-items: center;
+        //         margin-top: 5px;
+
+        //         &-info {
+        //             padding: 0 5px;
+
+        //             &>div {
+        //                 font-size: 10px;
+        //             }
+        //         }
+
+        //         &-btn {
+        //             height: 25px;
+        //             margin-right: 10px;
+        //         }
+        //     }
+        // }
     }
 }
 </style>

@@ -8,8 +8,12 @@
     "server/**/*",
     "style/**/*",
     "utils/**/*",
-    ".nuxt/*.d.ts",
     "types/**/*",
     "plugins/**/*",
+    ".nuxt/imports.d.ts",
+    ".nuxt/nuxt.d.ts",
+  ],
+  "exclude": [
+    ".nuxt/components.d.ts",
   ]
 }

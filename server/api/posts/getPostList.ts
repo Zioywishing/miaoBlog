@@ -30,6 +30,6 @@ export default defineEventHandler(async (event) => {
 
     return {
         code: 200,
-        data: posts
+        data: posts.reverse()
     };
 });

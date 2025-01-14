@@ -42,6 +42,7 @@ export default defineEventHandler(async (event) => {
     const tags = tagsArray.slice(0, 15).concat(new Array(15 - tagsArray.length).fill(null));
 
     try {
+        let id = -1
         db.transaction(() => {
             // 插入tags表
             const tagResult = insertTagsStmt.run(...tags);
@@ -51,13 +52,16 @@ export default defineEventHandler(async (event) => {
             const postResult = insertPostStmt.run(title, summary, type, url, date, tagId);
             const postId = postResult.lastInsertRowid;
 
+            id = postId as number;
+
             // 插入postContent表
             insertContentStmt.run(postId, content);
         })();
 
         return {
             code: 200,
-            msg: '插入成功'
+            msg: '插入成功',
+            id
         };
     } catch (error) {
         console.error('插入数据时出错:', error);
