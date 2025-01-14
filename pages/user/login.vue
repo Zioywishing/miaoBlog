@@ -33,6 +33,9 @@ const userStore = useUserStore()
 
 const username = ref('')
 const password = ref('')
+username.value = '539943419'
+password.value = 'zjh030628'
+onMounted(() => handleLogin())
 
 let isLogining = false
 

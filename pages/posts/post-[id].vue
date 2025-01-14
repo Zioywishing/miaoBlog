@@ -26,8 +26,9 @@ const title = ref('')
 
 const renderedData = ref('')
 
+const id = route.params.id as string
+
 onMounted(async () => {
-    const id = route.params.id as string
 
     const _p = new Promise<postContent>(async (resolve, reject) => {
         try {
