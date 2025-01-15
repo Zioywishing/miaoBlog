@@ -5,6 +5,17 @@
             <el-button v-for="item in Object.entries(testFunctionList)" @click="item[1]">
                 {{ item[0] }}
             </el-button>
+            <div>
+                测试更新
+                <el-upload :auto-upload="false" v-model="fileList" action="/api/system/update" ref="uploadRef">
+                    <template #trigger>
+                        <el-button type="primary">select file</el-button>
+                    </template>
+                    <el-button class="ml-3" type="success" @click="submitUpload">
+                        upload to server
+                    </el-button>
+                </el-upload>
+            </div>
         </div>
     </div>
 </template>
@@ -12,10 +23,18 @@
 <script setup lang="ts">
 import useUserStore from '~/hooks/pinia/useUserStore';
 import useMiaoFetch, { testAuth } from '~/hooks/useMiaoFetch';
+import type { UploadProps, UploadUserFile } from 'element-plus'
 
 const { post: { uploadPost, updatePost } } = useMiaoFetch()
 
+const fileList = ref<UploadUserFile[]>([])
 const userStore = useUserStore()
+
+const uploadRef = ref()
+
+const submitUpload = () => {
+  uploadRef.value!.submit()
+}
 
 const uploadTest = () => {
     uploadPost({
