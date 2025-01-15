@@ -7,7 +7,7 @@
             </el-button>
             <div>
                 测试更新
-                <el-upload :auto-upload="false" v-model="fileList" action="/api/system/update" ref="uploadRef">
+                <el-upload :auto-upload="false" v-model="fileList" action="/api/system/update" ref="uploadRef" :headers="headers">
                     <template #trigger>
                         <el-button type="primary">select file</el-button>
                     </template>
@@ -31,6 +31,12 @@ const fileList = ref<UploadUserFile[]>([])
 const userStore = useUserStore()
 
 const uploadRef = ref()
+
+const headers = computed(() => {
+    return {
+        Authorization: `Bearer ${userStore.token}`
+    }
+})
 
 const submitUpload = () => {
   uploadRef.value!.submit()
