@@ -1,6 +1,6 @@
 <template>
-    <div>
-
+    <div class="tools-wrapper">
+        <NuxtPage />
     </div>
 </template>
 
@@ -8,6 +8,14 @@
 
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.tools-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    // max-width: 800px;
+    padding: 0;
+}
 </style>

@@ -2,23 +2,8 @@
     <div>
         its the page which is used to test the api
         <div>
-            <el-button @click="uploadTest">
-                uploadPostTest
-            </el-button>
-            <el-button @click="editTest">
-                editPostTest
-            </el-button>
-            <el-button @click="testLogin">
-                testLogin
-            </el-button>
-            <el-button @click="testRegister">
-                testRegister
-            </el-button>
-            <el-button @click="testRefreshToken">
-                testRefreshToken
-            </el-button>
-            <el-button @click="testAuth">
-                testAuth
+            <el-button v-for="item in Object.entries(testFunctionList)" @click="item[1]">
+                {{ item[0] }}
             </el-button>
         </div>
     </div>
@@ -88,6 +73,33 @@ const testRefreshToken = async () => {
     })
     const token = response.token
     userStore.setToken(token)
+}
+
+const testToolShiquLikeApi = async () => {
+    const id = 29729408
+    const likes = 3
+    const sse = new EventSource(`/api/tools/shiqu/like?id=${id}&likes=${likes}`);
+    sse.onopen = function (event) {
+        console.log('Connection opened');
+    };
+    sse.onmessage = function (event) {
+        console.log('Received message:', event.data);
+    };
+    sse.onerror = function (event) {
+        console.error('Error occurred:', event);
+        sse.close()
+    };
+}
+
+
+
+const testFunctionList = {
+    uploadTest,
+    editTest,
+    testLogin,
+    testRegister,
+    testRefreshToken,
+    testToolShiquLikeApi
 }
 
 onMounted(() => {

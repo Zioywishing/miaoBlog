@@ -124,6 +124,16 @@ const PageContent = reactive<PageContent[]>([
           }
         ]
       },
+      {
+        name: '识趣阅读刷赞',
+        description: '给我妹自嗨用的',
+        nuxtLinks: [
+          {
+            name: 'link',
+            to: `/tools/fucksq`
+          }
+        ]
+      },
     ]
   }, {
     subTitle: '学习资料',

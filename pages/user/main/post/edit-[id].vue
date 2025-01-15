@@ -1,11 +1,17 @@
 <!-- 若route.params.id为new则为新建而非修改 -->
 <template>
     <div class="post-editor-wrapper">
+        <div class="post-editor-header">
+            <div class="post-editor-header-back" @click="handleBack">
+                <chevronDown></chevronDown>
+                返回
+            </div>
+        </div>
         <editor v-model:title="title" v-model:summary="summary" v-model:tags="tags" v-model:content="content" />
         <el-row>
             <el-col :span="24">
                 <div class="flex-end">
-                    <el-text v-if="message" :type="message.type">{{ message.message }}</el-text>
+                    <el-text v-if="message" :type="message.type" style="user-select: none;">{{ message.message }}</el-text>
                     <el-button @click="handleSubmit" style="margin-left: 10px;">
                         upload
                     </el-button>
@@ -20,6 +26,7 @@ import editor from '~/components/user/postEditor.vue';
 import useDefaultStore from '~/hooks/pinia/useDefaultStore';
 import useFetch from '~/hooks/useMiaoFetch';
 import type { postItem } from '~/types/post';
+import chevronDown from "~/components/icons/chevronDown.vue";
 
 type resType = {
     data: string
@@ -29,6 +36,7 @@ type resType = {
 const { post: { getPost, updatePost, uploadPost } } = useFetch()
 
 const route = useRoute()
+const router = useRouter()
 
 const id = ref<number>(-1)
 const title = ref<string>('')
@@ -48,6 +56,10 @@ const handleSubmit = () => {
 
 const handleUpload = async () => {
     try {
+        message.value = {
+            type: 'info',
+            message: '上传中'
+        }
         const response = await uploadPost({
             title: title.value,
             summary: summary.value,
@@ -80,6 +92,10 @@ const handleUpload = async () => {
 
 const handleUpdate = async () => {
     try {
+        message.value = {
+            type: 'info',
+            message: '上传中'
+        }
         const response = await updatePost({
             id: id.value,
             title: title.value,
@@ -108,6 +124,10 @@ const handleUpdate = async () => {
     }
 }
 
+const handleBack = () => {
+    router.back()
+}
+
 onMounted(async () => {
     console.log('route', route.params.id, route.params.id === 'new')
     if (route.params.id !== 'new') {
@@ -123,13 +143,34 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .post-editor-wrapper {
     /* box-sizing: border-box; */
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 20px;
+}
+
+.post-editor-header {
+
+    &-back {
+        width: fit-content;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+
+        svg {
+            width: 18px;
+            transform: rotate(90deg) translateX(1px);
+            margin-right: 3px;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
 }
 
 .flex-end {
