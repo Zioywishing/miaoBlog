@@ -6,13 +6,13 @@
                 {{ item[0] }}
             </el-button>
             <div>
-                测试更新
-                <el-upload :auto-upload="false" v-model="fileList" action="/api/system/update" ref="uploadRef" :headers="headers">
+                测试更新 !!!
+                <el-upload :auto-upload="false" v-model="fileList" action="/api/system/update" ref="uploadRef" :headers="headers" draggable="true">
                     <template #trigger>
                         <el-button type="primary">选择更新包</el-button>
                     </template>
                     <el-button class="ml-3" type="success" @click="submitUpload">
-                        上传更新包
+                        点击上传更新包
                     </el-button>
                 </el-upload>
             </div>
