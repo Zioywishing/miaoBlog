@@ -5,7 +5,7 @@
             <el-button v-for="item in Object.entries(testFunctionList)" @click="item[1]">
                 {{ item[0] }}
             </el-button>
-            <div>
+            <!-- <div>
                 测试更新 !!!
                 <el-upload :auto-upload="false" v-model="fileList" action="/api/system/update" ref="uploadRef" :headers="headers" draggable="true">
                     <template #trigger>
@@ -15,7 +15,7 @@
                         点击上传更新包
                     </el-button>
                 </el-upload>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>

@@ -69,11 +69,12 @@ const menuItem = shallowReactive([
         icon: Cloud,
         iconFill: true,
         to: '/user/main/server'
-    }, {
-        title: '测试',
-        icon: Cat,
-        to: '/user/main/test'
-    },
+    }, 
+    // {
+    //     title: '测试',
+    //     icon: Cat,
+    //     to: '/user/main/test'
+    // },
 ])
 
 const showSidebar = ref(true)
