@@ -14,10 +14,11 @@
                 <div class="flex-end">
                     <el-text v-if="message" :type="message.type" style="user-select: none;">{{ message.message
                         }}</el-text>
-                    <el-button @click="handleClickDelete" style="margin-left: 10px;" v-if="!isNewPost">
-                        delete
-                    </el-button><el-button @click="handleSubmit" style="margin-left: 10px;">
-                        upload
+                    <el-button @click="handleClickDelete" style="margin-left: 10px;" v-if="!isNewPost" type="danger">
+                        删除文章
+                    </el-button>
+                    <el-button @click="handleSubmit" style="margin-left: 10px;" type="primary">
+                        {{ isNewPost ? "上传文章" : "更新文章" }}
                     </el-button>
                 </div>
             </el-col>

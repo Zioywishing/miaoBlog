@@ -3,7 +3,7 @@
         <div class="md" v-if="isInit">
             <div class="md-title">{{ title }}</div>
             <div class="md-divider"></div>
-            <div v-html="renderedData"></div>
+            <markdown-render :data="content"></markdown-render>
         </div>
         <div v-else class="md-skeleton-item">
             <el-skeleton :rows="12" />
@@ -14,6 +14,7 @@
 <script setup lang="ts">
 import useMarkdownit from '~/hooks/useMarkdownit';
 import usePostStore from '~/hooks/pinia/usePostStore';
+import markdownRender from '~/components/markdownRender.vue';
 import type { postContent } from '~/types/post';
 
 const postStore = usePostStore()
@@ -23,6 +24,8 @@ const route = useRoute()
 const isInit = ref(false)
 
 const title = ref('')
+
+const content = ref('')
 
 const renderedData = ref('')
 
@@ -53,6 +56,8 @@ onMounted(async () => {
     const markdownIt = await useMarkdownit()
 
     const postsData = await _p
+
+    content.value = postsData.data
 
     renderedData.value = markdownIt.render(postsData.data)
 
