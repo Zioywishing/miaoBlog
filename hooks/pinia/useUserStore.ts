@@ -20,8 +20,15 @@ export const useUserStore = defineStore("user", () => {
     };
 
     const token = computed(() => {
+        console.log('token')
         if (_token.value) {
             return _token.value;
+        }
+        if(tokenExpireTime.value < Date.now()) {
+            localStorage.removeItem("miao-token");
+            localStorage.removeItem("miao-token-expire-time");
+            _token.value = undefined;
+            return "";
         }
         const res = localStorage.getItem("miao-token") || ""
         _token.value = res;

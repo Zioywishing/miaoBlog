@@ -11,22 +11,22 @@
                 </el-col>
             </el-row>
             <el-row style="width: 100%;" :gutter="20">
-                <el-col :span="16" class="col-flex-end">
-                    <el-text size="large">刷赞数：</el-text>
-                    <el-input-number v-model="likes" :min="1" :max="300" />
+                <el-col :span="13" class="col-flex-end">
+                    <el-text size="large" style="margin-right: 7px;">赞数</el-text>
+                    <el-input-number style="width: 130px;" v-model="likes" :min="1" :max="300" />
                 </el-col>
                 <el-col :span="4" class="col-flex-end">
                     <el-button type="primary" style="width: 100%"
                         :disabled="status === 'busy' || id === undefined" @click="handleStart">开始</el-button>
                 </el-col>
-                <el-col :span="4" class="col-flex-end">
+                <el-col :span="7" class="col-flex-end">
                     <el-button type="primary" style="width: 100%" :disabled="messages.length === 0" @click="handleClear">清空输出</el-button>
                 </el-col>
             </el-row>
             <div class="message-container-wrapper">
                 <el-scrollbar>
                     <div class="message-container">
-                        <el-text v-for="(message, index) in messages" :key="message.timestamp" class="message-container-message">
+                        <el-text v-for="(message) in messages" :key="message.id" class="message-container-message">
                             <span style="margin-right: 7px;">{{ `${_fd(message.timestamp)} ==>`
                                 }}</span>
                             <span>{{ message.message }}</span>
@@ -46,13 +46,15 @@ const status = ref<'waiting' | 'busy'>('waiting')
 
 const messages = reactive<{
     timestamp: number,
-    message: string
+    message: string,
+    id: number
 }[]>([])
 
 const log = (...message: string[]) => {
-    messages.push({
+    messages.unshift({
         timestamp: Date.now(),
-        message: message.join('')
+        message: message.join(''),
+        id: Math.random()
     })
 }
 
@@ -128,13 +130,14 @@ watchEffect(() => {
     /* padding: 5px 10px; */
     border: 1px solid #ccc;
     border-radius: 5px;
+    /* max-height: 500px; */
 }
 
 .message-container {
     width: 100%;
     max-width: 800px;
-    height: 100%;
-    max-height: 500px;
+    height: calc( 100vh - 350px );
+    max-height: calc( 100vh - 350px );
     overflow-y: auto;
     display: flex;
     flex-direction: column;

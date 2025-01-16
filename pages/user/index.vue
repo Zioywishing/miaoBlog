@@ -26,11 +26,29 @@ const userStore = useUserStore()
 //     ]
 // })
 
-onBeforeMount(() => {
-    if (userStore.isLogin === false) {
-        return router.replace('/user/login')
-    } else {
+onBeforeMount(async () => {
+    if (userStore && userStore.isLogin) {
         return router.replace('/user/main')
+    } else {
+        try {
+            if(userStore.token) {
+                const response = await $fetch('/api/user/refreshToken', {
+                    method: 'POST',
+                    body: {
+                        token: userStore.token
+                    }
+                })
+                userStore.setToken(response.token)
+                userStore.setTokenExpireTime(response.expiresIn)
+                userStore.setLoginStatus(true)
+                router.replace('/user/main')
+            } else {
+                router.replace('/user/login')
+            }
+        } catch (error) {
+            console.error(error)
+            router.replace('/user/login')
+        }
     }
 })
 </script>

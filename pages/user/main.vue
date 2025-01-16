@@ -44,6 +44,7 @@ import Cat from '~/components/icons/cat.vue'
 import chevronDown from '~/components/icons/chevronDown.vue';
 import Documents from '~/components/icons/documents.vue';
 import Home from '~/components/icons/home.vue';
+import Cloud from '~/components/icons/cloud.vue';
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -64,10 +65,15 @@ const menuItem = shallowReactive([
         icon: Cat,
         to: '/user/main/account'
     }, {
+        title: '服务',
+        icon: Cloud,
+        iconFill: true,
+        to: '/user/main/server'
+    }, {
         title: '测试',
         icon: Cat,
         to: '/user/main/test'
-    }
+    },
 ])
 
 const showSidebar = ref(true)

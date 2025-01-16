@@ -18,11 +18,6 @@ export default defineNuxtConfig({
 	vite: {
 		server: {},
 		plugins: [],
-		test: {
-			deps: {
-				inline: ['element-plus']
-			}
-		},
 	},
 	modules: ["@pinia/nuxt", '@element-plus/nuxt'],
 	compatibilityDate: "2025-01-12",
