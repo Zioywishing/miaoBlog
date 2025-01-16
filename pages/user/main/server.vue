@@ -10,27 +10,31 @@
                 
             </el-divider>
             <p>上传更新包并更新服务端</p>
-            <el-upload 
-                :auto-upload="false" 
-                v-model="fileList" 
-                action="/api/system/update" 
-                ref="uploadRef" 
-                :headers="headers" 
-                drag
-                :on-exceed="handleExceed"
-                :on-change="handleUploadChange"
-                :limit="1"
-            >
-                <template #trigger>
-                    <div class="server-upload">
-                        <add class="server-upload-icon"></add>
-                        <el-text style="margin: 0;">拖拽 output.tar.gz 至此<br />或单击此处选择文件</el-text>
-                    </div>
-                </template>
-            </el-upload>
+            <el-row style="margin-bottom: 10px;">
+                <el-col :span="24">
+                    <el-upload 
+                        :auto-upload="false" 
+                        v-model="fileList" 
+                        action="/api/system/update" 
+                        ref="uploadRef" 
+                        :headers="headers" 
+                        drag
+                        :on-exceed="handleExceed"
+                        :on-change="handleUploadChange"
+                        :limit="1"
+                    >
+                        <template #trigger>
+                            <div class="server-upload">
+                                <add class="server-upload-icon"></add>
+                                <el-text style="margin: 0;">拖拽 output.tar.gz 至此<br />或单击此处选择文件</el-text>
+                            </div>
+                        </template>
+                    </el-upload>
+                </el-col>
+            </el-row>
             <el-row>
                 <el-col :span="24" class="flex-end">
-                    <el-button type="success" @click="submitUpload">
+                    <el-button type="primary" @click="submitUpload" :disabled="disabledUploadUpdataBtn">
                             点击上传更新包并更新服务
                     </el-button>
                 </el-col>
@@ -51,13 +55,16 @@ import { genFileId } from 'element-plus'
 const fileList = ref<UploadUserFile[]>([])
 const userStore = useUserStore()
 
-
 const uploadRef = ref<UploadInstance>()
 
-const headers = computed(() => {
-    return {
-        Authorization: `Bearer ${userStore.token}`
+const headers = reactive(
+    {
+        Authorization: ``
     }
+)
+
+const disabledUploadUpdataBtn = computed(() => {
+    return fileList.value.length === 0
 })
 
 const handleExceed = (files: UploadUserFile[]) => {
@@ -69,15 +76,22 @@ const handleExceed = (files: UploadUserFile[]) => {
 
 const handleUploadChange = (_file: UploadUserFile, files: UploadUserFile[]) => {
     for (let i = files.length - 1; i >= 0; i--) {
-    if (files[i].name !== 'output.tar.gz') {
-        files.splice(i, 1);
+        if (files[i].name !== 'output.tar.gz') {
+            files.splice(i, 1);
+        }
     }
-    }
+    files.length = Math.max(1, files.length)
+    fileList.value = files
 }
 
 const submitUpload = () => {
   uploadRef.value!.submit()
 }
+
+onMounted(() => {
+    // nuxt的create声明周期发生在node环境，没有localstorage
+    headers.Authorization = `Bearer ${userStore.token}`
+})
 
 </script>
 

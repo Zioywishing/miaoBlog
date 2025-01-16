@@ -88,11 +88,11 @@ const handleLogout = () => {
     router.push('user/login')
 }
 
-onBeforeMount(() => {
-    if (userStore.isLogin === false) {
-        return router.replace('/user/login')
-    }
-})
+// onBeforeMount(() => {
+//     if (userStore.isLogin === false) {
+//         return router.replace('/user/login')
+//     }
+// })
 </script>
 
 <style lang="scss" scoped>

@@ -69,12 +69,26 @@ const _fd = (
 ) => formatDate(date, 'yyyy-MM-dd   HH:mm:ss')
 
 const handleStart = () => {
+    log('开始刷赞，尝试建立与服务器的连接')
+    status.value = 'busy'
     const sse = new EventSource(`/api/tools/shiqu/like?id=${id.value}&likes=${likes.value}`);
     sse.onopen = function (event) {
         log('建立与服务器的连接')
     };
     sse.onmessage = function (event) {
-        log('Received message:', event.data);
+        const data = JSON.parse(event.data.split('data: ')[1])
+        if(data.likeCountBefore || data.likeCountAfter) {
+            log(`当前赞数: ${data?.likeCountBefore ?? data?.likeCountAfter}`)
+        } else if(data.process) {
+            log(`已点赞 ${data.process} 次，已完成 ${data.percent}%`)
+        }
+        if(data.likeCountAfter) {
+            sse.close()
+            log('任务完成')
+            status.value = 'waiting'
+        }
+        // console.log(event.data)
+        // log('Received message:', event.data);
     };
     sse.onerror = function (event) {
         log('Error occurred:');

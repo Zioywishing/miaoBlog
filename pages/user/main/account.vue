@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="account-main">
         <el-button @click="handleLogout">登出</el-button>
     </div>
 </template>
@@ -18,5 +18,7 @@ const handleLogout = () => {
 </script>
 
 <style lang="scss" scoped>
-
+.account-main {
+    padding: 10px 20px;
+}
 </style>
