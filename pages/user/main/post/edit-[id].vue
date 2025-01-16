@@ -7,12 +7,16 @@
                 返回
             </div>
         </div>
-        <editor v-model:title="title" v-model:summary="summary" v-model:tags="tags" v-model:content="content" />
+        <editor v-model:title="title" v-model:summary="summary" v-model:tags="tags" v-model:content="content"
+            :disabled="disableEdit" />
         <el-row>
             <el-col :span="24">
                 <div class="flex-end">
-                    <el-text v-if="message" :type="message.type" style="user-select: none;">{{ message.message }}</el-text>
-                    <el-button @click="handleSubmit" style="margin-left: 10px;">
+                    <el-text v-if="message" :type="message.type" style="user-select: none;">{{ message.message
+                        }}</el-text>
+                    <el-button @click="handleClickDelete" style="margin-left: 10px;" v-if="!isNewPost">
+                        delete
+                    </el-button><el-button @click="handleSubmit" style="margin-left: 10px;">
                         upload
                     </el-button>
                 </div>
@@ -27,6 +31,7 @@ import useDefaultStore from '~/hooks/pinia/useDefaultStore';
 import useFetch from '~/hooks/useMiaoFetch';
 import type { postItem } from '~/types/post';
 import chevronDown from "~/components/icons/chevronDown.vue";
+// import type { Action } from 'element-plus/es/components/index.mjs';
 
 type resType = {
     data: string
@@ -38,11 +43,16 @@ const { post: { getPost, updatePost, uploadPost } } = useFetch()
 const route = useRoute()
 const router = useRouter()
 
+const isNewPost = ref(route.params.id === 'new')
+
 const id = ref<number>(-1)
 const title = ref<string>('')
 const summary = ref<string>('')
 const tags = ref<string[]>([])
 const content = ref<string>('')
+
+// 等待加载完成才允许编辑
+const disableEdit = ref(true)
 
 const message = ref<{ type: "" | "success" | "warning" | "info" | "primary" | "danger", message: string }>()
 
@@ -51,6 +61,50 @@ const handleSubmit = () => {
         handleUpload()
     } else {
         handleUpdate()
+    }
+}
+
+const handleClickDelete = async () => {
+    try {
+        await ElMessageBox.confirm(
+            '是否确定删除本篇文章？',
+            '警告',
+            {
+                confirmButtonText: '删除',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        )
+        await ElMessageBox.confirm(
+            '再次确认删除本篇文章',
+            '警告',
+            {
+                confirmButtonText: '删除',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        )
+        try {
+            const response = await $fetch('/api/posts/deletePost', {
+                method: 'POST',
+                body: {
+                    id: id.value
+                }
+            })
+            ElMessage({
+                type: 'success',
+                message: '删除文章完成',
+            })
+            const store = useDefaultStore()
+            store.deleteCache('posts')
+            router.back()
+        } catch {
+            ElMessage({
+                type: 'error',
+                message: '删除失败',
+            })
+        }
+    } catch {
     }
 }
 
@@ -81,6 +135,7 @@ const handleUpload = async () => {
         }
         const store = useDefaultStore()
         store.deleteCache('posts')
+        isNewPost.value = false
     } catch (error) {
         console.error(error)
         message.value = {
@@ -129,16 +184,27 @@ const handleBack = () => {
 }
 
 onMounted(async () => {
-    console.log('route', route.params.id, route.params.id === 'new')
     if (route.params.id !== 'new') {
+        message.value = {
+            type: 'info',
+            message: '初始化中'
+        }
         id.value = parseInt(route.params.id as string)
         const res = await getPost(id.value) as any as resType
-        console.log(res)
         id.value = res.id
         title.value = res.title
         summary.value = res.summary
         tags.value = []
         content.value = res.data
+        disableEdit.value = false
+
+
+        message.value = {
+            type: 'info',
+            message: ''
+        }
+    } else {
+        disableEdit.value = false
     }
 })
 </script>

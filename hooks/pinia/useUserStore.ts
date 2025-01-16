@@ -20,7 +20,6 @@ export const useUserStore = defineStore("user", () => {
     };
 
     const token = computed(() => {
-        console.log('token')
         if (_token.value) {
             return _token.value;
         }

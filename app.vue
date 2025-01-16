@@ -12,6 +12,7 @@
 <script lang="ts" setup>
 import miaoHeader from './components/miaoHeader.vue';
 import miaoContentWrapper from './components/miaoContentWrapper.vue';
+import "/style/default.scss";
 
 // @ts-ignore
 useHead({
@@ -32,9 +33,9 @@ useHead({
 }
 </style>
 
-<style lang="scss">
+<!-- <style lang="scss">
 @use '/style/default.scss';
-</style>
+</style> -->
 
 <style>
 .page-enter-active,
