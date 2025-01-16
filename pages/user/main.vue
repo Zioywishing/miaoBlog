@@ -22,7 +22,7 @@
         </div>
         <div class="user-content">
             <el-scrollbar>
-                <router-view></router-view>
+                <nuxt-page></nuxt-page>
             </el-scrollbar>
         </div>
         <div class="user-bottom-bar">

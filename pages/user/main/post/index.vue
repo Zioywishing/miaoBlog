@@ -6,7 +6,7 @@
         <div class="post-index-list">
             <el-card class="post-index-list-create" @click="handleNewPost">
                 <create class="post-index-list-create-icon"></create>
-                <div class="post-index-list-create-text">新建文章</div>
+                <div class="post-index-list-create-text">新文章</div>
             </el-card>
             <el-card class="post-index-list-card" v-for="post in postList" :key="post.id">
                 <template #header>
@@ -95,7 +95,7 @@ onMounted(async () => {
     &-list {
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1rem;
 
         &-create {
@@ -191,6 +191,14 @@ onMounted(async () => {
         //         }
         //     }
         // }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .post-index {
+        &-list {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        }
     }
 }
 </style>

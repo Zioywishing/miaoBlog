@@ -99,6 +99,8 @@ onMounted(() => {
 .user-server-config {
     position: relative;
     padding: 10px 20px;
+    max-width: 800px;
+    margin: 0px auto;
     .server-upload {
         border-radius: 6px;
         cursor: pointer;
