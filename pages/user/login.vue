@@ -7,7 +7,7 @@
             <!-- <div>杪Blog后台</div> -->
             <div class="login-form">
                 <el-input class="login-form-input" v-model="username" placeholder="用户名" />
-                <el-input class="login-form-input" v-model="password" placeholder="密码" type="password" show-password />
+                <el-input class="login-form-input" @keyup.enter="handleLogin" v-model="password" placeholder="密码" type="password" show-password />
                 <div :class="['login-form-message', `login-form-message-${message.type}`]">
                     <span>{{ message.message }}</span>
                     <nuxt-link to="/user/register">注册账户</nuxt-link>
