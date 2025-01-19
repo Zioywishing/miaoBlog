@@ -15,9 +15,7 @@ const props = defineProps({
 })
 const cwRef = ref<HTMLDivElement>()
 const cRef = ref<HTMLDivElement>()
-const cwStyle = ref<{ [key: string]: string | number }>({
-    maxHeight: '99999vh',
-})
+const cwStyle = ref<{ [key: string]: string | number }>({})
 const cStyle = ref<{ [key: string]: string | number }>({})
 
 let originHeight = -1
@@ -33,19 +31,28 @@ const clearTimer = () => {
 
 const handleHide = () => {
     clearTimer()
+    calcOriginHeight();
     cwStyle.value = {
-        maxHeight: 0,
-        opacity: 0,
+        maxHeight: `${originHeight}px`,
+        opacity: 1,
         transition: "all 0.2s ease-in-out, opacity 0.1s ease-out",
-        pointerEvents: 'none',
     }
     timer.push(setTimeout(() => {
         cwStyle.value = {
             maxHeight: 0,
-            display: 'none',
             opacity: 0,
+            transition: "all 0.2s ease-in-out, opacity 0.1s ease-out",
+            pointerEvents: 'none',
         }
-    }, 300))
+        timer.push(setTimeout(() => {
+            cwStyle.value = {
+                maxHeight: 0,
+                display: 'none',
+                opacity: 0,
+                pointerEvents: 'none',
+            }
+        }, 300))
+    }))
 }
 
 const handleShow = () => {
@@ -53,13 +60,31 @@ const handleShow = () => {
     cwStyle.value = {
         maxHeight: 0,
         opacity: 0,
+        pointerEvents: 'none',
     }
     timer.push(setTimeout(() => {
+        calcOriginHeight();
         cwStyle.value = {
-            maxHeight: `${originHeight}px`,
-            opacity: 1,
-            transition: "all 0.2s ease-in-out, opacity 0.3s ease-in"
+            maxHeight: 0,
+            opacity: 0,
+            transition: "all 0.2s ease-in-out, opacity 0.3s ease-in",
+            pointerEvents: 'none',
         }
+        timer.push(setTimeout(() => {
+            cwStyle.value = {
+                maxHeight: `${originHeight}px`,
+                opacity: 1,
+                transition: "all 0.2s ease-in-out, opacity 0.3s ease-in"
+            }
+            timer.push(setTimeout(() => {
+                cwStyle.value = {
+                    opacity: 1,
+                }
+                nextTick(() => {
+                    calcOriginHeight()
+                })
+            }, 300))
+        }))
     }))
 }
 
@@ -73,11 +98,12 @@ watch(() => props.show, (newVal) => {
     }
 })
 
+const calcOriginHeight = () => {
+    originHeight = cRef.value!.clientHeight
+}
+
 onMounted(() => {
-    originHeight = cwRef.value!.clientHeight
-    cwStyle.value = {
-        maxHeight: `${originHeight}px`,
-    }
+    calcOriginHeight()
 })
 </script>
 
