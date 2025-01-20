@@ -21,7 +21,7 @@ export default class Html2VNode {
 
     private buildMiddlewareMap(objs: (TagType | miaoVNodeType)[]) {
         const tagNameSet = new Set<string>()
-        const middlewareMap = new Map<string, middlewareType>()
+        const middlewareMap = new Map<string, middlewareType[]>()
         for (const item of objs) {
             const { tagName = '' } = this.parseTag(item.tag);
             tagNameSet.add(tagName)
@@ -29,7 +29,11 @@ export default class Html2VNode {
         for (const tagName of tagNameSet) {
             for (const middleware of this.middlewareList) {
                 if (middleware.filter(tagName)) {
-                    middlewareMap.set(tagName, middleware)
+                    if(!middlewareMap.has(tagName)) {
+                        middlewareMap.set(tagName, [middleware])
+                    } else {
+                        middlewareMap.get(tagName)!.unshift(middleware)
+                    }
                 }
             }
         }
@@ -38,16 +42,26 @@ export default class Html2VNode {
 
     private rander2VNode = (
         wrinklesResult: (miaoVNodeType | string)[],
-        middlewareMap: Map<string, middlewareType>
+        middlewareMap: Map<string, middlewareType[]>
     ): (VNode | string)[] => {
         return wrinklesResult.map((item: miaoVNodeType | string): VNode | string => {
             if (typeof item === 'string') {
                 return item;
             }
             const { tagName = '', tagAttrs } = this.parseTag(item.tag);
-            return middlewareMap.get(tagName)!.rander({
-                item, tagName, tagAttrs, middlewareMap
-            })
+            const middlewares = middlewareMap.get(tagName)
+            for(const middleware of middlewares!) {
+                const _res = middleware.rander({
+                    item,
+                    tagName,
+                    tagAttrs,
+                    middlewareMap
+                })
+                if(_res) {
+                    return _res
+                }
+            }
+            return ''
         })
     }
 
@@ -75,6 +89,12 @@ export default class Html2VNode {
         while (true) {
             const nextTag = this.getNextHtmlTag(currhtml);
             if (!nextTag) {
+                if(currhtml) {
+                    html2ObjResult.push({
+                        tag: '',
+                        children: currhtml,
+                    })
+                }
                 break;
             }
             const middleChild = currhtml.slice(0, nextTag.Index);
@@ -82,13 +102,28 @@ export default class Html2VNode {
                 html2ObjResult.push({
                     tag: '',
                     children: middleChild,
-                    // html: middleContent
                 })
             }
             currhtml = currhtml.slice(nextTag.Index + nextTag.tag.length);
             html2ObjResult.push(nextTag)
         }
+        html2ObjResult.forEach(item => {
+            // @ts-ignore
+            if(item.children &&typeof item.children==='string') {
+                // @ts-ignore
+                item.children = this.parseString(item.children)
+            }
+        })
         return html2ObjResult;
+    }
+
+    private parseString = (target: string) => {
+        
+        return target.replaceAll('&lt;', '<')
+            .replaceAll('&gt;', '>')
+            .replaceAll('&amp;', '&')
+            .replaceAll('&quot;', '"')
+            .replaceAll('&#39;', '\'')
     }
 
     private check = (html2ObjResult: (TagType | miaoVNodeType)[]) => {
@@ -176,13 +211,14 @@ type TagType = {
     isClose: boolean;
 }
 
+// 要优化也是以后优化了
 export type middlewareType = {
     filter: (tagName: string) => boolean,
     rander: (option: {
-        item: miaoVNodeType,
-        tagName: string,
-        tagAttrs: { [key: string]: string },
-        middlewareMap: Map<string, middlewareType>
-    }
+            item: miaoVNodeType,
+            tagName: string,
+            tagAttrs: { [key: string]: string },
+            middlewareMap: Map<string, middlewareType[]>
+        }
     ) => VNode | string
 }

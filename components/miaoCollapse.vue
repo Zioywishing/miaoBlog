@@ -67,14 +67,14 @@ const handleShow = () => {
         cwStyle.value = {
             maxHeight: 0,
             opacity: 0,
-            transition: "all 0.2s ease-in-out, opacity 0.3s ease-in",
+            transition: "all .2s ease-in-out, opacity .15s ease-in .07s",
             pointerEvents: 'none',
         }
         timer.push(setTimeout(() => {
             cwStyle.value = {
                 maxHeight: `${originHeight}px`,
                 opacity: 1,
-                transition: "all 0.2s ease-in-out, opacity 0.3s ease-in"
+                transition: "all .2s ease-in-out, opacity .15s ease-in .07s"
             }
             timer.push(setTimeout(() => {
                 cwStyle.value = {

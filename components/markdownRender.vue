@@ -33,15 +33,24 @@ const VNodeArr = computed(() => {
             },
             rander({
                 item,
-                tagName,
+                // tagName,
                 tagAttrs,
-                middlewareMap
+                // middlewareMap
             }) {
+                // console.log({
+                //     tagName,
+                //     tagAttrs,
+                // })
+                const codeType = tagAttrs?.class?.slice(1, -1)?.split('-')?.[1] ?? ''
+                // console.log({
+                //     codeType,
+                // })
                 return h(
                     codeMirror,
                     {
                         // @ts-ignore
-                        data: (item.children[0].children as string).replaceAll('&lt;', '<').replaceAll('&gt;', '>'),
+                        data: item.children[0].children.trim(),
+                        type: codeType,
                     },
                 )
             },
