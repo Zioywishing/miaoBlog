@@ -18,7 +18,7 @@ import "/style/default.scss";
 useHead({
   title: '杪 Blog',
   meta: [
-    { name: 'description', content: '杪儿的博客' }
+    { name: 'description', content: '杪儿的博客', lang: 'zh-CN' }
   ],
 })
 

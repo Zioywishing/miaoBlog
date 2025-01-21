@@ -91,8 +91,12 @@ const PageContent = reactive<PageContent[]>([
       },
       {
         name: 'MiaoBlog',
-        description: '施工中，不过不要抱有太大期待',
+        description: '施工中，不过最好不要抱有太大期待，毕竟还是以实现功能为目标去做的',
         links: [
+          {
+            name: "gitea",
+            url: "https://nj.miaospring.top:3001/539943419/miaoBlog.git"
+          },
           {
             name: "github",
             url: "https://github.com/Zioywishing/miaoBlog"
@@ -131,6 +135,16 @@ const PageContent = reactive<PageContent[]>([
           {
             name: 'link',
             to: `/tools/fucksq`
+          }
+        ]
+      },
+      {
+        name: '喵喵图床',
+        description: '其实就是一个很简陋的图床，上传，下载，没了',
+        nuxtLinks: [
+          {
+            name: 'link',
+            to: `/tools/imgBed`
           }
         ]
       },

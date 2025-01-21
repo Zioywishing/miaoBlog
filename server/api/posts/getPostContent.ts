@@ -1,5 +1,4 @@
 // @ts-ignore
-import testData from "~/public/testData/test.md"
 import DB from 'better-sqlite3';
 import { postItem } from "~/types/post";
 
