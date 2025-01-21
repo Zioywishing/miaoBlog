@@ -42,18 +42,17 @@ const handleVideoTrack = (track: MediaStreamTrack) => {
     let errCount = 0
     // @ts-ignore
     const imageCapture = new ImageCapture(track)
-    timer = setInterval(() => {
+    timer = setInterval(async () => {
         try {
-            imageCapture.grabFrame().then((videoFrame: VideoFrame) => {
-                const data = getQRData(videoFrame)
-                if (data &&!scannerResult.has(data)) {
-                    console.log(data)
-                    scannerResult.add(data)
-                    result.push(data)
-                    emit('onResult', data)
-                }
-                videoFrame.close()
-            })
+            const videoFrame = await imageCapture.grabFrame()
+            const data = getQRData(videoFrame)
+            if (data && !scannerResult.has(data)) {
+                console.log(data)
+                scannerResult.add(data)
+                result.push(data)
+                emit('onResult', data)
+            }
+            videoFrame.close()
         } catch (e) {
             errCount++
             if (errCount > 10) {
@@ -96,6 +95,8 @@ onBeforeUnmount(() => {
     video {
         height: inherit;
         width: inherit;
+        max-height: inherit;
+        max-width: inherit;
         object-fit: contain;
     }
 }

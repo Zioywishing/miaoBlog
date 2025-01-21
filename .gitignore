@@ -26,3 +26,5 @@ logs
 .pnpm-lock.yaml
 
 userData
+
+test/*
