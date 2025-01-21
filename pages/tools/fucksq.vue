@@ -4,10 +4,16 @@
         <el-divider></el-divider>
         <main class="fuck-sq-main">
             <el-row style="width: 100%;" :gutter="20">
-                <el-col :span="24">
+                <el-col :span="20">
                     <el-input v-model="url">
                         <template #prepend>链接</template>
                     </el-input>
+                </el-col>
+                <!-- <el-col :span="4">
+                    <el-button type="primary" style="width: 100%" @click="handleSelectImage">图片</el-button>
+                </el-col> -->
+                <el-col :span="4">
+                    <el-button type="primary" style="width: 100%" @click="handleOpenScanner">扫码</el-button>
                 </el-col>
             </el-row>
             <el-row style="width: 100%;" :gutter="20">
@@ -35,14 +41,21 @@
                 </el-scrollbar>
             </div>
         </main>
+        <div class="qr-scanner" v-if="displayQRScanner" @click="displayQRScanner = false">
+            <miaoQRScanner class="qr-scanner-scanner" @on-result="handleScannerRes" @click.stop></miaoQRScanner>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 
+const router = useRouter()
+
 const url = ref('')
 const likes = ref(10)
 const status = ref<'waiting' | 'busy'>('waiting')
+
+const displayQRScanner = ref(false)
 
 const messages = reactive<{
     timestamp: number,
@@ -58,10 +71,14 @@ const log = (...message: string[]) => {
     })
 }
 
+const matchId = (url: string) => {
+    const idMatch0 = url.match(/id%3D(\d+)/);
+    const idMatch1 = url.match(/id=(\d+)/);
+    return idMatch0? idMatch0[1] : idMatch1? idMatch1[1] : undefined
+}
+
 const id = computed(() => {
-    const idMatch0 = url.value.match(/id%3D(\d+)/);
-    const idMatch1 = url.value.match(/id=(\d+)/);
-    return idMatch0 ? idMatch0[1] : idMatch1 ? idMatch1[1] : undefined
+    return matchId(url.value)
 })
 
 const _fd = (
@@ -101,6 +118,23 @@ const handleClear = () => {
     messages.splice(0, messages.length)
 }
 
+const handleOpenScanner = () => {
+    // router.push('/tools/QRScanner')
+    displayQRScanner.value = true
+}
+
+const handleScannerRes = (res: string) => {
+    const id = matchId(res)
+    if(id) {
+        url.value = res
+    }
+    displayQRScanner.value = false
+}
+
+const handleSelectImage = () => {
+
+}
+
 watchEffect(() => {
     if (id.value) {
         log(`识别到id: ${id.value}`)
@@ -111,7 +145,7 @@ watchEffect(() => {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .fuck-sq-wrapper {
     width: 95%;
     height: 100%;
@@ -161,5 +195,22 @@ watchEffect(() => {
 .message-container-message  {
     width: 95%;
     margin: 0 10px;
+}
+
+.qr-scanner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &-scanner {
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+    }
 }
 </style>
