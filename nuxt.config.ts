@@ -1,6 +1,8 @@
 // import AutoImport from "unplugin-auto-import/vite";
 // import Components from "unplugin-vue-components/vite";
 // import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import mkcert from "vite-plugin-mkcert";
+
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // @ts-ignore
@@ -16,8 +18,10 @@ export default defineNuxtConfig({
 		}
 	},
 	vite: {
-		server: {},
-		plugins: [],
+		server: {
+			https: true,
+		},
+		plugins: [mkcert()],
 	},
 	modules: ["@pinia/nuxt", '@element-plus/nuxt'],
 	compatibilityDate: "2025-01-12",

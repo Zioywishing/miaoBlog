@@ -207,8 +207,9 @@ watchEffect(() => {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 3000;
     &-scanner {
-        width: 80%;
+        // width: 80%;
         height: 80%;
         object-fit: contain;
     }

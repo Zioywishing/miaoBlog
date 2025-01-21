@@ -1,7 +1,7 @@
 <template>
     <div class="qr-scanner-wrapper">
-        <video ref="scannerDisplayRef" autoplay></video>
-        <canvas ref="testCtx" v-show="false"></canvas>
+        <video ref="scannerDisplayRef"></video>
+        <!-- <canvas ref="testCtx" v-show="false"></canvas> -->
     </div>
 </template>
 
@@ -13,7 +13,7 @@ const emit = defineEmits<{
 }>()
 
 const scannerDisplayRef = ref<HTMLVideoElement>()
-const testCtx = ref<HTMLCanvasElement>()
+// const testCtx = ref<HTMLCanvasElement>()
 const result = reactive<string[]>([])
 
 let stream: MediaStream | null = null
@@ -75,6 +75,7 @@ onMounted(async () => {
     }
     if (stream) {
         scannerDisplayRef.value!.srcObject = stream
+        scannerDisplayRef.value!.play()
         const videoTrack = stream.getVideoTracks()[0]
         handleVideoTrack(videoTrack)
     }
