@@ -119,7 +119,7 @@ const cleanExpiredFiles_imgBed = async () => {
 
         for (const file of expiredFiles) {
             const hash = file.hash;
-            const filePath = useRuntimeConfig().public.userDataPath + `/imgBed/${hash}`;
+            const filePath = `./userData/imgBed/${hash}`;
             // 检查文件是否存在
             if (fs.existsSync(filePath)) {
                 // 删除文件
