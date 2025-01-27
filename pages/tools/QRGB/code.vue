@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="display: flex;flex-direction: column;align-items: center;">
         <miaoQRGBCode :value="testData"/>
         <div>{{ testData }}</div>
         <input type="text" v-model="testData">

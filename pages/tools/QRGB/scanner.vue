@@ -29,15 +29,34 @@ let stream: MediaStream | null = null
 let timer: any | undefined = undefined
 
 const unpaddingData = (data: string) => {
-    if (data.endsWith('012')) {
-        return atob(data.slice(0, data.length - 3))    
-    } else if (data.endsWith('01')) {
-        return atob(data.slice(0, data.length - 2)) 
-    } else {
-        return atob(data.slice(0, data.length - 1)) 
+    console.log(data)
+    let res: string
+    try {
+        if (data.endsWith('012')) {
+            res = atob(data.slice(0, data.length - 3))
+        } else if (data.endsWith('01')) {
+            res = atob(data.slice(0, data.length - 2))
+        } else {
+            res = atob(data.slice(0, data.length - 1))
+        }
+    } catch {
+        return ''
     }
+    return res
 }
 
+const binarization = (
+    value: number, options?: {
+        threshold?: number
+        min?: number,
+        max?: number
+    }) => {
+    options === undefined || (options = {})
+    const threshold = options?.threshold ?? 150
+    const min = options?.min ?? 0
+    const max = options?.max ?? 255
+    return value >= threshold ? max : min
+}
 // const scannerResult = new Set()
 
 const getQRDataFromVideoFrame = (videoFrame: VideoFrame): string | undefined => {
@@ -56,18 +75,24 @@ const getQRDataFromVideoFrame = (videoFrame: VideoFrame): string | undefined => 
         b: new ImageData(canvas.width, canvas.height),
     }
     for (let i = 0; i < imageData.data.length; i += 4) {
-        imageDataRGB.r.data[i] = imageData.data[i]
-        imageDataRGB.r.data[i + 1] = imageData.data[i]
-        imageDataRGB.r.data[i + 2] = imageData.data[i]
-        imageDataRGB.r.data[i + 3] = imageData.data[i + 3]
-        imageDataRGB.g.data[i] = imageData.data[i + 1]
-        imageDataRGB.g.data[i + 1] = imageData.data[i + 1]
-        imageDataRGB.g.data[i + 2] = imageData.data[i + 1]
-        imageDataRGB.g.data[i + 3] = imageData.data[i + 3]
-        imageDataRGB.b.data[i] = imageData.data[i + 2]
-        imageDataRGB.b.data[i + 1] = imageData.data[i + 2]
-        imageDataRGB.b.data[i + 2] = imageData.data[i + 2]
-        imageDataRGB.b.data[i + 3] = imageData.data[i + 3]
+        const rgba = {
+            r: binarization(imageData.data[i]),
+            g: binarization(imageData.data[i+1]),
+            b: binarization(imageData.data[i+2]),
+            a: imageData.data[i + 3]
+        }
+        imageDataRGB.r.data[i] = rgba.r
+        imageDataRGB.r.data[i + 1] = rgba.r
+        imageDataRGB.r.data[i + 2] = rgba.r
+        imageDataRGB.r.data[i + 3] = rgba.a
+        imageDataRGB.g.data[i] = rgba.g
+        imageDataRGB.g.data[i + 1] = rgba.g
+        imageDataRGB.g.data[i + 2] = rgba.g
+        imageDataRGB.g.data[i + 3] = rgba.a
+        imageDataRGB.b.data[i] = rgba.b
+        imageDataRGB.b.data[i + 1] = rgba.b
+        imageDataRGB.b.data[i + 2] = rgba.b
+        imageDataRGB.b.data[i + 3] = rgba.a
     }
     testCtxR.value!.width = canvas.width
     testCtxR.value!.height = canvas.height
@@ -82,7 +107,10 @@ const getQRDataFromVideoFrame = (videoFrame: VideoFrame): string | undefined => 
     const codeR = jsQR(imageDataRGB.r.data, imageDataRGB.r.width, imageDataRGB.r.height)
     const codeG = jsQR(imageDataRGB.g.data, imageDataRGB.g.width, imageDataRGB.g.height)
     const codeB = jsQR(imageDataRGB.b.data, imageDataRGB.b.width, imageDataRGB.b.height)
-    if(!codeR || !codeG || !codeB) return undefined
+    // console.log({
+    //     codeR, codeG, codeB
+    // })
+    if (!codeR || !codeG || !codeB) return undefined
     const data = unpaddingData(codeR?.data + codeG?.data + codeB?.data)
     return data
 }
@@ -98,9 +126,9 @@ const handleTrackProcessor = async (track: MediaStreamTrack) => {
         const frameFromCamera = result.value as VideoFrame;
         const data = getQRDataFromVideoFrame(frameFromCamera)
         if (data) {
-           res.value = data 
-           console.log(data)
-           emit('onResult', data)
+            res.value = data
+            console.log(data)
+            emit('onResult', data)
         }
     }
 }
