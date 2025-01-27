@@ -1,11 +1,11 @@
 <template>
     <div class="qr-scanner-wrapper">
         <video ref="scannerDisplayRef"></video>
+        <div>res: {{ res }}</div>
         <canvas ref="testCtx" style="transform: scale(.6);" v-show="true"></canvas>
         <canvas ref="testCtxR" style="transform: scale(.6);" v-show="true"></canvas>
         <canvas ref="testCtxG" style="transform: scale(.6);" v-show="true"></canvas>
         <canvas ref="testCtxB" style="transform: scale(.6);" v-show="true"></canvas>
-        <div>{{ res }}</div>
     </div>
 </template>
 
@@ -14,7 +14,7 @@ import jsQR from 'jsqr'
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 const emit = defineEmits<{
-    onResult: [value: string]
+    onResult: [value: Uint8Array]
 }>()
 
 const scannerDisplayRef = ref<HTMLVideoElement>()
@@ -22,27 +22,26 @@ const testCtx = ref<HTMLCanvasElement>()
 const testCtxR = ref<HTMLCanvasElement>()
 const testCtxG = ref<HTMLCanvasElement>()
 const testCtxB = ref<HTMLCanvasElement>()
-// const result = reactive<string[]>([])
 const res = ref<string>('')
 
 let stream: MediaStream | null = null
 let timer: any | undefined = undefined
 
-const unpaddingData = (data: string) => {
-    console.log(data)
-    let res: string
-    try {
-        if (data.endsWith('012')) {
-            res = atob(data.slice(0, data.length - 3))
-        } else if (data.endsWith('01')) {
-            res = atob(data.slice(0, data.length - 2))
-        } else {
-            res = atob(data.slice(0, data.length - 1))
-        }
-    } catch {
-        return ''
+const u8iEndWith = (data: Uint8Array, target: number[]) => {
+    for (let i = 0; i < target.length; i++) {
+        if (data[data.length - 1 - i] !== target[target.length - 1 - i]) return false
     }
-    return res
+    return true
+}
+
+const unpaddingData = (data: Uint8Array): Uint8Array => {
+    if(u8iEndWith(data, [0, 1, 2])) {
+        return data.slice(0, data.length - 3)
+    } else if (u8iEndWith(data, [0, 1])) {
+        return data.slice(0, data.length - 2) 
+    } else {
+        return data.slice(0, data.length - 1) 
+    }
 }
 
 const binarization = (
@@ -59,7 +58,7 @@ const binarization = (
 }
 // const scannerResult = new Set()
 
-const getQRDataFromVideoFrame = (videoFrame: VideoFrame): string | undefined => {
+const getQRDataFromVideoFrame = (videoFrame: VideoFrame): Uint8Array | undefined => {
     const canvas = testCtx.value!
     canvas.width = videoFrame.codedWidth
     canvas.height = videoFrame.codedHeight
@@ -77,8 +76,8 @@ const getQRDataFromVideoFrame = (videoFrame: VideoFrame): string | undefined => 
     for (let i = 0; i < imageData.data.length; i += 4) {
         const rgba = {
             r: binarization(imageData.data[i]),
-            g: binarization(imageData.data[i+1]),
-            b: binarization(imageData.data[i+2]),
+            g: binarization(imageData.data[i + 1]),
+            b: binarization(imageData.data[i + 2]),
             a: imageData.data[i + 3]
         }
         imageDataRGB.r.data[i] = rgba.r
@@ -107,11 +106,9 @@ const getQRDataFromVideoFrame = (videoFrame: VideoFrame): string | undefined => 
     const codeR = jsQR(imageDataRGB.r.data, imageDataRGB.r.width, imageDataRGB.r.height)
     const codeG = jsQR(imageDataRGB.g.data, imageDataRGB.g.width, imageDataRGB.g.height)
     const codeB = jsQR(imageDataRGB.b.data, imageDataRGB.b.width, imageDataRGB.b.height)
-    // console.log({
-    //     codeR, codeG, codeB
-    // })
     if (!codeR || !codeG || !codeB) return undefined
-    const data = unpaddingData(codeR?.data + codeG?.data + codeB?.data)
+    const resBuffer = new Uint8Array([...codeR.binaryData, ...codeG.binaryData, ...codeB.binaryData])
+    const data = unpaddingData(resBuffer)
     return data
 }
 
@@ -126,7 +123,7 @@ const handleTrackProcessor = async (track: MediaStreamTrack) => {
         const frameFromCamera = result.value as VideoFrame;
         const data = getQRDataFromVideoFrame(frameFromCamera)
         if (data) {
-            res.value = data
+            res.value = new TextDecoder().decode(data)
             console.log(data)
             emit('onResult', data)
         }

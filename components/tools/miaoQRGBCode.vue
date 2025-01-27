@@ -9,52 +9,45 @@ import QRCode from 'qrcode';
 import { onMounted, ref, watchEffect } from 'vue';
 
 const props = defineProps<{
-    value: string
+    value: string | Uint8Array,
+    width?: number
 }>()
 
-const width = ref(600)
+const width = ref(props.width ?? 600)
 
 const canvasRefRGB = ref<HTMLCanvasElement>()
 
-const generateQRCodeCanvasData = (data: string) => {
+const generateQRCodeCanvasData = (data: Uint8Array) => {
     const canvas = document.createElement('canvas')
     canvas.width = width.value
     canvas.height = width.value
     const ctx = canvas.getContext('2d')!
-    QRCode.toCanvas(canvas, [{ data: new TextEncoder().encode(data), mode: 'byte' }], {
+    QRCode.toCanvas(canvas, [{ data, mode: 'byte' }], {
         width: width.value,
     })
     const imageData = ctx.getImageData(0, 0, width.value, width.value)
     return imageData
 }
 
-const paddingData = (data: string) => {
-    const b64Data = btoa(data)
-    if (b64Data.length % 3 === 0) {
-        return b64Data + '012'
-    } else if (b64Data.length % 3 === 1) {
-        return b64Data + '01'
+const paddingData = (data: Uint8Array) => {
+    if(data.length % 3 === 0) {
+        return new Uint8Array([...data, 0, 1, 2])
+    } else if(data.length % 3 === 1) {
+        return new Uint8Array([...data, 0, 1]) 
     } else {
-        return b64Data + '0'
+        return new Uint8Array([...data, 0])
     }
 }
 
 onMounted(() => {
     watchEffect(() => {
-        const padedData = paddingData(props.value)
+        const u8iData = props.value instanceof Uint8Array ? props.value : new TextEncoder().encode(props.value)
+        const padedData = paddingData(u8iData)
         const data = {
             r: padedData.slice(0, padedData.length / 3),
             g: padedData.slice(padedData.length / 3, padedData.length / 3 * 2),
             b: padedData.slice(padedData.length / 3 * 2, padedData.length)
         }
-        // console.log({
-        //     data,
-        //     ECData: {
-        //         r: new TextEncoder().encode(data.r),
-        //         g: new TextEncoder().encode(data.g),
-        //         b: new TextEncoder().encode(data.b)
-        //     }
-        // })
         const imgData = {
             r: generateQRCodeCanvasData(data.r),
             g: generateQRCodeCanvasData(data.g),
