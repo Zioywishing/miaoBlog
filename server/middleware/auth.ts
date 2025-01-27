@@ -7,12 +7,10 @@ const pathNeedAuth = serverConfig.auth.api
 
 export default defineEventHandler(async (event) => {
     const path = getRequestURL(event).pathname
-    // console.log(path)
     if (pathNeedAuth.has(path)) {
         const key = getKey()
         // @ts-ignore
         const authHeader = event.headers.get('authorization');
-        // console.log(authHeader)
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
         }
@@ -20,7 +18,6 @@ export default defineEventHandler(async (event) => {
         try {
             const decoded = jwt.verify(token, key) as { userId: number, password: string, username: string, exp: number }
             if (decoded.exp > Date.now()) {
-                // console.log('token expired')
                 throw createError({ statusCode: 401, statusMessage: 'Token invalid or expired', data: { err: 'token expired', token } })
             }
             // console.log(decoded)

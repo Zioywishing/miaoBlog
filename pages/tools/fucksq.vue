@@ -4,10 +4,16 @@
         <el-divider></el-divider>
         <main class="fuck-sq-main">
             <el-row style="width: 100%;" :gutter="20">
-                <el-col :span="24">
+                <el-col :span="16">
                     <el-input v-model="url">
                         <template #prepend>链接</template>
                     </el-input>
+                </el-col>
+                <el-col :span="4">
+                    <el-button type="primary" style="width: 100%" @click="handleSelectImage">图片</el-button>
+                </el-col>
+                <el-col :span="4">
+                    <el-button type="primary" style="width: 100%" @click="handleOpenScanner">扫码</el-button>
                 </el-col>
             </el-row>
             <el-row style="width: 100%;" :gutter="20">
@@ -16,11 +22,12 @@
                     <el-input-number style="width: 130px;" v-model="likes" :min="1" :max="300" />
                 </el-col>
                 <el-col :span="4" class="col-flex-end">
-                    <el-button type="primary" style="width: 100%"
-                        :disabled="status === 'busy' || id === undefined" @click="handleStart">开始</el-button>
+                    <el-button type="primary" style="width: 100%" :disabled="status === 'busy' || id === undefined"
+                        @click="handleStart">开始</el-button>
                 </el-col>
                 <el-col :span="7" class="col-flex-end">
-                    <el-button type="primary" style="width: 100%" :disabled="messages.length === 0" @click="handleClear">清空输出</el-button>
+                    <el-button type="primary" style="width: 100%" :disabled="messages.length === 0"
+                        @click="handleClear">清空输出</el-button>
                 </el-col>
             </el-row>
             <div class="message-container-wrapper">
@@ -35,14 +42,24 @@
                 </el-scrollbar>
             </div>
         </main>
+        <div class="qr-scanner" v-if="displayQRScanner" @click="displayQRScanner = false">
+            <miaoQRScanner class="qr-scanner-scanner" @on-result="handleScannerRes" @click.stop></miaoQRScanner>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import jsQR from 'jsqr'
+
+
+// const router = useRouter()
+const testCRef = ref<HTMLCanvasElement>()
 
 const url = ref('')
 const likes = ref(10)
 const status = ref<'waiting' | 'busy'>('waiting')
+
+const displayQRScanner = ref(false)
 
 const messages = reactive<{
     timestamp: number,
@@ -58,10 +75,14 @@ const log = (...message: string[]) => {
     })
 }
 
-const id = computed(() => {
-    const idMatch0 = url.value.match(/id%3D(\d+)/);
-    const idMatch1 = url.value.match(/id=(\d+)/);
+const matchId = (url: string) => {
+    const idMatch0 = url.match(/id%3D(\d+)/);
+    const idMatch1 = url.match(/id=(\d+)/);
     return idMatch0 ? idMatch0[1] : idMatch1 ? idMatch1[1] : undefined
+}
+
+const id = computed(() => {
+    return matchId(url.value)
 })
 
 const _fd = (
@@ -77,12 +98,12 @@ const handleStart = () => {
     };
     sse.onmessage = function (event) {
         const data = JSON.parse(event.data.split('data: ')[1])
-        if(data.likeCountBefore || data.likeCountAfter) {
+        if (data.likeCountBefore || data.likeCountAfter) {
             log(`当前赞数: ${data?.likeCountBefore ?? data?.likeCountAfter}`)
-        } else if(data.process) {
+        } else if (data.process) {
             log(`已点赞 ${data.process} 次，已完成 ${data.percent}%`)
         }
-        if(data.likeCountAfter) {
+        if (data.likeCountAfter) {
             sse.close()
             log('任务完成')
             status.value = 'waiting'
@@ -101,6 +122,46 @@ const handleClear = () => {
     messages.splice(0, messages.length)
 }
 
+const handleOpenScanner = () => {
+    // router.push('/tools/QRScanner')
+    displayQRScanner.value = true
+}
+
+const handleScannerRes = (res: string) => {
+    const id = matchId(res)
+    if (id) {
+        url.value = res
+    }
+    displayQRScanner.value = false
+}
+
+const handleSelectImage = async () => {
+    const fper = new FilePicker()
+    const files = await fper.pick({
+        accept: 'image/*',
+        multiple: false
+    })
+    const file = files[0]
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')!
+    const img = await createImageBitmap(file)
+    canvas.width = img.width
+    canvas.height = img.height
+    ctx.drawImage(img, 0, 0, img.width, img.height)
+    const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height)
+    if (!imageData) return 
+    const code = jsQR(imageData?.data, imageData?.width, imageData?.height)
+    if(code?.data) {
+        const _url = code.data
+        const id = matchId(_url)
+        if(id) {
+            url.value = _url
+        } else {
+            log('图片未识别到id')
+        }
+    }
+}
+
 watchEffect(() => {
     if (id.value) {
         log(`识别到id: ${id.value}`)
@@ -111,7 +172,7 @@ watchEffect(() => {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .fuck-sq-wrapper {
     width: 95%;
     height: 100%;
@@ -150,16 +211,36 @@ watchEffect(() => {
 .message-container {
     width: 100%;
     max-width: 800px;
-    height: calc( 100vh - 350px );
-    max-height: calc( 100vh - 350px );
+    height: calc(100vh - 350px);
+    max-height: calc(100vh - 350px);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    padding: 10px 0 ;
+    padding: 10px 0;
 }
 
-.message-container-message  {
+.message-container-message {
     width: 95%;
     margin: 0 10px;
+}
+
+.qr-scanner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+
+    &-scanner {
+        max-width: 80vw;
+        max-height: 80vh;
+        // height: 80%;
+        object-fit: contain;
+    }
 }
 </style>
