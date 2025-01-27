@@ -148,6 +148,16 @@ const PageContent = reactive<PageContent[]>([
           }
         ]
       },
+      {
+        name: 'QRGB',
+        description: '把三个二维码叠在一起，真是创创又新新啊',
+        nuxtLinks: [
+          {
+            name: 'link',
+            to: `/tools/QRGB`
+          }
+        ]
+      },
     ]
   }, {
     subTitle: '学习资料',

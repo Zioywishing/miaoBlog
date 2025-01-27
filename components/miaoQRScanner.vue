@@ -21,12 +21,10 @@ let timer: any | undefined = undefined
 
 const scannerResult = new Set()
 
-const getQRData = (videoFrame: VideoFrame): string | undefined => {
+const getQRData = (videoFrame: ImageBitmap ): string | undefined => {
     const canvas = document.createElement('canvas')
     // const canvas = testCtx.value!
-    // @ts-ignore
     canvas.width = videoFrame.width
-    // @ts-ignore
     canvas.height = videoFrame.height
     // console.log(canvas.width, canvas.height)
     const ctx = canvas.getContext('2d')
@@ -82,6 +80,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
     stream?.getTracks().forEach(track => track.stop())
+    clearInterval(timer)
 })
 
 </script>
