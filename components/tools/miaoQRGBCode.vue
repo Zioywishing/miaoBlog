@@ -30,13 +30,7 @@ const generateQRCodeCanvasData = (data: Uint8Array) => {
 }
 
 const paddingData = (data: Uint8Array) => {
-    if(data.length % 3 === 0) {
-        return new Uint8Array([...data, 0, 1, 2])
-    } else if(data.length % 3 === 1) {
-        return new Uint8Array([...data, 0, 1]) 
-    } else {
-        return new Uint8Array([...data, 0])
-    }
+    return new Uint8Array([...data, ...new Array(3 - data.length % 3).fill(0).map((_, i) => i)])
 }
 
 onMounted(() => {

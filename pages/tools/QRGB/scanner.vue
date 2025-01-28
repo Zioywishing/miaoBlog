@@ -35,26 +35,30 @@ const u8iEndWith = (data: Uint8Array, target: number[]) => {
 }
 
 const unpaddingData = (data: Uint8Array): Uint8Array => {
-    if(u8iEndWith(data, [0, 1, 2])) {
-        return data.slice(0, data.length - 3)
-    } else if (u8iEndWith(data, [0, 1])) {
-        return data.slice(0, data.length - 2) 
-    } else {
-        return data.slice(0, data.length - 1) 
-    }
+    return data.slice(0, data.length - data[data.length - 1])
 }
 
-const binarization = (
-    value: number, options?: {
+class Binarization {
+    constructor(options?: {
         threshold?: number
         min?: number,
         max?: number
-    }) => {
-    options === undefined || (options = {})
-    const threshold = options?.threshold ?? 150
-    const min = options?.min ?? 0
-    const max = options?.max ?? 255
-    return value >= threshold ? max : min
+    }) {
+        options === undefined || (options = {})
+        this.threshold = options?.threshold ?? 150
+        this.min = options?.min ?? 0
+        this.max = options?.max ?? 255
+    }
+    private threshold: number
+    private min: number
+    private max: number
+    private cache = new Map<number, number>()
+    public binarization = (value: number) => {
+        if (this.cache.has(value)) return this.cache.get(value)!
+        const res = value >= this.threshold? this.max : this.min
+        this.cache.set(value, res)
+        return res
+    }
 }
 // const scannerResult = new Set()
 
@@ -73,6 +77,7 @@ const getQRDataFromVideoFrame = (videoFrame: VideoFrame): Uint8Array | undefined
         g: new ImageData(canvas.width, canvas.height),
         b: new ImageData(canvas.width, canvas.height),
     }
+    const binarization = new Binarization().binarization
     for (let i = 0; i < imageData.data.length; i += 4) {
         const rgba = {
             r: binarization(imageData.data[i]),
