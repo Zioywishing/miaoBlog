@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import jsQR from 'jsqr'
+import jsqrgb from 'jsqrgb';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 const emit = defineEmits<{
@@ -108,12 +109,13 @@ const getQRDataFromVideoFrame = (videoFrame: VideoFrame): Uint8Array | undefined
     testCtxG.value!.getContext('2d')?.putImageData(imageDataRGB.g, 0, 0)
     testCtxB.value!.getContext('2d')?.putImageData(imageDataRGB.b, 0, 0)
     // const code = jsQR(imageData?.data, imageData?.width, imageData?.height)
-    const codeR = jsQR(imageDataRGB.r.data, imageDataRGB.r.width, imageDataRGB.r.height)
-    const codeG = jsQR(imageDataRGB.g.data, imageDataRGB.g.width, imageDataRGB.g.height)
-    const codeB = jsQR(imageDataRGB.b.data, imageDataRGB.b.width, imageDataRGB.b.height)
-    if (!codeR || !codeG || !codeB) return undefined
-    const resBuffer = new Uint8Array([...codeR.binaryData, ...codeG.binaryData, ...codeB.binaryData])
-    const data = unpaddingData(resBuffer)
+    // const codeR = jsQR(imageDataRGB.r.data, imageDataRGB.r.width, imageDataRGB.r.height)
+    // const codeG = jsQR(imageDataRGB.g.data, imageDataRGB.g.width, imageDataRGB.g.height)
+    // const codeB = jsQR(imageDataRGB.b.data, imageDataRGB.b.width, imageDataRGB.b.height)
+    // if (!codeR || !codeG || !codeB) return undefined
+    // const resBuffer = new Uint8Array([...codeR.binaryData, ...codeG.binaryData, ...codeB.binaryData])
+    // const data = unpaddingData(resBuffer)
+    const data = jsqrgb.recognize(imageData)
     return data
 }
 
