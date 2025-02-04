@@ -12,7 +12,7 @@
                         {{ formatDate(post.date, 'yy-MM-dd HH:mm:ss') }}
                     </span>
                 </div>
-                <div class="post-tags">
+                <div class="post-tags" v-if="post.tags.length">
                     <bookmark class="post-tags-icon" />
                     <div v-for="tag in post.tags">{{ tag }}</div>
                 </div>

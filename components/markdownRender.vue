@@ -45,12 +45,19 @@ const VNodeArr = computed(() => {
                 // console.log({
                 //     codeType,
                 // })
+                // @ts-ignore
+                const inline = (item.children[0].children.trim() as string).includes('\n') ? false : true
+                console.log({
+                    inline,
+                    c: item.children
+                })
                 return h(
                     codeMirror,
                     {
                         // @ts-ignore
                         data: item.children[0].children.trim(),
                         type: codeType,
+                        inline,
                     },
                 )
             },

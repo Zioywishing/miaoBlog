@@ -1,5 +1,5 @@
 <template>
-    <div class="cm-rander-wrapper">
+    <div :class="wrapperClass">
         <div class="cm-header">
             <div class="cm-header-title">
                 <span>CodeMirror</span>
@@ -26,6 +26,7 @@ import { EditorState } from "@codemirror/state"
 const props = defineProps<{
     data: string,
     type?: string,
+    inline?: boolean,
 }>()
 
 const show = ref(true)
@@ -33,14 +34,18 @@ const cmRootRef = ref<HTMLElement>()
 
 const isLoading = ref(true)
 
+const wrapperClass = computed(() => {
+    return ['cm-rander-wrapper', props.inline === true ? 'cm-rander-wrapper-inline' : ''] 
+})
+
 const rows = computed(() => {
     if (!props.data) {
         return 5
     }
     const lines = props.data.split('\n')
-    console.log({
-        L: lines.length,
-    })
+    // console.log({
+    //     L: lines.length,
+    // })
     return lines.length - 2 > 0 ? lines.length - 2 : 1
 })
 
@@ -135,6 +140,15 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 .cm-rander-wrapper {
+    &-inline {
+      display: inline-block; 
+      .cm-header {
+        display: none !important;
+      }
+      .cm-gutters {
+        display: none !important; 
+      }
+    }
     .cm-header {
         display: flex;
         align-items: center;
