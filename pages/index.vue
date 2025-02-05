@@ -158,6 +158,17 @@ const PageContent = reactive<PageContent[]>([
           }
         ]
       },
+      {
+        name: 'ES-Crypto',
+        description: '结合浏览器fileSystem实现的加密小工具，再也不用担心内存爆掉了',
+        nuxtLinks: [
+          {
+            name: 'demo',
+            to: `/iframe/${encodeURIComponent('/iframe-source/es-crypto/index.html')}`
+          }
+        ]
+
+      },
     ]
   }, {
     subTitle: '学习资料',
