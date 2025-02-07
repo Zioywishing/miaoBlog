@@ -1,4 +1,4 @@
-// import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 import BetterSqlite3 from 'better-sqlite3';
 // import { defineEventHandler, createError, readBody } from 'h3';
 import jwt from 'jsonwebtoken';
@@ -27,18 +27,12 @@ export default defineEventHandler(async (event) => {
         }
 
         // 验证旧密码是否正确
-        // const passwordMatch = bcrypt.compareSync(oldPassword, user.password);
-        const passwordMatch = oldPassword === user.password;
-        if (!passwordMatch) {
+        const authRes = await authUser(username, oldPassword);
+        if (!authRes) {
             userDB.close();
-            throw createError({ statusCode: 401, statusMessage: 'Invalid old password' });
+            throw createError({ statusCode: 401, statusMessage: 'Old password is incorrect' });
         }
-
-        // 哈希新密码
-        // const salt = bcrypt.genSaltSync(10);
-        // const hashedNewPassword = bcrypt.hashSync(newPassword, salt);
-
-        const hashedNewPassword = newPassword;
+        const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
 
         // 更新密码
         const stmt = userDB.prepare('UPDATE user SET password =? WHERE username =?');

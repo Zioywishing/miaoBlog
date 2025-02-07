@@ -1,4 +1,3 @@
-// import { defineEventHandler, readBody, createError } from 'h3';
 import bcrypt from 'bcryptjs';
 import BetterSqlite3 from 'better-sqlite3';
 
@@ -10,9 +9,10 @@ export default defineEventHandler(async (event) => {
     // 查询用户
     const userDB = BetterSqlite3('./userData/db/user.db');
     const user: any = userDB.prepare('SELECT * FROM user WHERE username = ?').get(username);
-    if (!user || password !== user.password) {
+    const authRes = await authUser(username, password);
+    if(!authRes){
         userDB.close();
-        throw createError({ statusCode: 401, statusMessage: 'Invalid username or password' });
+        throw createError({ statusCode: 401, statusMessage: 'Username or password is incorrect' });
     }
 
     // 更新最后登录时间

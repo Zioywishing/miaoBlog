@@ -56,6 +56,15 @@ export default function useFetch() {
                     'Authorization': `Bearer ${userStore.token}`
                 }
             }),
+            deletePost: (id: number) => $fetch('/api/posts/deletePost', {
+                body: {
+                    id 
+                },
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${userStore.token}`
+                }
+            })
         },
         user: {
             login: (body: {

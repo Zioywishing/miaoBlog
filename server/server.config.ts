@@ -5,6 +5,7 @@ export default {
             '/api/test/testDir',
             '/api/posts/editPost',
             '/api/posts/uploadPost',
+            '/api/posts/deletePost',
             '/api/user/updatePassword',
             '/api/system/update'
         ])

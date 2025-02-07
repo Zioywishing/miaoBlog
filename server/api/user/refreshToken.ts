@@ -10,6 +10,10 @@ export default defineEventHandler(async (event) => {
     try {
         // 验证旧的 Token
         const decoded = jwt.verify(token, jwtSecret) as any;
+        const authRes = await authUser(decoded.username, decoded.password);
+        if (!authRes) {
+            throw createError({ statusCode: 401, statusMessage: 'Username or password is incorrect' });
+        }
         // 生成新的 Token
         const newToken = jwt.sign({
             username: decoded.username,

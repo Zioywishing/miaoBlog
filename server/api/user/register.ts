@@ -20,10 +20,7 @@ export default defineEventHandler(async (event) => {
     //     throw createError({ statusCode: 400, statusMessage: 'Username already exists' });
     // }
 
-    // 哈希密码，暂未实现，未来实现
-    // const salt = getKey().substring(0, 10);
-    // const hashedPassword = bcrypt.hashSync(password, salt);
-    const hashedPassword = password
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
     // 插入新用户
     const createTime = Date.now();

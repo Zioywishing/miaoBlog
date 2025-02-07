@@ -39,7 +39,7 @@ type resType = {
 } & postItem
 
 
-const { post: { getPost, updatePost, uploadPost } } = useFetch()
+const { post: { getPost, updatePost, uploadPost, deletePost } } = useFetch()
 
 const route = useRoute()
 const router = useRouter()
@@ -86,12 +86,7 @@ const handleClickDelete = async () => {
             }
         )
         try {
-            const response = await $fetch('/api/posts/deletePost', {
-                method: 'POST',
-                body: {
-                    id: id.value
-                }
-            })
+            const response = await deletePost(id.value)
             ElMessage({
                 type: 'success',
                 message: '删除文章完成',
@@ -99,7 +94,8 @@ const handleClickDelete = async () => {
             const store = useDefaultStore()
             store.deleteCache('posts')
             router.back()
-        } catch {
+        } catch(e) {
+            console.error(e)
             ElMessage({
                 type: 'error',
                 message: '删除失败',
