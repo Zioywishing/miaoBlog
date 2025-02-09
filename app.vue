@@ -13,6 +13,7 @@
 import miaoHeader from './components/miaoHeader.vue';
 import miaoContentWrapper from './components/miaoContentWrapper.vue';
 import "/style/default.scss";
+import "/style/tailwind.css"
 
 // @ts-ignore
 useHead({
