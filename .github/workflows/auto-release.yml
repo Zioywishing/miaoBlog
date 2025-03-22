@@ -1,0 +1,79 @@
+name: Auto Release
+
+on:
+  push:
+    branches: [main]
+    
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:12
+    permissions:
+      contents: write
+    steps:
+      - name: Install dependencies for Git and Node.js
+        run: |
+          apt-get update
+          apt-get install -y git curl wget nodejs npm tar gzip
+          
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          
+      - name: Install dependencies
+        run: pnpm install
+        
+      - name: Build project
+        run: pnpm build
+        
+      - name: Create output.tar.gz
+        run: tar -czvf output.tar.gz .output/
+        
+      - name: Get version from package.json
+        id: package-version
+        run: echo "VERSION=$(node -p "require('./package.json').version || '0.1.0'")" >> $GITHUB_ENV
+        
+      - name: Get commit count
+        id: commit-count
+        run: echo "COUNT=$(git rev-list --count HEAD)" >> $GITHUB_ENV
+        
+      - name: Create release version
+        id: release-version
+        run: echo "RELEASE_VERSION=v${{ env.VERSION }}.${{ env.COUNT }}" >> $GITHUB_ENV
+        
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$PREVIOUS_TAG" ]; then
+            git log --pretty=format:"* %s (%h)" > CHANGELOG.md
+          else
+            git log ${PREVIOUS_TAG}..HEAD --pretty=format:"* %s (%h)" > CHANGELOG.md
+          fi
+          echo "CHANGELOG_PATH=CHANGELOG.md" >> $GITHUB_ENV
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+          name: Release ${{ env.RELEASE_VERSION }}
+          body_path: ${{ env.CHANGELOG_PATH }}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            output.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
