@@ -8,7 +8,7 @@
                 </el-input>
             </el-col>
             <el-col :span="12">
-                <el-input-tag v-model:model-value="tags" placeholder="添加标签" :disabled="disabled"/>
+                <el-input-tag v-model:model-value="tags" placeholder="添加标签" :disabled="disabled" />
             </el-col>
         </el-row>
         <el-row>
@@ -18,7 +18,31 @@
                 </el-input>
             </el-col>
         </el-row>
-        <el-input type="textarea" v-model:model-value="content" placeholder="content" :autosize="{ minRows: 15 }" :disabled="disabled"/>
+        <el-row>
+            <el-col :span="16"></el-col>
+            <el-col :span="8">
+                <div
+                    class="switch-button overflow-hidden  z-10 border-0 border-gray-300 rounded-bl-sm rounded-tr-sm flex select-none">
+                    <div class="switch-button-item" :class="{ 'switch-button-item-active': isEditing }"
+                        @click="isEditing = true">
+                        编辑
+                    </div>
+                    <div class="switch-button-item" :class="{ 'switch-button-item-active': !isEditing }"
+                        @click="isEditing = false">
+                        预览
+                    </div>
+                </div>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col>
+                <el-input v-if="isEditing" type="textarea" v-model:model-value="content" placeholder="content"
+                    :autosize="{ minRows: 15 }" :disabled="disabled" />
+                <div class=" border-1 border-gray-300 rounded-sm p-2" v-else>
+                    <markdown-render :data="content ?? ''" />
+                </div>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -33,6 +57,8 @@ const summary = defineModel<string>('summary')
 const tags = defineModel<string[]>('tags')
 const content = defineModel<string>('content')
 
+const isEditing = ref(true)
+
 </script>
 
 <style scoped>
@@ -40,5 +66,32 @@ const content = defineModel<string>('content')
     display: flex;
     flex-direction: column;
     gap: 5px;
+}
+</style>
+
+<style lang="scss" scoped>
+.switch-button {
+
+    &-item {
+        width: 50%;
+        height: 100%;
+        background-color: #fff;
+        cursor: pointer;
+        transition: all .15s ease;
+        padding: 0 5px;
+
+        &:hover {
+            background-color: #f0f0f0;
+        }
+
+        &-active {
+            color: #0077ff;
+            background-color: #d3e7ff;
+
+            &:hover {
+                background-color: #c3e0ff;
+            }
+        }
+    }
 }
 </style>

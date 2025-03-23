@@ -11,7 +11,7 @@ export default class Html2VNode {
     public use(middleware: middlewareType) {
         this.middlewareList.push(middleware)
     }
-    public rander(htmlString: string) {
+    public render(htmlString: string) {
         const html2ObjResult = this.html2Obj(htmlString);
         const middlewareMap = this.buildMiddlewareMap(html2ObjResult);
         const wrinklesResult = this.wrinkles(html2ObjResult)
