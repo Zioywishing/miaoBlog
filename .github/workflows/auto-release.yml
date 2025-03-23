@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: debian:12
+      platform: linux/amd64
     permissions:
       contents: write
     steps:
