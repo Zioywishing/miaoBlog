@@ -94,6 +94,49 @@ const formatTime = () => {
     return `${hours}:${minutes}:${seconds}`;
 };
 
+// 定义API响应类型
+interface SystemInfoResponse {
+    success: boolean;
+    data?: {
+        system: {
+            platform: string;
+            release: string;
+            hostname: string;
+        };
+        node: string;
+        hardware: {
+            cpu: {
+                model: string;
+                cores: number;
+                usage: number;
+            };
+            memory: {
+                total: string;
+                free: string;
+                used: string;
+                percent: number;
+            };
+        };
+    };
+    message?: string;
+}
+
+interface PerformanceResponse {
+    success: boolean;
+    data?: {
+        cpu: {
+            usage: number;
+        };
+        memory: {
+            total: string;
+            free: string;
+            used: string;
+            percent: number;
+        };
+    };
+    message?: string;
+}
+
 // 获取系统信息
 const fetchSystemInfo = async () => {
     try {
@@ -102,10 +145,9 @@ const fetchSystemInfo = async () => {
         }
         error.value = '';
         
-        const { data } = await useFetch('/api/system/info');
-        const response = data.value as any;
+        const response = await $fetch<SystemInfoResponse>('/api/system/info');
         
-        if (response && response.success) {
+        if (response && response.success && response.data) {
             systemInfo.value = response.data;
             
             // 如果还没有性能数据，初始化它
@@ -133,10 +175,9 @@ const fetchSystemInfo = async () => {
 // 获取性能数据（CPU和内存使用率）
 const fetchPerformanceData = async () => {
     try {
-        const { data } = await useFetch('/api/system/performance');
-        const response = data.value as any;
+        const response = await $fetch<PerformanceResponse>('/api/system/performance');
         
-        if (response && response.success) {
+        if (response && response.success && response.data) {
             performanceData.value = response.data;
             performanceUpdated.value = formatTime();
         }

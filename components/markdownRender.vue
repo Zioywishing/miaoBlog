@@ -25,32 +25,22 @@ const VNodeArr = computed(() => {
         return () => []
     }
     const renderedData = markdownIt.render(props.data)
+    console.log({
+        renderedData
+    })
     const h2v = new Html2VNode()
     h2v.use(
         {
             filter(tagName) {
                 return tagName === 'code'
             },
-            rander({
+            render({
                 item,
-                // tagName,
                 tagAttrs,
-                // middlewareMap
             }) {
-                // console.log({
-                //     tagName,
-                //     tagAttrs,
-                // })
                 const codeType = tagAttrs?.class?.slice(1, -1)?.split('-')?.[1] ?? ''
-                // console.log({
-                //     codeType,
-                // })
                 // @ts-ignore
                 const inline = (item.children[0].children.trim() as string).includes('\n') ? false : true
-                console.log({
-                    inline,
-                    c: item.children
-                })
                 return h(
                     codeMirror,
                     {

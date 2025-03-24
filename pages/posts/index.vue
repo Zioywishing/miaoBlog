@@ -1,6 +1,6 @@
 <template>
     <div class="posts-wrapper">
-        <article class="posts-item" v-for="post in postsData" :key="post.id">
+        <article class="posts-item" v-for="post in posts" :key="post.id">
             <header class="post-title">
                 <nuxt-link :to="`/posts/post-${post.id}`">{{ post.title }}</nuxt-link>
             </header>
@@ -18,7 +18,7 @@
                 </div>
             </footer>
         </article>
-        <div class="posts-skeleton" v-if="!isInit">
+        <div class="posts-skeleton" v-if="pending">
             <div class="posts-skeleton-item" v-for="_ in range(5)">
                 <el-skeleton :rows="3" />
             </div>
@@ -33,29 +33,26 @@ import bookmark from '~/components/icons/tag.vue'
 import type { postItem } from '~/types/post';
 
 const store = useDefaultStore()
-const isInit = ref(false)
 
-const postsData = ref<postItem[]>([])
-
-const getData = async () => {
-    const cache = store.getCache('posts')
-    if (cache) {
-        return cache as postItem[]
-    }
-    const response = await $fetch('/api/posts/getPostList')
-    const res = response.data
-    store.setCache('posts', res)
-    return res
-}
-
-onMounted(async () => {
-    // router.push('/posts/temp')
-    // await sleep(1000)
-    postsData.value = await getData()
-    isInit.value = true;
-    // console.log(postsData.value)
+// 使用useFetch在服务器端获取数据
+const { data, pending } = await useFetch<{ code: number, data: postItem[] }>('/api/posts/getPostList', {
+    // 如果缓存中已有数据，优先使用缓存
+    key: 'posts-list',
+    transform: (response) => {
+        if (response && response.data) {
+            store.setCache('posts', response.data)
+            return response
+        }
+        return { code: 0, data: [] }
+    },
+    // 添加以下选项
+    lazy: true, // 避免客户端自动重新获取
+    server: true, // 仅在服务器端获取数据
+    // cache: 'force-cache', // 强制使用缓存
+    // dedupe: 'force', // 强制使用缓存的数据
 })
-
+// 从响应中提取文章列表
+const posts = computed(() => data.value?.data || []) as ComputedRef<postItem[]>
 </script>
 
 <style lang="scss" scoped>

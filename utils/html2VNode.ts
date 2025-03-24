@@ -12,10 +12,11 @@ export default class Html2VNode {
         this.middlewareList.push(middleware)
     }
     public render(htmlString: string) {
-        const html2ObjResult = this.html2Obj(htmlString);
+        const htmlString2 = htmlString.replaceAll('<hr>', '<hr></hr>').replaceAll('<br>', '<br></br>')
+        const html2ObjResult = this.html2Obj(htmlString2);
         const middlewareMap = this.buildMiddlewareMap(html2ObjResult);
         const wrinklesResult = this.wrinkles(html2ObjResult)
-        const vnodes = this.rander2VNode(wrinklesResult, middlewareMap)
+        const vnodes = this.render2VNode(wrinklesResult, middlewareMap)
         return vnodes;
     }
 
@@ -40,7 +41,7 @@ export default class Html2VNode {
         return middlewareMap;
     }
 
-    private rander2VNode = (
+    private render2VNode = (
         wrinklesResult: (miaoVNodeType | string)[],
         middlewareMap: Map<string, middlewareType[]>
     ): (VNode | string)[] => {
@@ -51,7 +52,7 @@ export default class Html2VNode {
             const { tagName = '', tagAttrs } = this.parseTag(item.tag);
             const middlewares = middlewareMap.get(tagName)
             for(const middleware of middlewares!) {
-                const _res = middleware.rander({
+                const _res = middleware.render({
                     item,
                     tagName,
                     tagAttrs,
@@ -69,7 +70,7 @@ export default class Html2VNode {
         filter: (_: string) => {
             return true;
         },
-        rander: ({
+        render: ({
             item, tagName, tagAttrs, middlewareMap
         }) => {
             if (!tagName) {
@@ -77,7 +78,7 @@ export default class Html2VNode {
             }
             let child: string | (string | VNode)[] = item.children as string
             if (typeof item.children !== 'string') {
-                child = this.rander2VNode(item.children, middlewareMap)
+                child = this.render2VNode(item.children, middlewareMap)
             }
             return h(tagName ?? 'span', tagAttrs, child)
         }
@@ -214,7 +215,7 @@ type TagType = {
 // 要优化也是以后优化了
 export type middlewareType = {
     filter: (tagName: string) => boolean,
-    rander: (option: {
+    render: (option: {
             item: miaoVNodeType,
             tagName: string,
             tagAttrs: { [key: string]: string },

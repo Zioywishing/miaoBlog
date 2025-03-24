@@ -1,9 +1,9 @@
 <template>
     <div class="md-wrapper">
-        <div class="md" v-if="isInit">
-            <div class="md-title">{{ title }}</div>
+        <div class="md" v-if="postData">
+            <div class="md-title">{{ postData.title }}</div>
             <div class="md-divider"></div>
-            <markdown-render :data="content"></markdown-render>
+            <markdown-render :data="postData.content"></markdown-render>
         </div>
         <div v-else class="md-skeleton-item">
             <el-skeleton :rows="12" />
@@ -18,55 +18,43 @@ import markdownRender from '~/components/markdownRender.vue';
 import type { postContent } from '~/types/post';
 
 const postStore = usePostStore()
-
 const route = useRoute()
-
-const isInit = ref(false)
-
-const title = ref('')
-
-const content = ref('')
-
-const renderedData = ref('')
-
 const id = route.params.id as string
 
-onMounted(async () => {
-
-    const _p = new Promise<postContent>(async (resolve, reject) => {
-        try {
-            const cache = postStore.getPostCache(id)
-            if (cache) {
-                resolve(cache)
-                return
-            }
-            const res = await $fetch('/api/posts/getPostContent', {
-                method: 'POST',
-                body: {
-                    id
-                }
-            }) as postContent
-            postStore.setPostCache(id, res)
-            resolve(res)
-        } catch (error) {
-            reject(error)
+// 使用useFetch来获取文章内容，支持SSR
+const { data: fetchedPost } = await useFetch('/api/posts/getPostContent', {
+    method: 'POST',
+    body: {
+        id
+    },
+    transform: async (response: postContent) => {
+        // 缓存数据
+        postStore.setPostCache(id, response)
+        
+        // 渲染Markdown
+        const markdownIt = await useMarkdownit()
+        
+        return {
+            title: response.title,
+            content: response.data,
+            rendered: markdownIt.render(response.data)
         }
-    })
-
-    const markdownIt = await useMarkdownit()
-
-    const postsData = await _p
-
-    content.value = postsData.data
-
-    renderedData.value = markdownIt.render(postsData.data)
-
-    title.value = postsData.title
-
-    isInit.value = true
-
+    },
+    // 使用缓存
+    async onRequest({ options }) {
+        const cache = postStore.getPostCache(id)
+        if (cache) {
+            return { 
+                title: cache.title, 
+                content: cache.data,
+                rendered: (await useMarkdownit()).render(cache.data)
+            }
+        }
+    }
 })
 
+// 响应式数据
+const postData = computed(() => fetchedPost.value)
 </script>
 
 <style scoped>
