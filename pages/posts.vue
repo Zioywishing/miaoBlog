@@ -1,6 +1,8 @@
 <template>
     <div class="user-wrapper">
-        <NuxtPage />
+        <Suspense>
+            <NuxtPage />
+        </Suspense>
     </div>
 </template>
 

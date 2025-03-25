@@ -18,7 +18,7 @@
                 </div>
             </footer>
         </article>
-        <div class="posts-skeleton" v-if="pending">
+        <div class="posts-skeleton" v-if="pending && 0">
             <div class="posts-skeleton-item" v-for="_ in range(5)">
                 <el-skeleton :rows="3" />
             </div>
@@ -48,8 +48,6 @@ const { data, pending } = await useFetch<{ code: number, data: postItem[] }>('/a
     // 添加以下选项
     lazy: true, // 避免客户端自动重新获取
     server: true, // 仅在服务器端获取数据
-    // cache: 'force-cache', // 强制使用缓存
-    // dedupe: 'force', // 强制使用缓存的数据
 })
 // 从响应中提取文章列表
 const posts = computed(() => data.value?.data || []) as ComputedRef<postItem[]>

@@ -1,9 +1,9 @@
 <template>
     <div class="md-wrapper">
-        <div class="md" v-if="postData">
+        <div class="md" v-if="!loading && postData">
             <div class="md-title">{{ postData.title }}</div>
             <div class="md-divider"></div>
-            <markdown-render :data="postData.content"></markdown-render>
+            <markdown-render :data="postData.data"></markdown-render>
         </div>
         <div v-else class="md-skeleton-item">
             <el-skeleton :rows="12" />
@@ -12,49 +12,22 @@
 </template>
 
 <script setup lang="ts">
-import useMarkdownit from '~/hooks/useMarkdownit';
-import usePostStore from '~/hooks/pinia/usePostStore';
-import markdownRender from '~/components/markdownRender.vue';
 import type { postContent } from '~/types/post';
 
-const postStore = usePostStore()
+const markdownRender = shallowRef<any>()
 const route = useRoute()
 const id = route.params.id as string
 
-// 使用useFetch来获取文章内容，支持SSR
-const { data: fetchedPost } = await useFetch('/api/posts/getPostContent', {
-    method: 'POST',
-    body: {
-        id
-    },
-    transform: async (response: postContent) => {
-        // 缓存数据
-        postStore.setPostCache(id, response)
-        
-        // 渲染Markdown
-        const markdownIt = await useMarkdownit()
-        
-        return {
-            title: response.title,
-            content: response.data,
-            rendered: markdownIt.render(response.data)
-        }
-    },
-    // 使用缓存
-    async onRequest({ options }) {
-        const cache = postStore.getPostCache(id)
-        if (cache) {
-            return { 
-                title: cache.title, 
-                content: cache.data,
-                rendered: (await useMarkdownit()).render(cache.data)
-            }
-        }
-    }
-})
+const loading = ref(true)
 
-// 响应式数据
-const postData = computed(() => fetchedPost.value)
+const postData = ref<postContent>()
+
+onBeforeMount(async () => {
+    const postDataPromise = getPostData(Number(id))
+    markdownRender.value = (await import('~/components/markdownRender.vue')).default
+    postData.value = await postDataPromise
+    loading.value = false
+})
 </script>
 
 <style scoped>

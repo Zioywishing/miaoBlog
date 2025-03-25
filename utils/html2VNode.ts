@@ -41,11 +41,11 @@ export default class Html2VNode {
         return middlewareMap;
     }
 
-    private render2VNode = (
+    private render2VNode = async (
         wrinklesResult: (miaoVNodeType | string)[],
         middlewareMap: Map<string, middlewareType[]>
-    ): (VNode | string)[] => {
-        return wrinklesResult.map((item: miaoVNodeType | string): VNode | string => {
+    ): Promise<(VNode | string)[]> => {
+        return Promise.all(wrinklesResult.map((async (item: miaoVNodeType | string): Promise<VNode | string> => {
             if (typeof item === 'string') {
                 return item;
             }
@@ -59,18 +59,18 @@ export default class Html2VNode {
                     middlewareMap
                 })
                 if(_res) {
-                    return _res
+                    return await _res
                 }
             }
             return ''
-        })
+        })))
     }
 
     private defaultMiddleware: middlewareType = {
         filter: (_: string) => {
             return true;
         },
-        render: ({
+        render: async ({
             item, tagName, tagAttrs, middlewareMap
         }) => {
             if (!tagName) {
@@ -78,7 +78,7 @@ export default class Html2VNode {
             }
             let child: string | (string | VNode)[] = item.children as string
             if (typeof item.children !== 'string') {
-                child = this.render2VNode(item.children, middlewareMap)
+                child = await this.render2VNode(item.children, middlewareMap)
             }
             return h(tagName ?? 'span', tagAttrs, child)
         }
@@ -221,5 +221,5 @@ export type middlewareType = {
             tagAttrs: { [key: string]: string },
             middlewareMap: Map<string, middlewareType[]>
         }
-    ) => VNode | string
+    ) => Promise<VNode | string>
 }
