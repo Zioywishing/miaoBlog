@@ -4,17 +4,19 @@
     <div class="md-render-wrapper markdown-body">
         <VNodeMD v-if="VNodeMD && props.data"></VNodeMD>
         <div v-else>
-            <el-skeleton :rows="12" />
+            <el-skeleton v-if="!props.disableSkeleton" :rows="12" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import codemirrorMiddleware from '~/hooks/h2v/codemirrorMiddleware';
 import useMarkdownit from '~/hooks/useMarkdownit';
 import Html2VNode from '~/utils/html2VNode';
 
 const props = defineProps<{
     data: string
+    disableSkeleton?: boolean
 }>()
 
 const VNodeMD = shallowRef<any>()
@@ -26,31 +28,7 @@ watch(() => props.data, async () => {
     const markdownIt = await useMarkdownit()
     const renderedData = markdownIt.render(props.data)
     const h2v = new Html2VNode()
-    h2v.use(
-        {
-            filter(tagName) {
-                return tagName === 'code'
-            },
-            async render({
-                item,
-                tagAttrs,
-            }) {
-                const codeMirror = (await import('./codeMirror.vue')).default
-                const codeType = tagAttrs?.class?.slice(1, -1)?.split('-')?.[1] ?? ''
-                // @ts-ignore
-                const inline = (item.children[0].children.trim() as string).includes('\n') ? false : true
-                return h(
-                    codeMirror,
-                    {
-                        // @ts-ignore
-                        data: item.children[0].children.trim(),
-                        type: codeType,
-                        inline,
-                    },
-                )
-            },
-        }
-    )
+    h2v.use(codemirrorMiddleware)
     const res = await h2v.render(renderedData)
     VNodeMD.value = {
         setup: () => {
@@ -60,10 +38,6 @@ watch(() => props.data, async () => {
 }, {
     immediate: true
 })
-
-// watch(() => renderedData.value, () => {
-//     _key.value = Math.random()
-// })
 
 </script>
 

@@ -39,7 +39,7 @@
                 <el-input v-if="isEditing" type="textarea" v-model:model-value="content" placeholder="content"
                     :autosize="{ minRows: 15 }" :disabled="disabled" />
                 <div class=" border-1 border-gray-300 rounded-sm p-2" v-else>
-                    <markdown-render :data="content ?? ''" />
+                    <markdown-render :data="content ?? ''" :disable-skeleton="true" />
                 </div>
             </el-col>
         </el-row>
