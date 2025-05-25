@@ -4,7 +4,7 @@
       <span>导航</span>
     </div>
     <div class="content-wrap">
-      <div v-for="(item) in PageContent" :key="item.subTitle" class="content">
+      <div v-for="(item) in pageContent" :key="item.subTitle" class="content">
         <div class="sub-title">
           <miao-divider-left>
             <div class="sub-title-wrapper">
@@ -60,7 +60,7 @@ type ContentItem = {
   }[]
 }
 
-const PageContent = reactive<PageContent[]>([
+const pageContent = reactive<PageContent[]>([
   {
     subTitle: '个人项目',
     show: true,
@@ -86,6 +86,25 @@ const PageContent = reactive<PageContent[]>([
           {
             name: "gitea",
             url: "https://nj.miaospring.top:3001/539943419/miaoShare"
+          }
+        ]
+      },
+      {
+        name: 'Bobj',
+        description: '模块化的JS对象序列化库，名字完全抄袭至BSON',
+        links: [
+          {
+            name: "github",
+            url: "https://github.com/Zioywishing/bobj"
+          }, {
+            name: "npm",
+            url: "https://www.npmjs.com/package/bobj"
+          }
+        ],
+        nuxtLinks: [
+          {
+            name: 'demo',
+            to: `/iframe/${encodeURIComponent('/iframe-source/bobj-demo/index.html')}`
           }
         ]
       },
