@@ -30,4 +30,10 @@ export default defineNuxtConfig({
 		compressPublicAssets: true,
 	},
 	experimental: { appManifest: false },
+	// 添加SSR配置，确保服务端渲染
+	ssr: true,
+	// 数据获取策略配置
+	routeRules: {
+		'/posts': { swr: 600 }, // 缓存10分钟，同时在后台重新验证
+	}
 });

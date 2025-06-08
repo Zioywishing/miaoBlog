@@ -30,7 +30,7 @@ export default class Html2VNode {
         for (const tagName of tagNameSet) {
             for (const middleware of this.middlewareList) {
                 if (middleware.filter(tagName)) {
-                    if(!middlewareMap.has(tagName)) {
+                    if (!middlewareMap.has(tagName)) {
                         middlewareMap.set(tagName, [middleware])
                     } else {
                         middlewareMap.get(tagName)!.unshift(middleware)
@@ -51,14 +51,14 @@ export default class Html2VNode {
             }
             const { tagName = '', tagAttrs } = this.parseTag(item.tag);
             const middlewares = middlewareMap.get(tagName)
-            for(const middleware of middlewares!) {
+            for (const middleware of middlewares!) {
                 const _res = middleware.render({
                     item,
                     tagName,
                     tagAttrs,
                     middlewareMap
                 })
-                if(_res) {
+                if (_res) {
                     return await _res
                 }
             }
@@ -90,7 +90,7 @@ export default class Html2VNode {
         while (true) {
             const nextTag = this.getNextHtmlTag(currhtml);
             if (!nextTag) {
-                if(currhtml) {
+                if (currhtml) {
                     html2ObjResult.push({
                         tag: '',
                         children: currhtml,
@@ -110,7 +110,7 @@ export default class Html2VNode {
         }
         html2ObjResult.forEach(item => {
             // @ts-ignore
-            if(item.children &&typeof item.children==='string') {
+            if (item.children && typeof item.children === 'string') {
                 // @ts-ignore
                 item.children = this.parseString(item.children)
             }
@@ -119,7 +119,7 @@ export default class Html2VNode {
     }
 
     private parseString = (target: string) => {
-        
+
         return target.replaceAll('&lt;', '<')
             .replaceAll('&gt;', '>')
             .replaceAll('&amp;', '&')
@@ -193,27 +193,27 @@ export default class Html2VNode {
         const tagStr = tag.replace(/<\s*\/*\s*|\s*>/g, '');
         const tagArr = tagStr.split(' ').filter(item => item.trim());
         const tagName = tagArr.shift();
-        
+
         const tagAttrs: { [key: string]: string } = {};
         let currentAttr = '';
         let currentValue = '';
         let inQuotes = false;
         let quoteChar = '';
-        
+
         for (let i = 0; i < tagArr.length; i++) {
             const part = tagArr[i];
-            
+
             if (!inQuotes) {
                 if (part.includes('=')) {
                     const [attr, ...valueParts] = part.split('=');
                     currentAttr = attr;
-                    
+
                     // 检查值是否以引号开始
                     if (valueParts[0].startsWith('"') || valueParts[0].startsWith("'")) {
                         quoteChar = valueParts[0][0];
                         currentValue = valueParts[0].slice(1);
                         inQuotes = true;
-                        
+
                         // 如果值在同一个部分结束
                         if (currentValue.endsWith(quoteChar)) {
                             currentValue = currentValue.slice(0, -1);
@@ -244,7 +244,7 @@ export default class Html2VNode {
                 }
             }
         }
-        
+
         return { tagName, tagAttrs };
     }
 }
@@ -264,10 +264,10 @@ type TagType = {
 export type middlewareType = {
     filter: (tagName: string) => boolean,
     render: (option: {
-            item: miaoVNodeType,
-            tagName: string,
-            tagAttrs: { [key: string]: string },
-            middlewareMap: Map<string, middlewareType[]>
-        }
+        item: miaoVNodeType,
+        tagName: string,
+        tagAttrs: { [key: string]: string },
+        middlewareMap: Map<string, middlewareType[]>
+    }
     ) => Promise<VNode | string>
 }

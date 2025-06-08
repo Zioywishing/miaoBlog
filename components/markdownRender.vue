@@ -30,6 +30,14 @@ watch(() => props.data, async () => {
     const h2v = new Html2VNode()
     h2v.use(codemirrorMiddleware)
     const res = await h2v.render(renderedData)
+    // console.log(res)
+    // res.forEach(async (item) => {
+    //     if (typeof item === 'string') {
+    //         console.log(item)
+    //     } else {
+    //         console.log(await VNode2Html(item))
+    //     }
+    // })
     VNodeMD.value = {
         setup: () => {
             return () => res
@@ -43,16 +51,16 @@ watch(() => props.data, async () => {
 
 <style lang="scss">
 .md-render-wrapper {
-    code {
-        box-sizing: border-box;
-        display: inline-block;
-        width: 100%;
-        text-wrap: auto;
-        background-color: #e7e7e7;
-        padding: 5px;
-        padding-left: 10px;
-        border-radius: 5px;
-    }
+    // code {
+    //     // box-sizing: border-box;
+    //     // display: inline-block;
+    //     // width: 100%;
+    //     // text-wrap: auto;
+    //     background-color: #e7e7e7;
+    //     // padding: 5px;
+    //     // padding-left: 10px;
+    //     // border-radius: 5px;
+    // }
 
     hr {
         display: block;
@@ -197,14 +205,14 @@ watch(() => props.data, async () => {
     }
 
     /* 恢复行内代码样式 */
-    code:not(pre code) {
-        padding: 0.2em 0.4em;
-        margin: 0;
-        font-size: 85%;
-        background-color: rgba(27, 31, 35, 0.05);
-        border-radius: 3px;
-        font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
-    }
+    // code:not(pre code) {
+    //     padding: 0.2em 0.4em;
+    //     margin: 0;
+    //     font-size: 85%;
+    //     background-color: rgba(27, 31, 35, 0.05);
+    //     border-radius: 3px;
+    //     font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    // }
 
     /* 恢复图片样式 */
     img {
@@ -215,15 +223,17 @@ watch(() => props.data, async () => {
 
     /* 恢复预格式化文本样式 */
     pre {
-        padding: 16px;
-        overflow: auto;
-        font-size: 85%;
-        line-height: 1.45;
-        background-color: #f6f8fa;
-        border-radius: 3px;
-        margin-top: 0;
-        margin-bottom: 1em;
-        word-wrap: normal;
+        padding: 0px 15px;
+        // background-color: #e7e7e7;
+        // padding: 16px;
+        // overflow: auto;
+        // font-size: 85%;
+        // line-height: 1.45;
+        // background-color: #f6f8fa;
+        // border-radius: 3px;
+        // margin-top: 0;
+        // margin-bottom: 1em;
+        // word-wrap: normal;
     }
 }
 </style>
