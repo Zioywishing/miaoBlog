@@ -128,6 +128,16 @@ const pageContent = reactive<PageContent[]>([
     show: true,
     content: [
       {
+        name: '自解压制作',
+        description: '仅适用windows，将若干文件/文件夹打包为自解压程序',
+        nuxtLinks: [
+          {
+            name: 'link',
+            to: `/iframe/${encodeURIComponent('/iframe-source/self-extractor/index.html')}`
+          }
+        ]
+      },
+      {
         name: 'Genshin-Gacha',
         description: '通过模拟来计算抽卡成功率的小工具',
         nuxtLinks: [
