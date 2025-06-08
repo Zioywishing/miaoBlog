@@ -193,10 +193,58 @@ export default class Html2VNode {
         const tagStr = tag.replace(/<\s*\/*\s*|\s*>/g, '');
         const tagArr = tagStr.split(' ').filter(item => item.trim());
         const tagName = tagArr.shift();
-        const tagAttrs = tagArr.map(v => v.trim().split('=')).reduce((pre, cur) => {
-            pre[cur[0]] = cur[1];
-            return pre;
-        }, {} as { [key: string]: string })
+        
+        const tagAttrs: { [key: string]: string } = {};
+        let currentAttr = '';
+        let currentValue = '';
+        let inQuotes = false;
+        let quoteChar = '';
+        
+        for (let i = 0; i < tagArr.length; i++) {
+            const part = tagArr[i];
+            
+            if (!inQuotes) {
+                if (part.includes('=')) {
+                    const [attr, ...valueParts] = part.split('=');
+                    currentAttr = attr;
+                    
+                    // 检查值是否以引号开始
+                    if (valueParts[0].startsWith('"') || valueParts[0].startsWith("'")) {
+                        quoteChar = valueParts[0][0];
+                        currentValue = valueParts[0].slice(1);
+                        inQuotes = true;
+                        
+                        // 如果值在同一个部分结束
+                        if (currentValue.endsWith(quoteChar)) {
+                            currentValue = currentValue.slice(0, -1);
+                            tagAttrs[currentAttr] = currentValue;
+                            currentAttr = '';
+                            currentValue = '';
+                            inQuotes = false;
+                        }
+                    } else {
+                        // 没有引号的值
+                        tagAttrs[currentAttr] = valueParts.join('=');
+                        currentAttr = '';
+                    }
+                } else {
+                    // 处理没有值的属性（如 disabled）
+                    tagAttrs[part] = '';
+                }
+            } else {
+                // 在引号内
+                if (part.endsWith(quoteChar)) {
+                    currentValue += ' ' + part.slice(0, -1);
+                    tagAttrs[currentAttr] = currentValue;
+                    currentAttr = '';
+                    currentValue = '';
+                    inQuotes = false;
+                } else {
+                    currentValue += ' ' + part;
+                }
+            }
+        }
+        
         return { tagName, tagAttrs };
     }
 }
