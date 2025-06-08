@@ -4,7 +4,8 @@
   "version": "1.1.0",
   "type": "module",
   "scripts": {
-    "build": "nuxt build && bash ./aftBuild.sh",
+    "build": "nuxt build",
+    "aftbuild": "bash ./aftBuild.sh",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

@@ -43,8 +43,8 @@ jobs:
       - name: Build project
         run: pnpm build
         
-      - name: Create output.tar.gz
-        run: tar -czvf output.tar.gz .output/
+      - name: Execute aftbuild script
+        run: pnpm aftbuild
         
       - name: Get version from package.json
         id: package-version
@@ -79,6 +79,6 @@ jobs:
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            output.tar.gz
+            .output/output.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
