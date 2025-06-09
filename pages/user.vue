@@ -15,6 +15,7 @@
     justify-content: center;
     align-items: center;
     margin: 0 auto;
+    min-height: inherit;
     // max-width: 800px;
     padding: 0;
 }

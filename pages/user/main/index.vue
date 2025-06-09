@@ -3,9 +3,7 @@
         <div class="bg-white rounded-lg shadow-md p-6">
             <h1 class="text-2xl font-bold mb-6 text-gray-800">系统信息</h1>
             
-            <div v-if="isLoading" class="flex justify-center items-center h-40">
-                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
+            <miaoLoading v-if="isLoading" :customHeight="true" :height="160" />
             
             <div v-else-if="error" class="text-red-500 text-center">
                 {{ error }}
@@ -78,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import useUserStore from '~/hooks/pinia/useUserStore';
 const systemInfo = ref<any>(null);
 const performanceData = ref<any>(null);
 const isLoading = ref(true);
@@ -145,7 +144,11 @@ const fetchSystemInfo = async () => {
         }
         error.value = '';
         
-        const response = await $fetch<SystemInfoResponse>('/api/system/info');
+        const response = await $fetch<SystemInfoResponse>('/api/system/info', {
+            headers: {
+                'Authorization': `Bearer ${useUserStore().token}`
+            }
+        });
         
         if (response && response.success && response.data) {
             systemInfo.value = response.data;
@@ -175,7 +178,11 @@ const fetchSystemInfo = async () => {
 // 获取性能数据（CPU和内存使用率）
 const fetchPerformanceData = async () => {
     try {
-        const response = await $fetch<PerformanceResponse>('/api/system/performance');
+        const response = await $fetch<PerformanceResponse>('/api/system/performance', {
+            headers: {
+                'Authorization': `Bearer ${useUserStore().token}`
+            }
+        });
         
         if (response && response.success && response.data) {
             performanceData.value = response.data;
