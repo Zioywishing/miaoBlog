@@ -1,5 +1,5 @@
 <template>
-    <div :class="wrapperClass">
+    <div :class="wrapperClass" class="mb-2">
         <div class="cm-header">
             <div class="cm-header-title">
                 <span>{{ props.type ?? 'Code' }}</span>
@@ -15,9 +15,9 @@
             </div>
         </div>
         <miao-collapse :show="show" style="overflow: hidden;">
-            <div v-if="!isLoading" ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
-            <el-skeleton v-if="isLoading === true" :rows="rows" style="display: flex;flex-direction: column;" />
+            <div ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
         </miao-collapse>
+        <div v-if="!inline" class="bg-[#eff1f5] rounded-b-[10px] w-full h-3"></div>
     </div>
 </template>
 
@@ -33,29 +33,30 @@ const props = defineProps<{
 const show = ref(true)
 const codeContainer = ref<HTMLElement>()
 const highlightedCode = ref('')
-const isLoading = ref(true)
+// const isLoading = ref(true)
 
 const wrapperClass = computed(() => {
     return ['cm-rander-wrapper', props.inline === true ? 'cm-rander-wrapper-inline' : '']
 })
 
-const rows = computed(() => {
-    if (!props.data) {
-        return 5
-    }
-    const lines = props.data.split('\n')
-    return lines.length - 2 > 0 ? lines.length - 2 : 1
-})
+// const rows = computed(() => {
+//     if (!props.data) {
+//         return 5
+//     }
+//     const lines = props.data.split('\n')
+//     return lines.length - 2 > 0 ? lines.length - 2 : 1
+// })
 
 const highlightCode = async () => {
-    isLoading.value = true
-    
+    // isLoading.value = false
+    highlightedCode.value = `<pre style="background-color: #eff1f5;color: #4c4f69;"><code>${escapeHtml(props.data)}</code></pre>`
+
     try {
         // 根据文件类型确定语言
         let lang = props.type || 'text'
 
-        console.log(lang)
-        
+        // console.log(lang)
+
         // 语言映射转换
         const langMap: Record<string, string> = {
             'js': 'javascript',
@@ -73,23 +74,23 @@ const highlightCode = async () => {
             'vue': 'vue',
             'xml': 'xml'
         }
-        
+
         if (langMap[lang]) {
             lang = langMap[lang]
         }
-        
+
         // 使用 codeToHtml 直接高亮代码
         highlightedCode.value = await codeToHtml(props.data, {
             lang,
-            // theme: "github-light"
-            theme: 'github-dark'
+            theme: "catppuccin-latte"
+            // theme: 'github-dark'
         })
     } catch (error) {
-        console.error('代码高亮失败:', error)
+        // console.error('代码高亮失败:', error)
         // 降级处理：如果高亮失败，直接使用pre和code标签
-        highlightedCode.value = `<pre><code>${escapeHtml(props.data)}</code></pre>`
+        highlightedCode.value = `<pre style="background-color: #eff1f5;color: #4c4f69;"><code>${escapeHtml(props.data)}</code></pre>`
     } finally {
-        isLoading.value = false
+        // isLoading.value = false
     }
 }
 
@@ -134,7 +135,7 @@ watch(() => props.data, async () => {
         justify-content: space-between;
         padding: 0 10px;
         height: 25px;
-        background-color: #000;
+        background-color: #15aa87;
         color: #fff;
         border-radius: 10px 10px 0 0;
         user-select: none;
@@ -162,20 +163,6 @@ watch(() => props.data, async () => {
                 color: #fff;
                 fill: #fff;
             }
-        }
-    }
-
-    .code-container {
-        pre {
-            margin: 0;
-            padding: 0.5em;
-            overflow: auto;
-        }
-        
-        code {
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            line-height: 1.5;
         }
     }
 }
