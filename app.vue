@@ -21,6 +21,9 @@ useHead({
   meta: [
     { name: 'description', content: '杪儿的博客', lang: 'zh-CN' }
   ],
+  htmlAttrs: {
+    lang: 'zh-CN',
+  }
 })
 
 </script>
