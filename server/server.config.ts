@@ -7,7 +7,8 @@ export default {
             '/api/posts/uploadPost',
             '/api/posts/deletePost',
             '/api/user/updatePassword',
-            '/api/system/update'
+            '/api/system/update',
+            '/api/system/updateFromGithub'
         ])
     }
 }

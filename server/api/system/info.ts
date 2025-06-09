@@ -1,7 +1,6 @@
 import os from 'os';
-import { execSync } from 'child_process';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   try {
     // 获取操作系统信息
     const platform = os.platform();

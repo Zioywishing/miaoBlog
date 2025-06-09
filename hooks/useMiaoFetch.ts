@@ -58,7 +58,7 @@ export default function useFetch() {
             }),
             deletePost: (id: number) => $fetch('/api/posts/deletePost', {
                 body: {
-                    id 
+                    id
                 },
                 method: 'POST',
                 headers: {
@@ -88,7 +88,6 @@ export default function useFetch() {
                     'Authorization': `Bearer ${userStore.token}`
                 }
             }),
-            // 暂未实现
             updatePassword: (body: {
                 oldPassword: string,
                 newPassword: string
@@ -100,6 +99,17 @@ export default function useFetch() {
                 }
             })
         },
+        system: {
+            updateFromGithub: (url: string) => $fetch('/api/system/updateFromGithub', {
+                body: {
+                    url
+                },
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${userStore.token}`
+                }
+            })
+        }
     }
 }
 
