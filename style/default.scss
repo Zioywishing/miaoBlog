@@ -20,3 +20,7 @@ body {
 .el-message {
     z-index: 70582140 !important;
 }
+
+.el-image-viewer__close {
+    transform: translateY(40px);
+}

@@ -11,7 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import codemirrorMiddleware from '~/hooks/h2v/codemirrorMiddleware';
+import useCodedisplayMiddleware from '~/hooks/h2v/codemirrorMiddleware';
+import useImgDisplayMiddleware from '~/hooks/h2v/imgMiddleware';
 import useMarkdownit from '~/hooks/useMarkdownit';
 import Html2VNode from '~/utils/html2VNode';
 
@@ -31,7 +32,8 @@ watch(() => props.data, async () => {
     const markdownIt = await useMarkdownit()
     renderedData.value = markdownIt.render(props.data)
     const h2v = new Html2VNode()
-    h2v.use(codemirrorMiddleware)
+    h2v.use(useCodedisplayMiddleware())
+    h2v.use(useImgDisplayMiddleware())
     const res = await h2v.render(renderedData.value!)
     VNodeMD.value = {
         setup: () => {

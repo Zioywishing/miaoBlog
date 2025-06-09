@@ -1,4 +1,4 @@
-const codemirrorMiddleware: middlewareType = {
+const useCodedisplayMiddleware: () => middlewareType = () => ({
     filter(tagName: string) {
         return tagName === 'code'
     },
@@ -6,15 +6,26 @@ const codemirrorMiddleware: middlewareType = {
         item,
         tagAttrs,
     }) {
-        const codeMirror = await cachedPromise('component:codeMirror', async () => {
-            const codeMirror = markRaw((await import('~/components/codeDisplay.vue')).default)
-            return codeMirror
+        const codeDisplay = await cachedPromise('component:codeDisplay', async () => {
+            const component = markRaw((await import('~/components/codeDisplay.vue')).default)
+            return component
         })
         const codeType = tagAttrs?.class?.split('-')?.[1] ?? ''
         // @ts-ignore
         const inline = (item.children[0].children.trim() as string).includes('\n') ? false : true
-        return h(
-            codeMirror,
+        return inline ? h(
+            "text",
+            {
+                style: {
+                    backgroundColor: '#eff1f5',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                }
+            },
+            // @ts-ignore
+            (item.children[0].children as string).trim()
+        ) : h(
+            codeDisplay,
             {
                 // @ts-ignore
                 data: item.children[0].children.trim(),
@@ -23,6 +34,6 @@ const codemirrorMiddleware: middlewareType = {
             },
         )
     },
-}
+})
 
-export default codemirrorMiddleware
+export default useCodedisplayMiddleware

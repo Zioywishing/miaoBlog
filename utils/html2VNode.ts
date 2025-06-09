@@ -8,6 +8,7 @@ export default class Html2VNode {
 
     constructor() {
         this.use(this.defaultMiddleware)
+        // this.use(this.preMiddleware)
     }
 
     public use(middleware: middlewareType) {
@@ -136,6 +137,25 @@ export default class Html2VNode {
                 // if (tagName === "table") debugger
             }
             return h(tagName ?? 'span', tagAttrs, child)
+        }
+    }
+
+    private preMiddleware: middlewareType = {
+        filter: (_: string) => {
+            return _.includes('pre');
+        },
+        render: async ({
+            item, tagName, tagAttrs, filterMiddleware
+        }) => {
+            if (!tagName) {
+                return item.children as string;
+            }
+            let child: string | (string | VNode)[] = item.children as string
+            if (typeof item.children !== 'string') {
+                child = await this.render2VNode(item.children, filterMiddleware)
+                // if (tagName === "table") debugger
+            }
+            return child[0]
         }
     }
 
