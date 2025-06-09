@@ -1,6 +1,6 @@
 <template>
     <div :class="wrapperClass" class="mb-2">
-        <div class="cm-header">
+        <div class="cm-header" v-if="!inline">
             <div class="cm-header-title">
                 <span>{{ props.type ?? 'Code' }}</span>
             </div>
@@ -14,8 +14,12 @@
                 </div>
             </div>
         </div>
-        <miao-collapse :show="show" style="overflow: hidden;">
-            <div ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
+        <miao-collapse :show="show" :fade="false" style="overflow: hidden;">
+            <el-scrollbar class="bg-[#eff1f5]">
+                <div class="bg-[#eff1f5] pr-0.5 w-fit">
+                    <div ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
+                </div>
+            </el-scrollbar>
         </miao-collapse>
         <div v-if="!inline" class="bg-[#eff1f5] rounded-b-[10px] w-full h-3"></div>
     </div>
@@ -128,6 +132,11 @@ watch(() => props.data, async () => {
             display: none !important;
         }
     }
+
+    // .el-scrollbar__bar {
+    //     transform: translateY(5px);
+    //     z-index: 10;
+    // }
 
     .cm-header {
         display: flex;

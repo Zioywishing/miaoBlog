@@ -11,7 +11,11 @@ const props = defineProps({
     show: {
         type: Boolean,
         default: true,
-    }
+    },
+    fade: {
+        type: Boolean,
+        default: true,
+    },
 })
 const cwRef = ref<HTMLDivElement>()
 const cRef = ref<HTMLDivElement>()
@@ -40,7 +44,7 @@ const handleHide = () => {
     timer.push(setTimeout(() => {
         cwStyle.value = {
             maxHeight: 0,
-            opacity: 0,
+            opacity: props.fade ? 0 : 1,
             transition: "all 0.2s ease-in-out, opacity 0.1s ease-out",
             pointerEvents: 'none',
         }
@@ -48,7 +52,7 @@ const handleHide = () => {
             cwStyle.value = {
                 maxHeight: 0,
                 display: 'none',
-                opacity: 0,
+                opacity: props.fade ? 0 : 1,
                 pointerEvents: 'none',
             }
         }, 300))
@@ -59,14 +63,14 @@ const handleShow = () => {
     clearTimer()
     cwStyle.value = {
         maxHeight: 0,
-        opacity: 0,
+        opacity: props.fade ? 0 : 1,
         pointerEvents: 'none',
     }
     timer.push(setTimeout(() => {
         calcOriginHeight();
         cwStyle.value = {
             maxHeight: 0,
-            opacity: 0,
+            opacity: props.fade ? 0 : 1,
             transition: "all .2s ease-in-out, opacity .15s ease-in .07s",
             pointerEvents: 'none',
         }
