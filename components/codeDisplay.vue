@@ -14,7 +14,7 @@
                 </div>
             </div>
         </div>
-        <miao-collapse v-if="!inline" :show="show" :fade="false" style="overflow: hidden;">
+        <miao-collapse v-if="!inline" :show="show" :fade="true" style="overflow: hidden;">
             <el-scrollbar class="bg-[#eff1f5] rounded-b-[10px]">
                 <div class="bg-[#eff1f5] pr-0.5 pb-1.5 w-fit">
                     <div ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
@@ -45,7 +45,7 @@ const wrapperClass = computed(() => {
 })
 
 const headerStyle = computed(() => ({
-    borderRadius: show.value ? "10px 10px 0 0" : "10px 0 10px 0"
+    borderRadius: show.value ? "10px 10px 0 0" : "10px 5px 10px 5px"
 }))
 
 // const rows = computed(() => {

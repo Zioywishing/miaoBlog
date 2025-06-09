@@ -4,7 +4,8 @@
     <div class="md-render-wrapper markdown-body">
         <VNodeMD v-if="VNodeMD && props.data"></VNodeMD>
         <div v-else>
-            <el-skeleton v-if="!props.disableSkeleton" :rows="12" />
+            <div v-html="renderedData" v-if="renderedData"></div>
+            <el-skeleton v-else :rows="12" />
         </div>
     </div>
 </template>
@@ -21,23 +22,18 @@ const props = defineProps<{
 
 const VNodeMD = shallowRef<any>()
 
+const renderedData = ref<string>()
+
 watch(() => props.data, async () => {
     if (!props.data) {
         return () => []
     }
     const markdownIt = await useMarkdownit()
-    const renderedData = markdownIt.render(props.data)
+    renderedData.value = markdownIt.render(props.data)
+    // console.log(renderedData.value)
     const h2v = new Html2VNode()
     h2v.use(codemirrorMiddleware)
-    const res = await h2v.render(renderedData)
-    // console.log(res)
-    // res.forEach(async (item) => {
-    //     if (typeof item === 'string') {
-    //         console.log(item)
-    //     } else {
-    //         console.log(await VNode2Html(item))
-    //     }
-    // })
+    const res = await h2v.render(renderedData.value!)
     VNodeMD.value = {
         setup: () => {
             return () => res

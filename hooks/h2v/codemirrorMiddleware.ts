@@ -7,7 +7,7 @@ const codemirrorMiddleware: middlewareType = {
         tagAttrs,
     }) {
         const codeMirror = await cachedPromise('component:codeMirror', async () => {
-            const codeMirror = (await import('~/components/codeDisplay.vue')).default
+            const codeMirror = markRaw((await import('~/components/codeDisplay.vue')).default)
             return codeMirror
         })
         const codeType = tagAttrs?.class?.split('-')?.[1] ?? ''

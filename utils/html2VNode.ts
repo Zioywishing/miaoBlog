@@ -1,3 +1,4 @@
+import { validateHeaderName } from "http";
 import type { VNode } from "vue";
 
 // 未完成
@@ -127,24 +128,24 @@ export default class Html2VNode {
             .replaceAll('&#39;', '\'')
     }
 
-    private check = (html2ObjResult: (TagType | miaoVNodeType)[]) => {
-        const stack = []
-        for (const item of html2ObjResult) {
-            if (!item.tag) {
-                continue;
-            }
-            // @ts-ignore
-            if (item?.isClose && item.isClose == true) {
-                const last = stack.pop();
-                if (last !== this.parseTag(item.tag).tagName) {
-                    return false;
-                }
-            } else {
-                stack.push(this.parseTag(item.tag).tagName)
-            }
-        }
-        return true;
-    }
+    // private check = (html2ObjResult: (TagType | miaoVNodeType)[]) => {
+    //     const stack = []
+    //     for (const item of html2ObjResult) {
+    //         if (!item.tag) {
+    //             continue;
+    //         }
+    //         // @ts-ignore
+    //         if (item?.isClose && item.isClose == true) {
+    //             const last = stack.pop();
+    //             if (last !== this.parseTag(item.tag).tagName) {
+    //                 return false;
+    //             }
+    //         } else {
+    //             stack.push(this.parseTag(item.tag).tagName)
+    //         }
+    //     }
+    //     return true;
+    // }
 
     // 想必是flat的反义词吧
     private wrinkles = (target: (TagType | miaoVNodeType)[]) => {
@@ -193,57 +194,63 @@ export default class Html2VNode {
         const tagStr = tag.replace(/<\s*\/*\s*|\s*>/g, '');
         const tagArr = tagStr.split(' ').filter(item => item.trim());
         const tagName = tagArr.shift();
+        const tagAttrs: { [key: string]: string } = tagArr.reduce((prev, curr) => {
+            const [key] = curr.split("=", 1)
+            const value = curr.slice(key.length + 2, curr.length - 1)
+            prev[key as string] = (value as string)
+            return prev
+        }, {} as { [k: string]: string });
 
-        const tagAttrs: { [key: string]: string } = {};
-        let currentAttr = '';
-        let currentValue = '';
-        let inQuotes = false;
-        let quoteChar = '';
+        // const tagAttrs: { [key: string]: string } = {};
+        // let currentAttr = '';
+        // let currentValue = '';
+        // let inQuotes = false;
+        // let quoteChar = '';
 
-        for (let i = 0; i < tagArr.length; i++) {
-            const part = tagArr[i];
+        // for (let i = 0; i < tagArr.length; i++) {
+        //     const part = tagArr[i];
 
-            if (!inQuotes) {
-                if (part.includes('=')) {
-                    const [attr, ...valueParts] = part.split('=');
-                    currentAttr = attr;
+        //     if (!inQuotes) {
+        //         if (part.includes('=')) {
+        //             const [attr, ...valueParts] = part.split('=');
+        //             currentAttr = attr;
 
-                    // 检查值是否以引号开始
-                    if (valueParts[0].startsWith('"') || valueParts[0].startsWith("'")) {
-                        quoteChar = valueParts[0][0];
-                        currentValue = valueParts[0].slice(1);
-                        inQuotes = true;
+        //             // 检查值是否以引号开始
+        //             if (valueParts[0].startsWith('"') || valueParts[0].startsWith("'")) {
+        //                 quoteChar = valueParts[0][0];
+        //                 currentValue = valueParts[0].slice(1);
+        //                 inQuotes = true;
 
-                        // 如果值在同一个部分结束
-                        if (currentValue.endsWith(quoteChar)) {
-                            currentValue = currentValue.slice(0, -1);
-                            tagAttrs[currentAttr] = currentValue;
-                            currentAttr = '';
-                            currentValue = '';
-                            inQuotes = false;
-                        }
-                    } else {
-                        // 没有引号的值
-                        tagAttrs[currentAttr] = valueParts.join('=');
-                        currentAttr = '';
-                    }
-                } else {
-                    // 处理没有值的属性（如 disabled）
-                    tagAttrs[part] = '';
-                }
-            } else {
-                // 在引号内
-                if (part.endsWith(quoteChar)) {
-                    currentValue += ' ' + part.slice(0, -1);
-                    tagAttrs[currentAttr] = currentValue;
-                    currentAttr = '';
-                    currentValue = '';
-                    inQuotes = false;
-                } else {
-                    currentValue += ' ' + part;
-                }
-            }
-        }
+        //                 // 如果值在同一个部分结束
+        //                 if (currentValue.endsWith(quoteChar)) {
+        //                     currentValue = currentValue.slice(0, -1);
+        //                     tagAttrs[currentAttr] = currentValue;
+        //                     currentAttr = '';
+        //                     currentValue = '';
+        //                     inQuotes = false;
+        //                 }
+        //             } else {
+        //                 // 没有引号的值
+        //                 tagAttrs[currentAttr] = valueParts.join('=');
+        //                 currentAttr = '';
+        //             }
+        //         } else {
+        //             // 处理没有值的属性（如 disabled）
+        //             tagAttrs[part] = '';
+        //         }
+        //     } else {
+        //         // 在引号内
+        //         if (part.endsWith(quoteChar)) {
+        //             currentValue += ' ' + part.slice(0, -1);
+        //             tagAttrs[currentAttr] = currentValue;
+        //             currentAttr = '';
+        //             currentValue = '';
+        //             inQuotes = false;
+        //         } else {
+        //             currentValue += ' ' + part;
+        //         }
+        //     }
+        // }
 
         return { tagName, tagAttrs };
     }
