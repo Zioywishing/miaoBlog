@@ -30,7 +30,6 @@ watch(() => props.data, async () => {
     }
     const markdownIt = await useMarkdownit()
     renderedData.value = markdownIt.render(props.data)
-    // console.log(renderedData.value)
     const h2v = new Html2VNode()
     h2v.use(codemirrorMiddleware)
     const res = await h2v.render(renderedData.value!)
