@@ -190,67 +190,22 @@ export default class Html2VNode {
         return null;
     }
 
-    private parseTag = (tag: string) => {
-        const tagStr = tag.replace(/<\s*\/*\s*|\s*>/g, '');
-        const tagArr = tagStr.split(' ').filter(item => item.trim());
-        const tagName = tagArr.shift();
-        const tagAttrs: { [key: string]: string } = tagArr.reduce((prev, curr) => {
-            const [key] = curr.split("=", 1)
-            const value = curr.slice(key.length + 2, curr.length - 1)
-            prev[key as string] = (value as string)
-            return prev
-        }, {} as { [k: string]: string });
+    private parseTag = (htmlString: string) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, 'text/html');
+        const element = doc.body.firstElementChild;
 
-        // const tagAttrs: { [key: string]: string } = {};
-        // let currentAttr = '';
-        // let currentValue = '';
-        // let inQuotes = false;
-        // let quoteChar = '';
+        if (!element) {
+            return htmlString;
+            throw new Error('未找到有效的HTML元素');
+        }
 
-        // for (let i = 0; i < tagArr.length; i++) {
-        //     const part = tagArr[i];
+        const tagName = element.tagName.toLowerCase();
+        const tagAttrs: { [key: string]: string } = {};
 
-        //     if (!inQuotes) {
-        //         if (part.includes('=')) {
-        //             const [attr, ...valueParts] = part.split('=');
-        //             currentAttr = attr;
-
-        //             // 检查值是否以引号开始
-        //             if (valueParts[0].startsWith('"') || valueParts[0].startsWith("'")) {
-        //                 quoteChar = valueParts[0][0];
-        //                 currentValue = valueParts[0].slice(1);
-        //                 inQuotes = true;
-
-        //                 // 如果值在同一个部分结束
-        //                 if (currentValue.endsWith(quoteChar)) {
-        //                     currentValue = currentValue.slice(0, -1);
-        //                     tagAttrs[currentAttr] = currentValue;
-        //                     currentAttr = '';
-        //                     currentValue = '';
-        //                     inQuotes = false;
-        //                 }
-        //             } else {
-        //                 // 没有引号的值
-        //                 tagAttrs[currentAttr] = valueParts.join('=');
-        //                 currentAttr = '';
-        //             }
-        //         } else {
-        //             // 处理没有值的属性（如 disabled）
-        //             tagAttrs[part] = '';
-        //         }
-        //     } else {
-        //         // 在引号内
-        //         if (part.endsWith(quoteChar)) {
-        //             currentValue += ' ' + part.slice(0, -1);
-        //             tagAttrs[currentAttr] = currentValue;
-        //             currentAttr = '';
-        //             currentValue = '';
-        //             inQuotes = false;
-        //         } else {
-        //             currentValue += ' ' + part;
-        //         }
-        //     }
-        // }
+        Array.from(element.attributes).forEach(attr => {
+            tagAttrs[attr.name] = attr.value;
+        });
 
         return { tagName, tagAttrs };
     }
