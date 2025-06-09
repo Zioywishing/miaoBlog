@@ -14,7 +14,7 @@ const useCodedisplayMiddleware: () => middlewareType = () => ({
         // @ts-ignore
         const inline = (item.children[0].children.trim() as string).includes('\n') ? false : true
         return inline ? h(
-            "text",
+            "span",
             {
                 style: {
                     backgroundColor: '#eff1f5',

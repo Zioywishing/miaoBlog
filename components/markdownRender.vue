@@ -48,16 +48,17 @@ watch(() => props.data, async () => {
 
 <style lang="scss">
 .md-render-wrapper {
-    // code {
-    //     // box-sizing: border-box;
-    //     // display: inline-block;
-    //     // width: 100%;
-    //     // text-wrap: auto;
-    //     background-color: #e7e7e7;
-    //     // padding: 5px;
-    //     // padding-left: 10px;
-    //     // border-radius: 5px;
-    // }
+    code {
+        white-space: pre;
+        // box-sizing: border-box;
+        // display: inline-block;
+        // width: 100%;
+        // text-wrap: auto;
+        // background-color: #e7e7e7;
+        // padding: 5px;
+        // padding-left: 10px;
+        // border-radius: 5px;
+    }
 
     hr {
         display: block;
@@ -148,6 +149,7 @@ watch(() => props.data, async () => {
     a {
         color: #0366d6;
         text-decoration: none;
+        word-wrap: break-word;
 
         &:hover {
             text-decoration: underline;
@@ -221,6 +223,9 @@ watch(() => props.data, async () => {
     /* 恢复预格式化文本样式 */
     pre {
         padding: 0px 15px;
+        white-space: pre-wrap;
+        // word-wrap: break-word;
+        // overflow-wrap: break-word;
         // background-color: #e7e7e7;
         // padding: 16px;
         // overflow: auto;
