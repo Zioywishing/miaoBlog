@@ -1,6 +1,6 @@
 <template>
     <div :class="wrapperClass" class="mb-2">
-        <div class="cm-header" v-if="!inline">
+        <div class="cm-header" v-if="!inline" :style="headerStyle">
             <div class="cm-header-title">
                 <span>{{ props.type ?? 'Code' }}</span>
             </div>
@@ -14,14 +14,15 @@
                 </div>
             </div>
         </div>
-        <miao-collapse :show="show" :fade="false" style="overflow: hidden;">
-            <el-scrollbar class="bg-[#eff1f5]">
-                <div class="bg-[#eff1f5] pr-0.5 w-fit">
+        <miao-collapse v-if="!inline" :show="show" :fade="false" style="overflow: hidden;">
+            <el-scrollbar class="bg-[#eff1f5] rounded-b-[10px]">
+                <div class="bg-[#eff1f5] pr-0.5 pb-1.5 w-fit">
                     <div ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
                 </div>
+                <!-- <div v-if="!inline" class="bg-[#eff1f5] rounded-b-[10px] w-full h-3"></div> -->
             </el-scrollbar>
         </miao-collapse>
-        <div v-if="!inline" class="bg-[#eff1f5] rounded-b-[10px] w-full h-3"></div>
+        <div v-else ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
     </div>
 </template>
 
@@ -42,6 +43,10 @@ const highlightedCode = ref('')
 const wrapperClass = computed(() => {
     return ['cm-rander-wrapper', props.inline === true ? 'cm-rander-wrapper-inline' : '']
 })
+
+const headerStyle = computed(() => ({
+    borderRadius: show.value ? "10px 10px 0 0" : "10px 0 10px 0"
+}))
 
 // const rows = computed(() => {
 //     if (!props.data) {
@@ -146,8 +151,8 @@ watch(() => props.data, async () => {
         height: 25px;
         background-color: #15aa87;
         color: #fff;
-        border-radius: 10px 10px 0 0;
         user-select: none;
+        transition:all .25s ease;
 
         .cm-header-controls {
             display: flex;
