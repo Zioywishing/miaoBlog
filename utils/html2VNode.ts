@@ -196,7 +196,7 @@ export default class Html2VNode {
         const element = doc.body.firstElementChild;
 
         if (!element) {
-            return htmlString;
+            return { tagName: "", tagAttrs: {} };
             throw new Error('未找到有效的HTML元素');
         }
 
