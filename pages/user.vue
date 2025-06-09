@@ -5,7 +5,37 @@
 </template>
 
 <script setup lang="ts">
-
+import useUserStore from '~/hooks/pinia/useUserStore';
+// const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+onBeforeMount(async () => {
+    if (userStore && userStore.isLogin) {
+        return router.replace('/user/main')
+    } else {
+        try {
+            if (userStore.token) {
+                const response = await $fetch('/api/user/refreshToken', {
+                    method: 'POST',
+                    body: {
+                        token: userStore.token
+                    }
+                })
+                userStore.setToken(response.token)
+                userStore.setTokenExpireTime(response.expiresIn)
+                userStore.setLoginStatus(true)
+                // // if(route.)
+                // console.log(route)
+                router.replace('/user/main')
+            } else {
+                router.replace('/user/login')
+            }
+        } catch (error) {
+            console.error(error)
+            router.replace('/user/login')
+        }
+    }
+})
 </script>
 
 <style lang="scss" scoped>
