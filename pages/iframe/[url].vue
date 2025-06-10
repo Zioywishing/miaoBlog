@@ -1,8 +1,10 @@
 <template>
     <div class="iframe-wrapper">
-        <iframe ref="iframeRef" :src="decodeURIComponent(route.params.url as string)" frameborder="0"></iframe>
+        <iframe ref="iframeRef" frameborder="0" @load="handleIframeLoad"
+            :src="decodeURIComponent(route.params.url as string)"></iframe>
         <Transition name="fade">
-            <div class="loading w-full h-full bg-[#ffffffee] absolute flex justify-center items-center" v-show="isLoading">
+            <div class="loading w-full h-full bg-[#ffffffee] absolute flex justify-center items-center"
+                v-show="isLoading">
                 <div>
                     <miao-loading></miao-loading>
                 </div>
@@ -15,19 +17,20 @@
 
 const route = useRoute();
 
-const iframeRef = ref<HTMLIFrameElement | null>(null);
+// const iframeRef = ref<HTMLIFrameElement | null>(null);
 
 const isLoading = ref(true);
 
-onMounted(() => {
-    iframeRef.value?.addEventListener('load', () => {
-        // console.log('iframe loaded');
-        isLoading.value = false;
-    })
-})
+const handleIframeLoad = () => {
+    console.log('iframe loaded');
+    isLoading.value = false;
+}
 
 // onMounted(() => {
-//     console.log(route.params.url);
+//     iframeRef.value!.addEventListener('load', () => {
+//         console.log('iframe loaded');
+//         isLoading.value = false;
+//     })
 // })
 </script>
 
@@ -55,6 +58,6 @@ iframe {
 }
 
 .fade-leave-to {
-  opacity: 0;
+    opacity: 0;
 }
 </style>
