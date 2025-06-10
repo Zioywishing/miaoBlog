@@ -1,9 +1,8 @@
 <template>
     <div class="iframe-wrapper">
-        <iframe ref="iframeRef" frameborder="0" @load="handleIframeLoad"
-            :src="decodeURIComponent(route.params.url as string)"></iframe>
+        <iframe ref="iframeRef" frameborder="0" :src="decodeURIComponent(route.params.url as string)"></iframe>
         <Transition name="fade">
-            <div class="loading w-full h-full bg-[#ffffffee] absolute flex justify-center items-center"
+            <div class="loading w-full h-full bg-[#ffffff] absolute flex justify-center items-center"
                 v-show="isLoading">
                 <div>
                     <miao-loading></miao-loading>
@@ -17,21 +16,20 @@
 
 const route = useRoute();
 
-// const iframeRef = ref<HTMLIFrameElement | null>(null);
+const iframeRef = ref<HTMLIFrameElement | null>(null);
 
 const isLoading = ref(true);
 
-const handleIframeLoad = () => {
-    console.log('iframe loaded');
-    isLoading.value = false;
-}
+// const handleIframeLoad = () => {
+//     console.log('iframe loaded');
+//     isLoading.value = false;
+// }
 
-// onMounted(() => {
-//     iframeRef.value!.addEventListener('load', () => {
-//         console.log('iframe loaded');
-//         isLoading.value = false;
-//     })
-// })
+onMounted(() => {
+    !iframeRef.value?.contentDocument ? (_ => isLoading.value = false)() : iframeRef.value!.addEventListener('load', () => {
+        isLoading.value = false;
+    })
+})
 </script>
 
 <style scoped>
