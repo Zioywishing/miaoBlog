@@ -19,7 +19,15 @@
             </el-col>
         </el-row>
         <el-row>
-            <el-col :span="16"></el-col>
+            <el-col :span="16">
+                <div class="flex justify-baseline items-center gap-1 h-full border-1 border-gray-300 rounded-sm">
+                    <div class="pl-2 pr-2 bg-[#f5f7fa] text-[#909399] text-sm h-full items-center flex border-r-gray-300 border-r-1">插入</div>
+                    <div title="插入图片" class="flex justify-center items-center h-6 w-6" @click="handleInsertImage">
+                        <Image
+                            class="w-5 h-5 hover:cursor-pointer transition-all duration-150 hover:w-5.5 hover:h-5.5 text-gray-500" />
+                    </div>
+                </div>
+            </el-col>
             <el-col :span="8">
                 <div
                     class="switch-button overflow-hidden  z-10 border-0 border-gray-300 rounded-bl-sm rounded-tr-sm flex select-none justify-end gap-1">
@@ -53,8 +61,9 @@
 </template>
 
 <script setup lang="ts">
+import Image from '~/components/icons/image.vue'
 
-const props = defineProps<{
+const _props = defineProps<{
     disabled?: boolean
 }>()
 
@@ -66,6 +75,54 @@ const content = defineModel<string>('content')
 const isEditing = ref(true)
 const isPreviewing = ref(false)
 
+// 插入图片功能
+const handleInsertImage = async () => {
+    try {
+        // 使用FilePicker选择图片文件
+        const files = await new FilePicker().pick({
+            accept: 'image/*',
+            multiple: false
+        })
+
+        if (files.length === 0) {
+            return
+        }
+
+        const file = files[0]
+
+        // 创建FormData上传到图床
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('expire', '0') // 永不过期
+
+        // 上传到图床API
+        const response = await $fetch('/api/tools/imgBed/upload', {
+            method: 'POST',
+            body: formData
+        })
+
+        if (response.code === 200 && 'hash' in response) {
+            // 构建图片链接
+            const imageUrl = `/api/tools/imgBed/download/${response.hash}`
+            const imageMarkdown = `\n![${file.name}](${imageUrl})\n`
+
+            // 将图片链接插入到文章内容末尾
+            if (content.value) {
+                content.value += imageMarkdown
+            } else {
+                content.value = imageMarkdown
+            }
+
+            // 显示成功提示
+            ElMessage.success('图片插入成功')
+        } else {
+            ElMessage.error('图片上传失败')
+        }
+    } catch (error) {
+        console.error('插入图片失败:', error)
+        ElMessage.error('插入图片失败')
+    }
+}
 </script>
 
 <style scoped>
@@ -91,17 +148,18 @@ const isPreviewing = ref(false)
         justify-content: center;
         align-items: center;
         max-width: 100px;
+        border-radius: 3px;
 
         &:hover {
             background-color: #f0f0f0;
         }
 
         &-active {
-            color: #0077ff;
-            background-color: #d3e7ff;
+            color: #fff;
+            background-color: #15aa87;
 
             &:hover {
-                background-color: #c3e0ff;
+                background-color: #129072;
             }
         }
     }

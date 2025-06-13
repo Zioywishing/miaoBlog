@@ -87,6 +87,9 @@ const handleClickDelete = async () => {
         )
         try {
             const response = await deletePost(id.value)
+            if (response.code !== 200) {
+                throw (response.code)
+            }
             ElMessage({
                 type: 'success',
                 message: '删除文章完成',
@@ -125,7 +128,7 @@ const handleUpload = async () => {
         }
         // @ts-ignore
         id.value = response.id
-        console.log(id.value)
+        // console.log(id.value)
         message.value = {
             type: 'success',
             message: '上传成功'
@@ -179,6 +182,13 @@ const handleUpdate = async () => {
 const handleBack = () => {
     router.back()
 }
+
+watch(content, (_) => {
+    message.value = {
+        type: "info",
+        message: '更新未同步'
+    }
+})
 
 onMounted(async () => {
     if (route.params.id !== 'new') {
