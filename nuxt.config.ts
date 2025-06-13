@@ -16,6 +16,22 @@ export default defineNuxtConfig({
 		pageTransition: {
 			name: 'page',
 			mode: 'out-in'
+		},
+		head: {
+			script: [
+				{
+					async: true,
+					src: 'https://www.googletagmanager.com/gtag/js?id=G-X0E57834WZ'
+				},
+				{
+					children: `
+						window.dataLayer = window.dataLayer || [];
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', 'G-X0E57834WZ');
+					`
+				}
+			]
 		}
 	},
 	vite: {
