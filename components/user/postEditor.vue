@@ -22,29 +22,33 @@
             <el-col :span="16"></el-col>
             <el-col :span="8">
                 <div
-                    class="switch-button overflow-hidden  z-10 border-0 border-gray-300 rounded-bl-sm rounded-tr-sm flex select-none">
+                    class="switch-button overflow-hidden  z-10 border-0 border-gray-300 rounded-bl-sm rounded-tr-sm flex select-none justify-end gap-1">
                     <div class="switch-button-item" :class="{ 'switch-button-item-active': isEditing }"
-                        @click="isEditing = true">
+                        @click="isEditing = !isEditing">
                         编辑
                     </div>
-                    <div class="switch-button-item" :class="{ 'switch-button-item-active': !isEditing }"
-                        @click="isEditing = false">
+                    <div class="switch-button-item" :class="{ 'switch-button-item-active': isPreviewing }"
+                        @click="isPreviewing = !isPreviewing">
                         预览
                     </div>
                 </div>
             </el-col>
         </el-row>
-        <el-row>
-            <el-col>
-                <el-input v-if="isEditing" type="textarea" v-model:model-value="content" placeholder="content"
+        <!-- <el-row>
+            <el-col> -->
+        <div class="flex">
+            <el-scrollbar max-height="80vh" style="flex: 1;" v-if="isEditing">
+                <el-input style="flex: 1;" type="textarea" v-model:model-value="content" placeholder="content"
                     :autosize="{ minRows: 15 }" :disabled="disabled" />
-                <el-scrollbar>
-                    <div class=" border-1 border-gray-300 rounded-sm p-2" v-if="!isEditing">
-                        <markdown-render :data="content ?? ''" :disable-skeleton="true" />
-                    </div>
-                </el-scrollbar>
-            </el-col>
-        </el-row>
+            </el-scrollbar>
+            <el-scrollbar max-height="80vh" style="flex: 1;" v-if="isPreviewing">
+                <div class="border-1 border-gray-300 rounded-sm p-2 pb-[300px]">
+                    <markdown-render :data="content ?? ''" :disable-skeleton="true" />
+                </div>
+            </el-scrollbar>
+        </div>
+        <!-- </el-col>
+        </el-row> -->
     </div>
 </template>
 
@@ -60,6 +64,7 @@ const tags = defineModel<string[]>('tags')
 const content = defineModel<string>('content')
 
 const isEditing = ref(true)
+const isPreviewing = ref(false)
 
 </script>
 
@@ -74,6 +79,7 @@ const isEditing = ref(true)
 <style lang="scss" scoped>
 .switch-button {
 
+
     &-item {
         width: 50%;
         height: 100%;
@@ -81,6 +87,10 @@ const isEditing = ref(true)
         cursor: pointer;
         transition: all .15s ease;
         padding: 0 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 100px;
 
         &:hover {
             background-color: #f0f0f0;
