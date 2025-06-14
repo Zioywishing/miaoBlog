@@ -19,7 +19,7 @@
             </el-col>
         </el-row>
         <el-row>
-            <el-col :span="16">
+            <el-col :span="15">
                 <div class="flex justify-baseline items-center gap-1 h-full border-1 border-gray-300 rounded-sm">
                     <div
                         class="pl-2.5 pr-2.5 bg-[#f5f7fa] text-[#909399] text-[0.8rem] h-full items-center flex border-r-gray-300 border-r-1">
@@ -30,6 +30,7 @@
                     </div>
                 </div>
             </el-col>
+            <el-col :span="1"></el-col>
             <el-col :span="8">
                 <div
                     class="switch-button overflow-hidden z-10 border-0 border-gray-300 rounded-bl-sm rounded-tr-sm flex select-none justify-end gap-1">
@@ -45,16 +46,17 @@
             </el-col>
         </el-row>
         <div class="flex gap-1">
-            <el-scrollbar max-height="calc(80vh + 6px)" style="flex: 1;" v-if="isEditing">
-                <textarea ref="textareaRef" v-model="content" placeholder="在此输入Markdown内容..." :disabled="disabled"
-                    class="markdown-textarea w-full min-h-[300px] p-3 resize-none border-1 border-gray-300 rounded-sm outline-none font-mono text-base "
-                    @input="resizeTextarea" @keydown.tab.prevent="handleTab" @paste="handlePaste"></textarea>
-            </el-scrollbar>
-            <el-scrollbar max-height="80vh" style="flex: 1;" v-if="isPreviewing">
-                <div class="border-1 border-gray-300 rounded-sm p-2 pb-[300px]">
-                    <markdown-render :data="content ?? ''" :disable-skeleton="true" />
-                </div>
-            </el-scrollbar>
+            <textarea ref="textareaRef" style="height: calc(63vh + 6px);flex: 1;" v-model="content" placeholder="..."
+                :disabled="disabled" v-if="isEditing"
+                class="markdown-textarea w-full min-h-[300px] p-3 resize-none border-1 border-gray-300 rounded-sm outline-none font-mono text-base "
+                @keydown.tab.prevent="handleTab" @paste="handlePaste"></textarea>
+            <div style="flex: 1;" class="border-1 border-gray-300 rounded-sm w-0" v-if="isPreviewing">
+                <el-scrollbar max-height="63vh">
+                    <div class="pb-32">
+                        <markdown-render :data="content ?? ''" :disable-skeleton="true" />
+                    </div>
+                </el-scrollbar>
+            </div>
         </div>
     </div>
 </template>
@@ -78,24 +80,6 @@ const isPreviewing = ref(false)
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
-const resizeTextarea = () => {
-    const textarea = textareaRef.value;
-    if (textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-};
-
-watch(content, () => {
-    nextTick(resizeTextarea);
-});
-
-watch(isEditing, (newValue) => {
-    if (newValue) {
-        nextTick(resizeTextarea)
-    }
-})
-
 // 处理Tab键，用于插入缩进而不是切换焦点
 const handleTab = (e: KeyboardEvent) => {
     // 插入2个空格作为缩进
@@ -118,20 +102,6 @@ const handleTab = (e: KeyboardEvent) => {
     }
 }
 
-// 监听Ctrl+S快捷键
-onMounted(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.key === 's') {
-            e.preventDefault() // 阻止浏览器默认保存行为
-            emit('save')
-        }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-
-    onUnmounted(() => {
-        window.removeEventListener('keydown', handleKeyDown)
-    })
-})
 
 const insertTextAtCursor = (textToInsert: string) => {
     const textarea = textareaRef.value;
@@ -142,12 +112,6 @@ const insertTextAtCursor = (textToInsert: string) => {
     const currentText = content.value || '';
 
     content.value = currentText.substring(0, start) + textToInsert + currentText.substring(end);
-
-    nextTick(() => {
-        textarea.focus();
-        textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
-        resizeTextarea();
-    });
 };
 
 const uploadImage = async (file: File) => {
@@ -212,6 +176,20 @@ const handleInsertImage = async () => {
         console.log('用户取消了文件选择。');
     }
 };
+
+// 监听Ctrl+S快捷键
+onMounted(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault() // 阻止浏览器默认保存行为
+            emit('save')
+        }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    onUnmounted(() => {
+        window.removeEventListener('keydown', handleKeyDown)
+    })
+})
 </script>
 
 <style lang="scss" scoped>
@@ -222,12 +200,26 @@ const handleInsertImage = async () => {
 }
 
 .markdown-textarea {
-    line-height: 1.6;
-    tab-size: 2;
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
-    // 确保textarea的box-sizing是border-box，这样padding和border不会影响scrollHeight的计算
-    box-sizing: border-box;
-    overflow-y: hidden; // 隐藏多余的滚动条
+    outline: none !important;
+}
+
+.markdown-textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+.markdown-textarea::-webkit-scrollbar-track {
+    background: #00000000;
+}
+
+.markdown-textarea::-webkit-scrollbar-thumb {
+    background: #90939933;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.markdown-textarea::-webkit-scrollbar-thumb:hover {
+    background: #90939955;
 }
 
 .switch-button {
