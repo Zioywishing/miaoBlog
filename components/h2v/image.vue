@@ -1,5 +1,5 @@
 <template>
-    <el-image :src="src" :alt="alt" :preview-src-list="previewSrcList" class=" rounded-sm">
+    <el-image :src="src" :alt="alt" :preview-src-list="realPreviewSrcList" class=" rounded-sm">
     </el-image>
 </template>
 
@@ -9,11 +9,26 @@ const props = defineProps<{
     alt?: string
     previewSrcList: string[]
 }>()
+
+const mounted = ref(false)
+
+// 有点蠢
+const realPreviewSrcList = computed(() => {
+    if (!mounted.value) return []
+    const list = [...props.previewSrcList]
+    const index = list.indexOf(props.src)
+    const _head = list.slice(0, index)
+    list.splice(0, index)
+    list.push(..._head)
+    return list
+})
+
 onMounted(() => {
+    mounted.value = true
     props.previewSrcList.push(props.src)
 })
 onUnmounted(() => {
-    props.previewSrcList.splice(props.previewSrcList.indexOf(props.src), 1) 
+    props.previewSrcList.splice(props.previewSrcList.indexOf(props.src), 1)
 })
 </script>
 
