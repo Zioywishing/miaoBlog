@@ -37,9 +37,9 @@
                 </template>
             </el-card>
 
-            <el-card v-if="isLoading" v-for="_ in 6">
+            <!-- <el-card v-if="isLoading" v-for="_ in 6">
                 <el-skeleton :rows="5" />
-            </el-card>
+            </el-card> -->
         </div>
     </div>
 </template>
