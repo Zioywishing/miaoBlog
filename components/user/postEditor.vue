@@ -48,7 +48,7 @@
             <el-scrollbar max-height="calc(80vh + 6px)" style="flex: 1;" v-if="isEditing">
                 <textarea ref="textareaRef" v-model="content" placeholder="在此输入Markdown内容..." :disabled="disabled"
                     class="markdown-textarea w-full min-h-[300px] p-3 resize-none border-1 border-gray-300 rounded-sm outline-none font-mono text-base "
-                    @input="resizeTextarea" @keydown.tab.prevent="handleTab"></textarea>
+                    @input="resizeTextarea" @keydown.tab.prevent="handleTab" @paste="handlePaste"></textarea>
             </el-scrollbar>
             <el-scrollbar max-height="80vh" style="flex: 1;" v-if="isPreviewing">
                 <div class="border-1 border-gray-300 rounded-sm p-2 pb-[300px]">
@@ -133,54 +133,85 @@ onMounted(() => {
     })
 })
 
-// 插入图片功能
-const handleInsertImage = async () => {
+const insertTextAtCursor = (textToInsert: string) => {
+    const textarea = textareaRef.value;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentText = content.value || '';
+
+    content.value = currentText.substring(0, start) + textToInsert + currentText.substring(end);
+
+    nextTick(() => {
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
+        resizeTextarea();
+    });
+};
+
+const uploadImage = async (file: File) => {
+    const loadingMessage = ElMessage({
+        message: '图片上传中...',
+        type: 'info',
+        duration: 0,
+    });
+
     try {
-        // 使用FilePicker选择图片文件
-        const files = await new FilePicker().pick({
-            accept: 'image/*',
-            multiple: false
-        })
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('expire', `${3600 * 1000 * 24 * 365 * 50 + Date.now()}`);
 
-        if (files.length === 0) {
-            return
-        }
-
-        const file = files[0]
-
-        // 创建FormData上传到图床
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('expire', `${3600 * 1000 * 24 * 365 * 50 + Date.now()}`) // 约等于永不过期
-
-        // 上传到图床API
         const response = await $fetch('/api/tools/imgBed/upload', {
             method: 'POST',
-            body: formData
-        })
+            body: formData,
+        });
 
         if (response.code === 200 && 'hash' in response) {
-            // 构建图片链接
-            const imageUrl = `/api/tools/imgBed/download/${response.hash}`
-            const imageMarkdown = `\n![${file.name}](${imageUrl})\n`
-
-            // 将图片链接插入到文章内容末尾
-            if (content.value) {
-                content.value += imageMarkdown
-            } else {
-                content.value = imageMarkdown
-            }
-
-            // 显示成功提示
-            ElMessage.success('图片插入成功')
+            const imageUrl = `/api/tools/imgBed/download/${response.hash}`;
+            const imageMarkdown = `\n![${file.name}](${imageUrl})\n`;
+            insertTextAtCursor(imageMarkdown);
+            ElMessage.success('图片上传成功');
         } else {
-            ElMessage.error('图片上传失败')
+            ElMessage.error('图片上传失败');
         }
     } catch (error) {
-        console.error('插入图片失败:', error)
-        ElMessage.error('插入图片失败')
+        console.error('图片上传操作失败:', error);
+        ElMessage.error('图片上传失败');
+    } finally {
+        loadingMessage.close();
     }
-}
+};
+
+const handlePaste = async (event: ClipboardEvent) => {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+
+    const imageFile = Array.from(items)
+        .find(item => item.type.startsWith('image/'))
+        ?.getAsFile();
+
+    if (imageFile) {
+        event.preventDefault();
+        await uploadImage(imageFile);
+    }
+};
+
+const handleInsertImage = async () => {
+    try {
+        const files = await new FilePicker().pick({
+            accept: 'image/*',
+            multiple: false,
+        });
+
+        if (files.length > 0) {
+            await uploadImage(files[0]);
+        }
+    } catch (error) {
+        // 用户取消文件选择时，FilePicker会抛出异常，这里静默处理
+        console.log('用户取消了文件选择。');
+    }
+};
 </script>
 
 <style lang="scss" scoped>
