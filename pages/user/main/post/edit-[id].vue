@@ -8,7 +8,7 @@
             </div>
         </div>
         <editor v-model:title="title" v-model:summary="summary" v-model:tags="tags" v-model:content="content"
-            :disabled="disableEdit" />
+            :disabled="disableEdit" @save="handleSubmit" />
         <el-row>
             <el-col :span="24">
                 <div class="flex-end">
@@ -32,6 +32,7 @@ import useDefaultStore from '~/hooks/pinia/useDefaultStore';
 import useFetch from '~/hooks/useMiaoFetch';
 import type { postItem } from '~/types/post';
 import chevronDown from "~/components/icons/chevronDown.vue";
+import { debounce } from 'lodash-es';
 // import type { Action } from 'element-plus/es/components/index.mjs';
 
 type resType = {
@@ -52,18 +53,23 @@ const summary = ref<string>('')
 const tags = ref<string[]>([])
 const content = ref<string>('')
 
+const last_upload_content = ref<string>('')
+
 // 等待加载完成才允许编辑
 const disableEdit = ref(true)
 
 const message = ref<{ type: "" | "success" | "warning" | "info" | "primary" | "danger", message: string }>()
 
-const handleSubmit = () => {
+// 使用lodash-es的debounce实现防抖保存
+const handleSubmit = debounce(async () => {
     if (id.value === -1) {
-        handleUpload()
+        await handleUpload()
     } else {
-        handleUpdate()
+        await handleUpdate()
     }
-}
+}, 500, {
+    leading: true,
+})
 
 const handleClickDelete = async () => {
     try {
@@ -97,7 +103,7 @@ const handleClickDelete = async () => {
             const store = useDefaultStore()
             store.deleteCache('posts')
             router.back()
-        } catch(e) {
+        } catch (e) {
             console.error(e)
             ElMessage({
                 type: 'error',
@@ -114,6 +120,14 @@ const handleUpload = async () => {
             type: 'info',
             message: '上传中'
         }
+
+        // 显示上传中提示
+        const loadingMessage = ElMessage({
+            type: 'info',
+            message: '文章上传中...',
+            duration: 0
+        })
+
         const response = await uploadPost({
             title: title.value,
             summary: summary.value,
@@ -123,6 +137,10 @@ const handleUpload = async () => {
             type: 'markdown',
             date: Date.now()
         })
+
+        // 关闭上传中的提示
+        loadingMessage.close()
+
         if (response.code !== 200) {
             throw ('response')
         }
@@ -133,6 +151,8 @@ const handleUpload = async () => {
             type: 'success',
             message: '上传成功'
         }
+        ElMessage.success('文章保存成功')
+        last_upload_content.value = content.value
         const store = useDefaultStore()
         store.deleteCache('posts')
         isNewPost.value = false
@@ -142,6 +162,7 @@ const handleUpload = async () => {
             type: 'danger',
             message: '上传出错'
         }
+        ElMessage.error('文章上传失败')
     }
 }
 
@@ -151,6 +172,14 @@ const handleUpdate = async () => {
             type: 'info',
             message: '上传中'
         }
+
+        // 显示保存中提示
+        const loadingMessage = ElMessage({
+            type: 'info',
+            message: '文章保存中...',
+            duration: 0
+        })
+
         const response = await updatePost({
             id: id.value,
             title: title.value,
@@ -161,6 +190,10 @@ const handleUpdate = async () => {
             type: 'markdown',
             date: Date.now()
         })
+
+        // 关闭保存中的提示
+        loadingMessage.close()
+
         if (response.code !== 200) {
             throw ('response')
         }
@@ -168,6 +201,8 @@ const handleUpdate = async () => {
             type: 'success',
             message: '上传成功'
         }
+        ElMessage.success('文章保存成功')
+        last_upload_content.value = content.value
         const store = useDefaultStore()
         store.deleteCache('posts')
     } catch (error) {
@@ -176,6 +211,7 @@ const handleUpdate = async () => {
             type: 'danger',
             message: '上传出错'
         }
+        ElMessage.error('文章保存失败')
     }
 }
 
@@ -184,9 +220,16 @@ const handleBack = () => {
 }
 
 watch(content, (_) => {
-    message.value = {
-        type: "info",
-        message: '更新未同步'
+    if (last_upload_content.value !== content.value) {
+        message.value = {
+            type: "info",
+            message: '更新未同步'
+        }
+    } else {
+        message.value = {
+            type: 'info',
+            message: ''
+        }
     }
 })
 
@@ -203,6 +246,7 @@ onMounted(async () => {
         summary.value = res.summary
         tags.value = []
         content.value = res.data
+        last_upload_content.value = content.value
         disableEdit.value = false
 
 

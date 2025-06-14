@@ -72,8 +72,25 @@ const summary = defineModel<string>('summary')
 const tags = defineModel<string[]>('tags')
 const content = defineModel<string>('content')
 
+const emit = defineEmits(['save'])
+
 const isEditing = ref(true)
 const isPreviewing = ref(false)
+
+// 监听Ctrl+S快捷键
+onMounted(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault() // 阻止浏览器默认保存行为
+            emit('save')
+        }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    
+    onUnmounted(() => {
+        window.removeEventListener('keydown', handleKeyDown)
+    })
+})
 
 // 插入图片功能
 const handleInsertImage = async () => {
