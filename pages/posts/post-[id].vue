@@ -1,33 +1,35 @@
 <template>
     <div class="md-wrapper">
-        <div class="md" v-if="!loading && postData">
-            <div class="md-title">{{ postData.title }}</div>
+        <div class="md">
+            <div class="md-title">{{ (postData as any).title }}</div>
             <div class="md-divider"></div>
-            <markdown-render :data="postData.data"></markdown-render>
+            <markdown-render v-if="postData?.data" :data="postData?.data ?? ''"></markdown-render>
         </div>
-        <div v-else class="md-skeleton-item">
+        <!-- <div v-else class="md-skeleton-item">
             <el-skeleton :rows="12" />
-        </div>
+        </div> -->
     </div>
 </template>
 
 <script setup lang="ts">
-import type { postContent } from '~/types/post';
+import markdownRender from '~/components/markdownRender.vue'
 
-const markdownRender = shallowRef<any>()
 const route = useRoute()
 const id = route.params.id as string
 
-const loading = ref(true)
+const { data: { value: postData } } = await useFetch<any>("/api/posts/getPostContent", {
+    method: 'POST',
+    body: {
+        id: id
+    }
+})!
 
-const postData = ref<postContent>()
-
-onBeforeMount(async () => {
-    const postDataPromise = getPostData(Number(id))
-    markdownRender.value = (await import('~/components/markdownRender.vue')).default
-    postData.value = await postDataPromise
-    loading.value = false
-})
+// onBeforeMount(async () => {
+//     const postDataPromise = getPostData(Number(id))
+//     // markdownRender.value = (await import('~/components/markdownRender.vue')).default
+//     // postData.value = await postDataPromise
+//     loading.value = false
+// })
 </script>
 
 <style scoped>

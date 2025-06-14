@@ -8,12 +8,12 @@
             </div>
         </div>
         <editor v-model:title="title" v-model:summary="summary" v-model:tags="tags" v-model:content="content"
-            :disabled="disableEdit" @save="handleSubmit" />
+            :disabled="disableEdit" @save="handleSubmit" :content_mdit_rendered="content_mdit_rendered" />
         <el-row>
             <el-col :span="24">
                 <div class="flex-end">
                     <el-text v-if="message" :type="message.type" style="user-select: none;">{{ message.message
-                        }}</el-text>
+                    }}</el-text>
                     <el-button @click="handleClickDelete" style="margin-left: 10px;" v-if="!isNewPost" type="danger">
                         删除文章
                     </el-button>
@@ -33,6 +33,7 @@ import useFetch from '~/hooks/useMiaoFetch';
 import type { postItem } from '~/types/post';
 import chevronDown from "~/components/icons/chevronDown.vue";
 import { debounce } from 'lodash-es';
+import useMarkdownit from '~/hooks/useMarkdownit';
 // import type { Action } from 'element-plus/es/components/index.mjs';
 
 type resType = {
@@ -52,6 +53,12 @@ const title = ref<string>('')
 const summary = ref<string>('')
 const tags = ref<string[]>([])
 const content = ref<string>('')
+
+const mdit = ref<any>()
+
+const content_mdit_rendered = computed(() => {
+    return mdit.value?.render(content.value) ?? ""
+})
 
 const last_upload_content = ref<string>('')
 
@@ -133,7 +140,7 @@ const handleUpload = async () => {
             summary: summary.value,
             tags: tags.value,
             url: '',
-            content: content.value,
+            content: content_mdit_rendered.value,
             type: 'markdown',
             date: Date.now()
         })
@@ -186,7 +193,7 @@ const handleUpdate = async () => {
             summary: summary.value,
             tags: tags.value,
             url: '',
-            content: content.value,
+            content: content_mdit_rendered.value,
             type: 'markdown',
             date: Date.now()
         })
@@ -240,7 +247,8 @@ onMounted(async () => {
             message: '初始化中'
         }
         id.value = parseInt(route.params.id as string)
-        const res = await getPost(id.value) as any as resType
+        let res: resType;
+        [mdit.value, res] = await Promise.all([useMarkdownit(), getPost(id.value)]) as [any, any]
         id.value = res.id
         title.value = res.title
         summary.value = res.summary

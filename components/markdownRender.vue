@@ -2,7 +2,7 @@
 
 <template>
     <div class="md-render-wrapper markdown-body">
-        <VNodeMD v-if="VNodeMD && props.data"></VNodeMD>
+        <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD>
         <div v-else>
             <div v-html="renderedData" v-if="renderedData"></div>
             <el-skeleton v-else :rows="12" />
@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import useCodedisplayMiddleware from '~/hooks/h2v/codemirrorMiddleware';
 import useImgDisplayMiddleware from '~/hooks/h2v/imgMiddleware';
-import useMarkdownit from '~/hooks/useMarkdownit';
+// import useMarkdownit from '~/hooks/useMarkdownit';
 import Html2VNode from '~/utils/html2VNode';
 
 const props = defineProps<{
@@ -27,10 +27,9 @@ const renderedData = ref<string>()
 
 watch(() => props.data, async () => {
     if (!props.data) {
-        return () => []
+        return
     }
-    const markdownIt = await useMarkdownit()
-    renderedData.value = markdownIt.render(props.data)
+    renderedData.value = props.data
     const h2v = new Html2VNode()
     h2v.use(useCodedisplayMiddleware())
     h2v.use(useImgDisplayMiddleware())

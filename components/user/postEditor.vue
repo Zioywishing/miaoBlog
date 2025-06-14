@@ -53,7 +53,7 @@
             <div style="flex: 1;" class="border-1 border-gray-300 rounded-sm w-0" v-if="isPreviewing">
                 <el-scrollbar max-height="63vh">
                     <div class="pb-32">
-                        <markdown-render :data="content ?? ''" :disable-skeleton="true" />
+                        <markdown-render :data="content_mdit_rendered ?? ''" :disable-skeleton="true" />
                     </div>
                 </el-scrollbar>
             </div>
@@ -66,6 +66,7 @@ import Image from '~/components/icons/image.vue'
 
 const _props = defineProps<{
     disabled?: boolean
+    content_mdit_rendered: string
 }>()
 
 const title = defineModel<string>('title')

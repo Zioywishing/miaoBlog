@@ -4,7 +4,7 @@ import type { VNode } from "vue";
 export default class Html2VNode {
     private middlewareList: middlewareType[] = []
     private middlewareMap: Map<string, middlewareType> = new Map();
-    private domParser = new DOMParser();
+    private domParser = window && DOMParser !== undefined ? new DOMParser() : null;
 
     constructor() {
         this.use(this.defaultMiddleware)
@@ -28,6 +28,9 @@ export default class Html2VNode {
 
 
     public render(htmlString: string) {
+        if (!this.domParser) {
+            return h(htmlString);
+        }
         const doc = this.domParser.parseFromString(htmlString, "text/html").body;
         if (!doc) {
             throw new Error('htmlString is not a valid html string')
