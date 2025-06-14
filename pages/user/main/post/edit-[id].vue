@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import editor from '~/components/user/postEditor.vue';
 import useDefaultStore from '~/hooks/pinia/useDefaultStore';
-import useFetch from '~/hooks/useMiaoFetch';
+import useMiaoFetch from '~/hooks/useMiaoFetch';
 import type { postItem } from '~/types/post';
 import chevronDown from "~/components/icons/chevronDown.vue";
 import { debounce } from 'lodash-es';
@@ -41,7 +41,7 @@ type resType = {
 } & postItem
 
 
-const { post: { getPost, updatePost, uploadPost, deletePost } } = useFetch()
+const { post: { getPost, updatePost, uploadPost, deletePost } } = useMiaoFetch()
 
 const route = useRoute()
 const router = useRouter()
@@ -77,6 +77,12 @@ const handleSubmit = debounce(async () => {
 }, 500, {
     leading: true,
 })
+
+const clearCache = () => {
+    const store = useDefaultStore()
+    store.deleteCache('posts')
+    clearNuxtData(`post-content-${id.value}`)
+}
 
 const handleClickDelete = async () => {
     try {
