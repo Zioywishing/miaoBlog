@@ -79,7 +79,7 @@ const handleLogin = async () => {
         userStore.setLoginStatus(true)
         userStore.setToken(res.token)
         userStore.setTokenExpireTime(res.expiresIn)
-        router.push('/user')
+        router.push('/user/main')
     } catch (e) {
         isLogining = false
         // @ts-ignore
@@ -101,7 +101,7 @@ const handleLogin = async () => {
 
 onBeforeMount(() => {
     if (userStore.isLogin === true) {
-        return router.push('/user')
+        return router.push('/user/main')
     }
 })
 </script>

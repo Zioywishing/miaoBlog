@@ -45,8 +45,6 @@ export default defineEventHandler(async (event) => {
     // 填充或截取前15个标签
     const tags = tagsArray.slice(0, 15).concat(new Array(15 - tagsArray.length).fill(null));
 
-    console.log({ title, summary, content, type, url, date, _tags, contentHtml })
-
     try {
         const postId = db.transaction(() => {
             // 插入tags数据并获取其ID
