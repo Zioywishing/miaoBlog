@@ -67,6 +67,12 @@ const createPostsDB = () => {
         );
     `);
     postsDB.exec(`
+        CREATE TABLE IF NOT EXISTS postContentHTML (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL
+        );
+    `);
+    postsDB.exec(`
         CREATE TABLE IF NOT EXISTS tags (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             tag1 TEXT,

@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
   const db = new DB('./userData/db/posts.db');
   const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(Number(id)) as postItem;
-  const contentHTML: any = db.prepare('SELECT content FROM postContentHTML WHERE id = ?').get(Number(id));
+  const content: any = db.prepare('SELECT content FROM postContent WHERE id = ?').get(Number(id));
   db.close();
 
   if (!post) {
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  if (!contentHTML) {
+  if (!content) {
     return {
       code: 404,
       msg: '文章内容不存在'
@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
 
   return {
     code: 200,
-    data: contentHTML.content,
+    data: content.content,
     ...post
   };
-})
+}) 

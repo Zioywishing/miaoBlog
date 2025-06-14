@@ -41,7 +41,7 @@ type resType = {
 } & postItem
 
 
-const { post: { getPost, updatePost, uploadPost, deletePost } } = useMiaoFetch()
+const { post: { getPostMD, updatePost, uploadPost, deletePost } } = useMiaoFetch()
 
 const route = useRoute()
 const router = useRouter()
@@ -58,6 +58,10 @@ const mdit = ref<any>()
 
 const content_mdit_rendered = computed(() => {
     return mdit.value?.render(content.value) ?? ""
+})
+
+watch(content_mdit_rendered, (newVal) => {
+    console.log(newVal)
 })
 
 const last_upload_content = ref<string>('')
@@ -78,11 +82,11 @@ const handleSubmit = debounce(async () => {
     leading: true,
 })
 
-const clearCache = () => {
-    const store = useDefaultStore()
-    store.deleteCache('posts')
-    clearNuxtData(`post-content-${id.value}`)
-}
+// const clearCache = () => {
+//     const store = useDefaultStore()
+//     store.deleteCache('posts')
+//     clearNuxtData(`post-content-${id.value}`)
+// }
 
 const handleClickDelete = async () => {
     try {
@@ -146,7 +150,8 @@ const handleUpload = async () => {
             summary: summary.value,
             tags: tags.value,
             url: '',
-            content: content_mdit_rendered.value,
+            content: content.value,
+            contentHtml: content_mdit_rendered.value,
             type: 'markdown',
             date: Date.now()
         })
@@ -199,7 +204,8 @@ const handleUpdate = async () => {
             summary: summary.value,
             tags: tags.value,
             url: '',
-            content: content_mdit_rendered.value,
+            content: content.value,
+            contentHtml: content_mdit_rendered.value,
             type: 'markdown',
             date: Date.now()
         })
@@ -254,7 +260,7 @@ onMounted(async () => {
         }
         id.value = parseInt(route.params.id as string)
         let res: resType;
-        [mdit.value, res] = await Promise.all([useMarkdownit(), getPost(id.value)]) as [any, any]
+        [mdit.value, res] = await Promise.all([useMarkdownit(), getPostMD(id.value)]) as [any, any]
         id.value = res.id
         title.value = res.title
         summary.value = res.summary
@@ -269,6 +275,7 @@ onMounted(async () => {
             message: ''
         }
     } else {
+        [mdit.value] = await Promise.all([useMarkdownit()]) as [any]
         disableEdit.value = false
     }
 })

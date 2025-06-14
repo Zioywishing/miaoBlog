@@ -16,6 +16,12 @@ function prepareDB() {
         WHERE id = ?
     `);
 
+    const updateContentHTMLStmt = db.prepare(`
+        UPDATE postContentHTML
+        SET content = ?
+        WHERE id = ?
+    `);
+
     const updateTagsStmt = db.prepare(`
         UPDATE tags
         SET tag1 = ?, tag2 = ?, tag3 = ?, tag4 = ?, tag5 = ?,
@@ -28,16 +34,16 @@ function prepareDB() {
         INSERT INTO tags (tag1, tag2, tag3, tag4, tag5, tag6, tag7, tag8, tag9, tag10, tag11, tag12, tag13, tag14, tag15)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-    return { updatePostStmt, updateContentStmt, updateTagsStmt, insertTagsStmt, db };
+    return { updatePostStmt, updateContentStmt, updateContentHTMLStmt, updateTagsStmt, insertTagsStmt, db };
 }
 
 export default defineEventHandler(async (event) => {
-    const { updatePostStmt, updateContentStmt, updateTagsStmt, insertTagsStmt, db } = cacheResult(prepareDB)();
+    const { updatePostStmt, updateContentStmt, updateContentHTMLStmt, updateTagsStmt, insertTagsStmt, db } = cacheResult(prepareDB)();
 
     const body = await readBody(event);
-    const { id, title, summary, tags: _tags, type, url, date, content } = body;
+    const { id, title, summary, tags: _tags, type, url, date, content, contentHtml } = body;
 
-    if ([id, title, summary, _tags, type, url, date, content].some(item => item === undefined)) {
+    if ([id, title, summary, _tags, type, url, date, content, contentHtml].some(item => item === undefined)) {
         return {
             code: 400,
             msg: '参数错误',
@@ -66,8 +72,11 @@ export default defineEventHandler(async (event) => {
             // 更新posts表
             updatePostStmt.run(title, summary, type, url, date, tagRow.tag_id, id);
 
-            // 更新postContent表
+            // 更新postContent表（MD格式）
             updateContentStmt.run(content, id);
+            
+            // 更新postContentHTML表（HTML格式）
+            updateContentHTMLStmt.run(contentHtml, id);
         })();
 
         return {

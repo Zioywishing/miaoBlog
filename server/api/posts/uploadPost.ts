@@ -19,21 +19,25 @@ function prepareDB() {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    return { db, insertPostStmt, insertContentStmt, insertTagsStmt };
+    const insertContentHTMLStmt = db.prepare(`
+        INSERT INTO postContentHTML (id, content)
+        VALUES (?, ?)
+    `);
+
+    return { db, insertPostStmt, insertContentStmt, insertTagsStmt, insertContentHTMLStmt };
 }
 
 export default defineEventHandler(async (event) => {
-    const { db, insertPostStmt, insertContentStmt, insertTagsStmt } = cacheResult(prepareDB)();
+    const { db, insertPostStmt, insertContentStmt, insertTagsStmt, insertContentHTMLStmt } = cacheResult(prepareDB)();
 
     const body = await readBody(event);
-    const { title, summary, tags: _tags, type, url, date, content } = body;
-    
-    if([title, summary, _tags, type, url, date, content].some(item => item === undefined)){
+    const { title, summary, content, type, url, date, tags: _tags, contentHtml } = body;
+
+    if ([title, summary, content, contentHtml, type, url, date, _tags].some(field => field === undefined)) {
         return {
             code: 400,
-            msg: '参数错误',
-            body
-        }
+            msg: '参数不完整'
+        };
     }
 
     // 确保_tags是一个数组
@@ -41,27 +45,31 @@ export default defineEventHandler(async (event) => {
     // 填充或截取前15个标签
     const tags = tagsArray.slice(0, 15).concat(new Array(15 - tagsArray.length).fill(null));
 
-    try {
-        let id = -1
-        db.transaction(() => {
-            // 插入tags表
-            const tagResult = insertTagsStmt.run(...tags);
-            const tagId = tagResult.lastInsertRowid;
+    console.log({ title, summary, content, type, url, date, _tags, contentHtml })
 
-            // 插入posts表
+    try {
+        const postId = db.transaction(() => {
+            // 插入tags数据并获取其ID
+            const tagsResult = insertTagsStmt.run(...tags);
+            const tagId = tagsResult.lastInsertRowid;
+
+            // 插入posts数据
             const postResult = insertPostStmt.run(title, summary, type, url, date, tagId);
             const postId = postResult.lastInsertRowid;
 
-            id = postId as number;
-
-            // 插入postContent表
+            // 插入content数据
             insertContentStmt.run(postId, content);
+
+            // 插入HTML内容
+            insertContentHTMLStmt.run(postId, contentHtml);
+
+            return postId;
         })();
 
         return {
             code: 200,
             msg: '插入成功',
-            id
+            id: postId
         };
     } catch (error) {
         console.error('插入数据时出错:', error);

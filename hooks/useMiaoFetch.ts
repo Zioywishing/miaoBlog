@@ -13,7 +13,8 @@ export default function useFetch() {
                 tags: string[],
                 url: string,
                 date: number,
-                content: string
+                content: string,
+                contentHtml: string
             }) => $fetch('/api/posts/uploadPost', {
                 method: 'POST',
                 body,
@@ -29,7 +30,8 @@ export default function useFetch() {
                 tags: string[],
                 url: string,
                 date: number,
-                content: string
+                content: string,
+                contentHtml: string
             }) => $fetch('/api/posts/editPost', {
                 method: 'POST',
                 body,
@@ -38,6 +40,15 @@ export default function useFetch() {
                 }
             }),
             getPost: (id: number) => $fetch(`/api/posts/getPostContent`, {
+                method: 'post',
+                body: {
+                    id
+                },
+                headers: {
+                    'Authorization': `Bearer ${userStore.token}`
+                }
+            }),
+            getPostMD: (id: number) => $fetch(`/api/posts/getPostMDContent`, {
                 method: 'post',
                 body: {
                     id
