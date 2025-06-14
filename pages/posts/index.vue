@@ -1,6 +1,11 @@
 <template>
     <div class="posts-wrapper">
-        <article class="posts-item" v-for="post in posts" :key="post.id">
+        <div class="posts-skeleton" v-if="status === 'pending'">
+            <div class="posts-skeleton-item" v-for="_ in range(5)">
+                <el-skeleton :rows="2" />
+            </div>
+        </div>
+        <article v-else class="posts-item" v-for="post in posts" :key="post.id">
             <header class="post-title">
                 <nuxt-link :to="`/posts/post-${post.id}`">{{ post.title }}</nuxt-link>
             </header>
@@ -18,11 +23,6 @@
                 </div>
             </footer>
         </article>
-        <div class="posts-skeleton" v-if="pending && 0">
-            <div class="posts-skeleton-item" v-for="_ in range(5)">
-                <el-skeleton :rows="3" />
-            </div>
-        </div>
     </div>
 </template>
 
@@ -35,18 +35,8 @@ import type { postItem } from '~/types/post';
 // const store = useDefaultStore()
 
 // 使用useFetch在服务器端获取数据
-const { data, pending } = await useFetch<{ code: number, data: postItem[] }>('/api/posts/getPostList', {
-    // 如果缓存中已有数据，优先使用缓存
+const { status, data } = await useLazyFetch<{ code: number, data: postItem[] }>('/api/posts/getPostList', {
     key: 'posts-list',
-    // transform: (response) => {
-    //     if (response && response.data) {
-    //         store.setCache('posts', response.data)
-    //         return response
-    //     }
-    //     return { code: 0, data: [] }
-    // },
-    // lazy: true, // 避免客户端自动重新获取
-    server: true, // 仅在服务器端获取数据
 })
 // 从响应中提取文章列表
 const posts = computed(() => data.value?.data || []) as ComputedRef<postItem[]>
