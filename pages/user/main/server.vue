@@ -16,10 +16,12 @@
                     </el-col>
                 </el-row>
                 <el-row style="margin: 10px 0">
-                    <el-col :span="18">
+                    <el-col :span="17">
                         <el-input v-model="githubRepoUrl" placeholder="输入Github API地址">
                             <!-- <template #prepend>API</template> -->
                         </el-input>
+                    </el-col>
+                    <el-col :span="1">
                     </el-col>
                     <el-col :span="6" class="flex-end">
                         <el-button type="primary" @click="handleUpdateFromGithub">

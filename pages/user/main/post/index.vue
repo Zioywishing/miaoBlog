@@ -47,13 +47,11 @@
 <script setup lang="ts">
 import type { postItem } from '~/types/post';
 import create from '~/components/icons/create.vue';
-import getPostList from '~/utils/getPost';
+// import getPostList from '~/utils/getPost';
 
 const router = useRouter()
 
-const isLoading = ref(true);
-
-const postList = ref<postItem[]>([]);
+// const postList = ref<postItem[]>([]);
 
 const handleClickEditBtn = (id: number) => {
     router.push(`/user/main/post/edit-${id}`)
@@ -63,10 +61,11 @@ const handleNewPost = () => {
     router.push('/user/main/post/edit-new')
 }
 
-onMounted(async () => {
-    postList.value = await getPostList();
-    isLoading.value = false;
-})
+const { status, data: { value: { data: postList } } } = await useLazyFetch<{ data: postItem[] }>('/api/posts/getPostList', {})
+
+// console.log(postList.value?.data)
+
+const isLoading = computed(() => status.value === 'pending')
 </script>
 
 <style lang="scss" scoped>

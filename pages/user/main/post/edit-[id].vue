@@ -60,10 +60,6 @@ const content_mdit_rendered = computed(() => {
     return mdit.value?.render(content.value) ?? ""
 })
 
-watch(content_mdit_rendered, (newVal) => {
-    console.log(newVal)
-})
-
 const last_upload_content = ref<string>('')
 
 // 等待加载完成才允许编辑
