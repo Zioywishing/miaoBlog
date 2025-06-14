@@ -21,7 +21,7 @@
         <el-row>
             <el-col :span="16">
                 <div class="flex justify-baseline items-center gap-1 h-full border-1 border-gray-300 rounded-sm">
-                    <div class="pl-2 pr-2 bg-[#f5f7fa] text-[#909399] text-sm h-full items-center flex border-r-gray-300 border-r-1">插入</div>
+                    <div class="pl-2.5 pr-2.5 bg-[#f5f7fa] text-[#909399] text-[0.8rem] h-full items-center flex border-r-gray-300 border-r-1">插入</div>
                     <div title="插入图片" class="flex justify-center items-center h-6 w-6" @click="handleInsertImage">
                         <Image
                             class="w-5 h-5 hover:cursor-pointer transition-all duration-150 hover:w-5.5 hover:h-5.5 text-gray-500" />
@@ -93,7 +93,7 @@ const handleInsertImage = async () => {
         // 创建FormData上传到图床
         const formData = new FormData()
         formData.append('file', file)
-        formData.append('expire', '0') // 永不过期
+        formData.append('expire', `${3600 * 1000 * 24 * 365 * 50 + Date.now()}`) // 约等于永不过期
 
         // 上传到图床API
         const response = await $fetch('/api/tools/imgBed/upload', {

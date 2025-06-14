@@ -30,6 +30,7 @@ export default defineEventHandler(async (event) => {
         const fileStream = fs.createReadStream(filePath);
         
         setResponseHeader(event, 'Content-Disposition', `attachment; filename="${fileName}"`);
+        setResponseHeader(event, 'Cache-Control', 'max-age=5184000');
         // 发送文件流
         return sendStream(event, fileStream);
     } catch (error) {
