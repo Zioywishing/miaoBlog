@@ -1,5 +1,5 @@
 <template>
-    <el-image :src="src" :alt="alt" :preview-src-list="previewSrcList">
+    <el-image :src="src" :alt="alt" :preview-src-list="previewSrcList" class=" rounded-sm">
     </el-image>
 </template>
 
