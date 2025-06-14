@@ -27,26 +27,25 @@
 </template>
 
 <script setup lang="ts">
-import useDefaultStore from '~/hooks/pinia/useDefaultStore';
+// import useDefaultStore from '~/hooks/pinia/useDefaultStore';
 import timeIcon from '~/components/icons/time.vue'
 import bookmark from '~/components/icons/tag.vue'
 import type { postItem } from '~/types/post';
 
-const store = useDefaultStore()
+// const store = useDefaultStore()
 
 // 使用useFetch在服务器端获取数据
 const { data, pending } = await useFetch<{ code: number, data: postItem[] }>('/api/posts/getPostList', {
     // 如果缓存中已有数据，优先使用缓存
     key: 'posts-list',
-    transform: (response) => {
-        if (response && response.data) {
-            store.setCache('posts', response.data)
-            return response
-        }
-        return { code: 0, data: [] }
-    },
-    // 添加以下选项
-    lazy: true, // 避免客户端自动重新获取
+    // transform: (response) => {
+    //     if (response && response.data) {
+    //         store.setCache('posts', response.data)
+    //         return response
+    //     }
+    //     return { code: 0, data: [] }
+    // },
+    // lazy: true, // 避免客户端自动重新获取
     server: true, // 仅在服务器端获取数据
 })
 // 从响应中提取文章列表

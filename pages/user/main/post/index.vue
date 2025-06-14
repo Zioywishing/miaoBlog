@@ -61,9 +61,11 @@ const handleNewPost = () => {
     router.push('/user/main/post/edit-new')
 }
 
-const { status, data: { value: { data: postList } } } = await useLazyFetch<{ data: postItem[] }>('/api/posts/getPostList', {})
+const { status, data: postListData } = await useLazyFetch('/api/posts/getPostList', {
+    server: true,
+})
 
-// console.log(postList.value?.data)
+const postList = computed(() => (postListData?.value?.data ?? []) as postItem[])
 
 const isLoading = computed(() => status.value === 'pending')
 </script>
