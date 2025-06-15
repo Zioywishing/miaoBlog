@@ -16,19 +16,19 @@
                     <div class="space-y-2">
                         <div class="flex justify-between">
                             <span class="text-gray-600">平台:</span>
-                            <span class="font-medium">{{ systemInfo?.system?.platform }}</span>
+                            <span class="font-medium">{{ systemStatus?.system?.platform }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">版本:</span>
-                            <span class="font-medium">{{ systemInfo?.system?.release }}</span>
+                            <span class="font-medium">{{ systemStatus?.system?.release }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">主机名:</span>
-                            <span class="font-medium">{{ systemInfo?.system?.hostname }}</span>
+                            <span class="font-medium">{{ systemStatus?.system?.hostname }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Node.js版本:</span>
-                            <span class="font-medium">{{ systemInfo?.node }}</span>
+                            <span class="font-medium">{{ systemStatus?.node }}</span>
                         </div>
                     </div>
                 </div>
@@ -39,37 +39,36 @@
                     <div class="space-y-2">
                         <div class="flex justify-between">
                             <span class="text-gray-600">CPU型号:</span>
-                            <span class="font-medium">{{ systemInfo?.hardware?.cpu?.model }}</span>
+                            <span class="font-medium">{{ systemStatus?.hardware?.cpu?.model }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">CPU核心数:</span>
-                            <span class="font-medium">{{ systemInfo?.hardware?.cpu?.cores }}</span>
+                            <span class="font-medium">{{ systemStatus?.hardware?.cpu?.cores }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">CPU使用率:</span>
                             <div class="w-32 bg-gray-200 rounded-full h-4 overflow-hidden">
-                                <div class="bg-blue-600 h-4 rounded-full" :style="`width: ${performanceData?.cpu?.usage < 5 ? 5 : performanceData?.cpu?.usage}%`"></div>
+                                <div class="bg-blue-600 h-4 rounded-full" :style="`width: ${systemStatus?.performance?.cpu?.usage < 5 ? 5 : systemStatus?.performance?.cpu?.usage}%`"></div>
                             </div>
-                            <span class="font-medium">{{ performanceData?.cpu?.usage }}%</span>
+                            <span class="font-medium">{{ systemStatus?.performance?.cpu?.usage }}%</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">内存使用情况:</span>
-                            <span class="font-medium">{{ performanceData?.memory?.used || systemInfo?.hardware?.memory?.used }} / {{ performanceData?.memory?.total || systemInfo?.hardware?.memory?.total }}</span>
+                            <span class="font-medium">{{ systemStatus?.performance?.memory?.used }} / {{ systemStatus?.performance?.memory?.total }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">内存使用率:</span>
                             <div class="w-32 bg-gray-200 rounded-full h-4 overflow-hidden">
-                                <div class="bg-green-600 h-4 rounded-full" :style="`width: ${performanceData?.memory?.percent}%`"></div>
+                                <div class="bg-green-600 h-4 rounded-full" :style="`width: ${systemStatus?.performance?.memory?.percent}%`"></div>
                             </div>
-                            <span class="font-medium">{{ performanceData?.memory?.percent }}%</span>
+                            <span class="font-medium">{{ systemStatus?.performance?.memory?.percent }}%</span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="mt-4 text-gray-500 text-sm flex justify-between">
-                <div>性能数据更新时间: {{ performanceUpdated }}</div>
-                <div>系统数据更新时间: {{ lastUpdated }}</div>
+            <div class="mt-4 text-gray-500 text-sm flex justify-center">
+                <div>数据更新时间: {{ lastUpdated }}</div>
             </div>
         </div>
     </div>
@@ -77,12 +76,10 @@
 
 <script setup lang="ts">
 import useUserStore from '~/hooks/pinia/useUserStore';
-const systemInfo = ref<any>(null);
-const performanceData = ref<any>(null);
+const systemStatus = ref<any>(null);
 const isLoading = ref(true);
 const error = ref('');
 const lastUpdated = ref('');
-const performanceUpdated = ref('');
 
 // 格式化时间
 const formatTime = () => {
@@ -94,7 +91,7 @@ const formatTime = () => {
 };
 
 // 定义API响应类型
-interface SystemInfoResponse {
+interface SystemStatusResponse {
     success: boolean;
     data?: {
         system: {
@@ -116,105 +113,60 @@ interface SystemInfoResponse {
                 percent: number;
             };
         };
-    };
-    message?: string;
-}
-
-interface PerformanceResponse {
-    success: boolean;
-    data?: {
-        cpu: {
-            usage: number;
-        };
-        memory: {
-            total: string;
-            free: string;
-            used: string;
-            percent: number;
+        performance: {
+            cpu: {
+                usage: number;
+            };
+            memory: {
+                total: string;
+                free: string;
+                used: string;
+                percent: number;
+            };
         };
     };
     message?: string;
 }
 
-// 获取系统信息
-const fetchSystemInfo = async () => {
+// 获取系统状态信息
+const fetchSystemStatus = async () => {
     try {
-        if (!systemInfo.value) {
-            isLoading.value = true;
-        }
+        isLoading.value = true;
         error.value = '';
         
-        const response = await $fetch<SystemInfoResponse>('/api/system/info', {
+        const response = await $fetch<SystemStatusResponse>('/api/system/status', {
             headers: {
                 'Authorization': `Bearer ${useUserStore().token}`
             }
         });
         
         if (response && response.success && response.data) {
-            systemInfo.value = response.data;
-            
-            // 如果还没有性能数据，初始化它
-            if (!performanceData.value) {
-                performanceData.value = {
-                    cpu: {
-                        usage: response.data.hardware.cpu.usage
-                    },
-                    memory: response.data.hardware.memory
-                };
-            }
-            
+            systemStatus.value = response.data;
             lastUpdated.value = formatTime();
         } else {
             error.value = response?.message || '获取系统信息失败';
         }
     } catch (err) {
         error.value = '请求发生错误';
-        console.error('Error fetching system info:', err);
+        console.error('Error fetching system status:', err);
     } finally {
         isLoading.value = false;
     }
 };
 
-// 获取性能数据（CPU和内存使用率）
-const fetchPerformanceData = async () => {
-    try {
-        const response = await $fetch<PerformanceResponse>('/api/system/performance', {
-            headers: {
-                'Authorization': `Bearer ${useUserStore().token}`
-            }
-        });
-        
-        if (response && response.success && response.data) {
-            performanceData.value = response.data;
-            performanceUpdated.value = formatTime();
-        }
-    } catch (err) {
-        console.error('Error fetching performance data:', err);
-    }
-};
-
 // 首次获取数据
 onMounted(() => {
-    // 获取完整系统信息
-    fetchSystemInfo();
+    // 获取系统状态信息
+    fetchSystemStatus();
     
-    // 设置30秒定时更新系统信息
-    const systemTimer = setInterval(() => {
-        fetchSystemInfo();
-    }, 30000);
-    
-    // 立即获取一次性能数据
-    fetchPerformanceData();
-    
-    // 设置5秒定时更新性能数据
-    const performanceTimer = setInterval(() => {
-        fetchPerformanceData();
-    }, 5000);
+    // 设置60秒定时更新系统状态信息（与缓存时间一致）
+    const statusTimer = setInterval(() => {
+        fetchSystemStatus();
+    }, 60000);
     
     // 组件卸载时清除定时器
     onUnmounted(() => {
-        clearInterval(systemTimer);
-        clearInterval(performanceTimer);
+        clearInterval(statusTimer);
     });
 });
 </script>

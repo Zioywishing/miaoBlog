@@ -1,6 +1,7 @@
 import os from 'os';
+import { defineCachedEventHandler } from '#imports';
 
-export default defineEventHandler(async (_event) => {
+export default defineCachedEventHandler(async () => {
   try {
     // 获取操作系统信息
     const platform = os.platform();
@@ -42,16 +43,24 @@ export default defineEventHandler(async (_event) => {
             usage: cpuUsage
           },
           memory: memoryUsage
+        },
+        performance: {
+          cpu: {
+            usage: cpuUsage
+          },
+          memory: memoryUsage
         }
       }
     };
   } catch (error) {
-    console.error('Error fetching system info:', error);
+    console.error('Error fetching system status:', error);
     return {
       success: false,
-      message: '获取系统信息失败'
+      message: '获取系统状态信息失败'
     };
   }
+}, {
+  maxAge: 60 // 缓存1分钟
 });
 
 // 格式化字节数为可读格式
