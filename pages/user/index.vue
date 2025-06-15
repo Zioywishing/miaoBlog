@@ -5,6 +5,13 @@
 </template>
 
 <script setup lang="ts">
+import useUserStore from '~/hooks/pinia/useUserStore';
+
+if (import.meta.client) {
+    const userStore = useUserStore()
+    const router = useRouter()
+    userStore.isLogin ? router.replace('/user/main') : router.replace('/user/login')
+}
 
 </script>
 

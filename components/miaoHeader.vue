@@ -20,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+import useUserStore from '~/hooks/pinia/useUserStore';
 
 const route = useRoute()
 
@@ -30,29 +31,44 @@ type NavItem = {
 }
 
 
-const navList: NavItem[] = [
-    {
-        title: '首页',
-        path: '/'
-    },
-    {
-        title: '文章',
-        path: '/posts',
-    },
-    {
-        title: '后台',
-        path: '/user',
-    },
-    // {
-    //     title: '测试',
-    //     path: '/test',
-    //     otherPath: ['/testRouter']
-    // },
-]
+const navList = computed<NavItem[]>(() => {
+    if (import.meta.server) {
+        return [
+            {
+                title: '首页',
+                path: '/'
+            },
+            {
+                title: '文章',
+                path: '/posts',
+            },
+            {
+                title: '后台',
+                path: '/user',
+            },
+        ]
+    } else {
+        const userStore = useUserStore()
+        return [
+            {
+                title: '首页',
+                path: '/'
+            },
+            {
+                title: '文章',
+                path: '/posts',
+            },
+            {
+                title: '后台',
+                path: userStore.isLogin ? "/user/main" :'/user',
+            },
+        ]
+    }
+})
 
 const isActive = (navItem: NavItem) => {
-    const currentFirstPath = `/${route.path.split('/')[1]}`
-    if (currentFirstPath === navItem.path) {
+    const currentFirstPath = `${route.path.split('/')[1]}`
+    if (currentFirstPath === navItem.path.split('/')[1]) {
         return true
     }
     if (navItem.otherPath && navItem.otherPath.length > 0) {
