@@ -31,14 +31,15 @@ export default defineEventHandler(async (event) => {
     try {
         // 开启事务
         db.transaction(() => {
+            // 查找该文章对应的tag_id
+            const tagRow: any = getTagIdStmt.get(Number(id));
+            
             // 先从posts表中删除文章记录
             deletePostStmt.run(Number(id));
 
             // 再从postContent表中删除文章内容记录
             deleteContentStmt.run(Number(id));
 
-            // 查找该文章对应的tag_id
-            const tagRow: any = getTagIdStmt.get(Number(id));
             if (tagRow && tagRow.tag_id) {
                 // 如果存在tag_id，从tags表中删除对应的标签记录
                 deleteTagsStmt.run(tagRow.tag_id);
