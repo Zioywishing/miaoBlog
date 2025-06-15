@@ -1,45 +1,48 @@
 <template>
-    <div class="post-index">
-        <div class="post-index-title">
+    <div class="box-border p-3 h-full flex flex-col items-center">
+        <div
+            class="w-full text-center pb-2.5 text-4xl font-bold mb-4 tracking-wider no-underline border-b border-gray-300 my-3 mx-0 font-serif">
             文章列表
         </div>
-        <div class="post-index-list">
-            <el-card class="post-index-list-create" @click="handleNewPost">
-                <create class="post-index-list-create-icon"></create>
-                <div class="post-index-list-create-text">新文章</div>
-            </el-card>
-            <el-card class="post-index-list-card" v-for="post in postList" :key="post.id">
-                <template #header>
-                    <div class="post-index-list-card-header">
-                        <el-text line-clamp="2">{{ post.title }}</el-text>
-                        <el-button @click="handleClickEditBtn(post.id)">
-                            编辑
-                        </el-button>
-                    </div>
-                </template>
-                <div class="post-index-list-card-content">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+            <!-- 新文章卡片 -->
+            <div class="bg-white rounded-md shadow-md hover:shadow-lg transition-shadow cursor-pointer flex flex-col items-center justify-center p-4"
+                @click="handleNewPost">
+                <create class="w-10 h-10"></create>
+                <div class="mt-2 select-none tracking-wider">新文章</div>
+            </div>
+
+            <!-- 文章列表卡片 -->
+            <div v-for="post in postList" :key="post.id"
+                class="bg-white rounded-md shadow-md overflow-hidden flex flex-col hover:shadow-lg border-[1px] border-gray-100 transition-all">
+                <!-- 卡片头部 -->
+                <div class="flex justify-between items-center p-4 border-b-gray-200 border-b-[1px]">
+                    <el-text size="large" line-clamp="2">{{ post.title }}</el-text>
+                    <el-button @click="handleClickEditBtn(post.id)">
+                        编辑
+                    </el-button>
+                </div>
+
+                <!-- 卡片内容 -->
+                <div class="p-4 flex-1">
                     <div class="post-index-list-card-content-summary">
                         <el-text line-clamp="2">
                             {{ post.summary }}
                         </el-text>
                     </div>
-                    <el-text line-clamp="1">
+                    <div class="flex flex-wrap gap-2">
                         <el-tag size="small" class="post-index-list-card-content-tag" v-for="tag in post.tags"
                             :key="tag" style="user-select: none;">
                             {{ tag }}
                         </el-tag>
-                    </el-text>
-                </div>
-                <template #footer>
-                    <div class="post-index-list-card-footer">
-                        {{ formatDate(post.date, 'yyyy-MM-dd HH:mm:ss') }}
                     </div>
-                </template>
-            </el-card>
+                </div>
 
-            <!-- <el-card v-if="isLoading" v-for="_ in 6">
-                <el-skeleton :rows="5" />
-            </el-card> -->
+                <!-- 卡片底部 -->
+                <div class="p-3 text-xs text-gray-500 border-t-gray-200 border-t-[1px]">
+                    {{ formatDate(post.date, 'yyyy-MM-dd HH:mm:ss') }}
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -70,136 +73,6 @@ const postList = computed(() => (postListData?.value?.data ?? []) as postItem[])
 const isLoading = computed(() => status.value === 'pending')
 </script>
 
-<style lang="scss" scoped>
-.post-index {
-    box-sizing: border-box;
-    padding: 10px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    &-title {
-        width: 100%;
-        text-align: center;
-        padding: 0 0 10px 0;
-        font-size: 2rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-        letter-spacing: 4px;
-        text-decoration: none;
-        font-family: PT Serif, Serif;
-        border-bottom: 1px solid #ccc;
-        margin: 10px 0 20px;
-    }
-
-    &-list {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1rem;
-
-        &-create {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-
-            &-text {
-                letter-spacing: 2px;
-                transform: translateX(-2px);
-                user-select: none;
-            }
-        }
-
-        &-card {
-            &-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            &-content {
-                &-tags {
-                    display: flex;
-                    height: 25px;
-                    max-width: calc(100% - 0px);
-                    user-select: none;
-                }
-
-                &-tag:not(:first-child) {
-                    margin: 0 5px;
-                }
-            }
-
-            &-footer {
-                font-size: smaller;
-                color: #686868;
-            }
-        }
-
-        // .post-item {
-        //     box-sizing: border-box;
-        //     overflow: hidden;
-        //     padding-bottom: 5px;
-
-        //     // padding: 10px;
-        //     &-header {
-        //         display: flex;
-        //         flex-direction: column;
-        //         justify-content: space-between;
-
-        //         &-title {
-        //             width: 100%;
-        //             box-sizing: border-box;
-        //             text-align: center;
-        //             letter-spacing: 4px;
-        //             text-decoration: none;
-        //             font-size: large;
-        //             background-color: #15aa87;
-        //             color: #fff;
-        //             padding: 3px 0 5px;
-        //             // font-family: PT Serif, Serif;
-        //         }
-        //     }
-
-        //     &-content {
-        //         max-height: 45px;
-        //         overflow: hidden;
-        //         text-overflow: ellipsis;
-        //         text-indent: 2em;
-        //         color: #363636;
-        //     }
-
-        //     &-footer {
-        //         display: flex;
-        //         justify-content: space-between;
-        //         align-items: center;
-        //         margin-top: 5px;
-
-        //         &-info {
-        //             padding: 0 5px;
-
-        //             &>div {
-        //                 font-size: 10px;
-        //             }
-        //         }
-
-        //         &-btn {
-        //             height: 25px;
-        //             margin-right: 10px;
-        //         }
-        //     }
-        // }
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .post-index {
-        &-list {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        }
-    }
-}
+<style scoped>
+/* 所有样式已经使用 Tailwind 类内联到 HTML 中 */
 </style>
