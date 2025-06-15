@@ -23,7 +23,6 @@ useHead({
   }
 })
 
-
 </script>
 
 <style lang="scss" scoped>

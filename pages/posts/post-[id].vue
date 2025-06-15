@@ -6,13 +6,13 @@
         <div v-else class="md">
             <div class="md-title">{{ postData?.title ?? "未知文章" }}</div>
             <div class="md-divider"></div>
-            <markdown-render v-if="postData" :data="postData.data"></markdown-render>
+            <post-render v-if="postData" :data="postData.data"></post-render>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import markdownRender from '~/components/markdownRender.vue'
+import postRender from '~/components/postRender.vue'
 
 const route = useRoute()
 const id = route.params.id as string

@@ -53,7 +53,7 @@
             <div style="flex: 1;" class="border-1 border-gray-300 rounded-sm w-0" v-if="isPreviewing">
                 <el-scrollbar max-height="63vh">
                     <div class="pb-32">
-                        <markdown-render :data="content_mdit_rendered ?? ''" :disable-skeleton="true" />
+                        <post-render :data="content_mdit_rendered ?? ''" :disable-skeleton="false" />
                     </div>
                 </el-scrollbar>
             </div>
@@ -121,7 +121,7 @@ const compressImage = async (file: File): Promise<File> => {
     const Compressor = (await import('compressorjs')).default;
     return new Promise((resolve, reject) => {
         new Compressor(file, {
-            quality: 0.5,
+            quality: 0.4,
             success(result) {
                 // 对比压缩效果
                 resolve(result as File);

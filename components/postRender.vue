@@ -1,8 +1,7 @@
-<!-- todo: 对于这个代码，未来要用组件进行渲染 -->
-
 <template>
     <div class="md-render-wrapper markdown-body">
-        <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD>
+        <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
+        <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD && props.data !== undefined"></component>
         <div v-else>
             <div v-html="renderedData" v-if="renderedData"></div>
             <el-skeleton v-else :rows="12" />
@@ -25,20 +24,17 @@ const VNodeMD = shallowRef<any>()
 
 const renderedData = ref<string>()
 
+const h2v = new Html2VNode()
+h2v.use(useCodedisplayMiddleware())
+h2v.use(useImgDisplayMiddleware())
+
 watch(() => props.data, async () => {
     if (!props.data) {
         return
     }
     renderedData.value = props.data
-    const h2v = new Html2VNode()
-    h2v.use(useCodedisplayMiddleware())
-    h2v.use(useImgDisplayMiddleware())
     const res = await h2v.render(renderedData.value!)
-    VNodeMD.value = {
-        setup: () => {
-            return () => res
-        },
-    }
+    VNodeMD.value = res
 }, {
     immediate: true
 })
