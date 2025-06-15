@@ -25,7 +25,7 @@
                         class="pl-2.5 pr-2.5 bg-[#f5f7fa] text-[#909399] text-[0.8rem] h-full items-center flex border-r-gray-300 border-r-1">
                         插入</div>
                     <div title="插入图片" class="flex justify-center items-center h-6 w-6" @click="handleInsertImage">
-                        <Image
+                        <ImageIcon
                             class="w-5 h-5 hover:cursor-pointer transition-all duration-150 hover:w-5.5 hover:h-5.5 text-gray-500" />
                     </div>
                 </div>
@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import Image from '~/components/icons/image.vue'
+import ImageIcon from '~/components/icons/image.vue'
 
 const _props = defineProps<{
     disabled?: boolean
@@ -80,6 +80,8 @@ const isEditing = ref(true)
 const isPreviewing = ref(false)
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
+
+let isUnmounted = false;
 
 // 处理Tab键，用于插入缩进而不是切换焦点
 const handleTab = (e: KeyboardEvent) => {
@@ -103,7 +105,6 @@ const handleTab = (e: KeyboardEvent) => {
     }
 }
 
-
 const insertTextAtCursor = (textToInsert: string) => {
     const textarea = textareaRef.value;
     if (!textarea) return;
@@ -115,6 +116,24 @@ const insertTextAtCursor = (textToInsert: string) => {
     content.value = currentText.substring(0, start) + textToInsert + currentText.substring(end);
 };
 
+// 使用Compressor压缩图片
+const compressImage = async (file: File): Promise<File> => {
+    const Compressor = (await import('compressorjs')).default;
+    return new Promise((resolve, reject) => {
+        new Compressor(file, {
+            quality: 0.5,
+            success(result) {
+                // 对比压缩效果
+                resolve(result as File);
+            },
+            error(err) {
+                console.error('图片压缩失败:', err);
+                resolve(file);
+            }
+        });
+    });
+};
+
 const uploadImage = async (file: File) => {
     const loadingMessage = ElMessage({
         message: '图片上传中...',
@@ -123,8 +142,11 @@ const uploadImage = async (file: File) => {
     });
 
     try {
+        // 压缩图片
+        const compressedFile = await compressImage(file);
+
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', compressedFile);
         formData.append('expire', `${3600 * 1000 * 24 * 365 * 50 + Date.now()}`);
 
         const response = await $fetch('/api/tools/imgBed/upload', {
@@ -188,6 +210,7 @@ onMounted(() => {
     }
     window.addEventListener('keydown', handleKeyDown)
     onUnmounted(() => {
+        isUnmounted = true;
         window.removeEventListener('keydown', handleKeyDown)
     })
 })
