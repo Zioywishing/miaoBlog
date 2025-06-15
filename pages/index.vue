@@ -252,9 +252,14 @@ const switchItemShow = (item: PageContent) => {
   item.show = !item.show
 }
 
-// useHead({
-//   title: '杪 Blog | 首页',
-// })
+if (import.meta.server) {
+  useServerSeoMeta({
+    // robots: 'index, follow',
+    description: '杪儿的博客',
+    ogDescription: '杪儿的博客',
+    author: "MiaoSpring",
+  })
+}
 
 </script>
 

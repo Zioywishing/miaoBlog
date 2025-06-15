@@ -6,7 +6,7 @@
         <div v-else class="md">
             <div class="md-title">{{ postData?.title ?? "未知文章" }}</div>
             <div class="md-divider"></div>
-            <markdown-render v-if="postData?.data" :data="postData?.data ?? ''"></markdown-render>
+            <markdown-render v-if="postData" :data="postData.data"></markdown-render>
         </div>
     </div>
 </template>
@@ -17,14 +17,47 @@ import markdownRender from '~/components/markdownRender.vue'
 const route = useRoute()
 const id = route.params.id as string
 
-const { status, data: postData } = await useLazyFetch<{ data: string, title: string }>("/api/posts/getPostContent", {
+const { status, data: postData } = await useLazyFetch("/api/posts/getPostContent", {
     method: 'POST',
     body: {
         id: id
     },
     server: true,
     key: `post-content-${id}`,
-})!
+})
+
+if (import.meta.server) {
+    function extractFirstImage(html: string): { url: string; alt: string } | null {
+        const imgRegex = /<img[^>]+>/i;
+        const imgTagMatch = html.match(imgRegex);
+
+        if (!imgTagMatch) {
+            return null;
+        }
+
+        const imgTag = imgTagMatch[0];
+        const srcRegex = /src="([^"]+)"/i;
+        const altRegex = /alt="([^"]*)"/i;
+
+        const srcMatch = imgTag.match(srcRegex);
+        const altMatch = imgTag.match(altRegex);
+
+        const src = srcMatch ? srcMatch[1] : '';
+        const alt = altMatch ? altMatch[1] : '';
+
+        return src ? { url: src, alt } : null;
+    }
+    const imgData = extractFirstImage(postData.value!.data as string)
+    useServerSeoMeta({
+        // robots: 'index, follow',
+        description: postData.value!.summary ?? 'Error',
+        ogDescription: postData.value!.summary ?? 'Error',
+        ...(imgData ? {
+            ogImage: imgData,
+        } : {}),
+        keywords: postData.value!.tags && postData.value!.tags.join(","),
+    })
+}
 
 </script>
 

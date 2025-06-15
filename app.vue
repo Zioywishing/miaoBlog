@@ -18,13 +18,11 @@ import "/style/tailwind.css"
 // @ts-ignore
 useHead({
   title: '杪 Blog',
-  meta: [
-    { name: 'description', content: '杪儿的博客', lang: 'zh-CN' }
-  ],
   htmlAttrs: {
     lang: 'zh-CN',
   }
 })
+
 
 </script>
 
