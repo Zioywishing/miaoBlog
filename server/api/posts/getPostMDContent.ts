@@ -2,6 +2,27 @@
 import DB from 'better-sqlite3';
 import { postItem } from "~/types/post";
 
+// 使用缓存函数获取文章Markdown内容
+const getPostMDContent = defineCachedFunction(
+  async (id: number) => {
+    const db = new DB('./userData/db/posts.db');
+    const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(Number(id)) as postItem;
+    const content: any = db.prepare('SELECT content FROM postContent WHERE id = ?').get(Number(id));
+    db.close();
+
+    if (!post || !content) {
+      return null;
+    }
+
+    return { post, content: content.content };
+  },
+  {
+    maxAge: 60 * 60 * 24, // 24小时
+    name: 'post-md-content',
+    getKey: (id: number) => String(id)
+  }
+);
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const id = body.id;
@@ -12,28 +33,18 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  const db = new DB('./userData/db/posts.db');
-  const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(Number(id)) as postItem;
-  const content: any = db.prepare('SELECT content FROM postContent WHERE id = ?').get(Number(id));
-  db.close();
-
-  if (!post) {
+  const result = await getPostMDContent(Number(id));
+  
+  if (!result) {
     return {
       code: 404,
       msg: '文章不存在'
     };
   }
 
-  if (!content) {
-    return {
-      code: 404,
-      msg: '文章内容不存在'
-    };
-  }
-
   return {
     code: 200,
-    data: content.content,
-    ...post
+    data: result.content,
+    ...result.post
   };
 }) 

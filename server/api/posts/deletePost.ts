@@ -45,6 +45,12 @@ export default defineEventHandler(async (event) => {
             }
         })();
 
+        // 清除缓存
+        const storage = useStorage('cache');
+        await storage.removeItem(`nitro:functions:post-content:${id}.json`);
+        await storage.removeItem(`nitro:functions:post-md-content:${id}.json`);
+        await storage.removeItem('nitro:functions:post-list:all-posts.json');
+
         db.close();
         return {
             code: 200,

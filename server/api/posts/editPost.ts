@@ -1,6 +1,7 @@
 // editPost.ts
 import DB from 'better-sqlite3';
 import cacheResult from '~/server/utils/cacheRes';
+
 function prepareDB() {
     const db = new DB('./userData/db/posts.db');
 
@@ -78,6 +79,12 @@ export default defineEventHandler(async (event) => {
             // 更新postContentHTML表（HTML格式）
             updateContentHTMLStmt.run(contentHtml, id);
         })();
+
+        // 清除缓存
+        const storage = useStorage('cache');
+        await storage.removeItem(`nitro:functions:post-content:${id}.json`);
+        await storage.removeItem(`nitro:functions:post-md-content:${id}.json`);
+        await storage.removeItem('nitro:functions:post-list:all-posts.json');
 
         return {
             code: 200,

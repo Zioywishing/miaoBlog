@@ -64,6 +64,10 @@ export default defineEventHandler(async (event) => {
             return postId;
         })();
 
+        // 清除文章列表缓存，这样新文章可以立即显示
+        const storage = useStorage('cache');
+        await storage.removeItem('nitro:functions:post-list:all-posts.json');
+
         return {
             code: 200,
             msg: '插入成功',
