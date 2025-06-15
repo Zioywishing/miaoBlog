@@ -1,6 +1,6 @@
 <template>
     <div class="posts-wrapper">
-        <div class="posts-skeleton" v-if="status === 'pending'">
+        <div class="posts-skeleton" v-if="status === 'pending' && !data">
             <div class="posts-skeleton-item" v-for="_ in range(5)">
                 <el-skeleton :rows="2" />
             </div>
