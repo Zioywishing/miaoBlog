@@ -351,7 +351,7 @@ if (import.meta.server) {
         flex-direction: column;
         align-items: baseline;
         padding-bottom: 10px;
-        border-radius: 5px;
+        border-radius: 7px 23px 7px 13px;
         overflow: hidden;
         transition: scale 0.15s ease;
         user-select: none;
@@ -395,7 +395,7 @@ if (import.meta.server) {
           justify-content: flex-end;
           align-items: flex-end;
           user-select: none;
-          padding-right: 10px;
+          padding-right: 5px;
 
           &-icon {
             // font-size: 14px;
@@ -403,7 +403,7 @@ if (import.meta.server) {
             margin-right: 10px;
             height: 16px;
             aspect-ratio: 1;
-            transform: translateY(0px) rotate(-45deg);
+            transform: translateY(7px) rotate(-45deg) translateX(9px);
             opacity: .7;
           }
 
