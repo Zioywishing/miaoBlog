@@ -67,7 +67,7 @@ const pageContent = reactive<PageContent[]>([
     content: [
       {
         name: 'MiaoDirectory',
-        description: '有个插件功能的单文件文件托管服务',
+        description: '有个插件功能的单文件文件托管小工具，目前准备长期维护。',
         links: [
           {
             name: 'github',
@@ -80,18 +80,26 @@ const pageContent = reactive<PageContent[]>([
         ]
       },
       {
-        name: 'MiaoShare',
-        description: '多了个加密环节的文件分享平台',
+        name: 'MiaoBlog',
+        description: '你正在看的东西，未来的博客会在此更新，目前准备长期维护。',
         links: [
+          // {
+          //   name: "gitea",
+          //   url: "https://nj.miaospring.top:3001/539943419/miaoBlog.git"
+          // },
           {
-            name: "gitea",
-            url: "https://nj.miaospring.top:3001/539943419/miaoShare"
+            name: "github",
+            url: "https://github.com/Zioywishing/miaoBlog"
+          },
+          {
+            name: "link",
+            url: "https://miaospring.top"
           }
         ]
       },
       {
         name: 'Bobj',
-        description: '模块化的JS对象序列化库，名字完全抄袭至BSON',
+        description: '效果类似msgpack，有时比msgpackr更有效率些。',
         links: [
           // {
           //   name: "github",
@@ -110,19 +118,15 @@ const pageContent = reactive<PageContent[]>([
         ]
       },
       {
-        name: 'MiaoBlog',
-        description: '施工中，不过最好不要抱有太大期待，毕竟还是以实现功能为目标去做的',
+        name: 'MiaoShare',
+        description: '早期做的文件加密分析平台，已停止维护。',
         links: [
           {
             name: "gitea",
-            url: "https://nj.miaospring.top:3001/539943419/miaoBlog.git"
-          },
-          {
-            name: "github",
-            url: "https://github.com/Zioywishing/miaoBlog"
+            url: "https://nj.miaospring.top:3001/539943419/miaoShare"
           }
         ]
-      }
+      },
     ]
   }, {
     subTitle: '小工具',
@@ -130,7 +134,7 @@ const pageContent = reactive<PageContent[]>([
     content: [
       {
         name: '自解压制作',
-        description: '仅适用windows，将若干文件/文件夹打包为自解压程序',
+        description: '仅适用windows，将若干文件/文件夹打包为自解压程序，随手写的。',
         nuxtLinks: [
           {
             name: 'link',
@@ -148,19 +152,19 @@ const pageContent = reactive<PageContent[]>([
           }
         ]
       },
-      {
-        name: 'MiaoTracker',
-        description: '仅仅是个接口而已，用来查询开发者的位置记录',
-        nuxtLinks: [
-          {
-            name: 'demo',
-            to: `/iframe/${encodeURIComponent('https://nj.miaospring.top:17582/api/getAllPositions')}`
-          }
-        ]
-      },
+      // {
+      //   name: 'MiaoTracker',
+      //   description: '仅仅是个接口而已，用来查询开发者的位置记录',
+      //   nuxtLinks: [
+      //     {
+      //       name: 'demo',
+      //       to: `/iframe/${encodeURIComponent('https://nj.miaospring.top:17582/api/getAllPositions')}`
+      //     }
+      //   ]
+      // },
       {
         name: '识趣阅读刷赞',
-        description: '给我妹自嗨用的',
+        description: '我妹专用',
         nuxtLinks: [
           {
             name: 'link',
