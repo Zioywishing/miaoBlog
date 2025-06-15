@@ -8,9 +8,16 @@
 import useUserStore from '~/hooks/pinia/useUserStore';
 
 if (import.meta.client) {
-    const userStore = useUserStore()
-    const router = useRouter()
-    userStore.isLogin ? router.replace('/user/main') : router.replace('/user/login')
+    const timer = setTimeout(() => {
+        const userStore = useUserStore()
+        const router = useRouter()
+        const route = useRoute()
+        route.path === '/user' && userStore.isLogin ? router.replace('/user/main') : router.replace('/user/login')
+    }, 2000)
+
+    onUnmounted(() => {
+        clearTimeout(timer)
+    })
 }
 
 </script>
