@@ -1,10 +1,10 @@
 <template>
     <div class="md-wrapper">
-        <div v-if="status === 'pending'" class="h-[70vh] flex justify-center items-center w-full">
+        <div v-if="status === 'pending' && !postData" class="h-[70vh] flex justify-center items-center w-full">
             <miao-loading></miao-loading>
         </div>
         <div v-else class="md">
-            <div class="md-title">{{ (postData as any).title }}</div>
+            <div class="md-title">{{ postData?.title ?? "未知文章" }}</div>
             <div class="md-divider"></div>
             <markdown-render v-if="postData?.data" :data="postData?.data ?? ''"></markdown-render>
         </div>
