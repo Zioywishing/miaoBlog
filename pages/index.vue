@@ -93,10 +93,11 @@ const pageContent = reactive<PageContent[]>([
         name: 'Bobj',
         description: '模块化的JS对象序列化库，名字完全抄袭至BSON',
         links: [
+          // {
+          //   name: "github",
+          //   url: "https://github.com/Zioywishing/bobj"
+          // }, 
           {
-            name: "github",
-            url: "https://github.com/Zioywishing/bobj"
-          }, {
             name: "npm",
             url: "https://www.npmjs.com/package/bobj"
           }
@@ -232,6 +233,16 @@ const pageContent = reactive<PageContent[]>([
             url: 'https://element-plus.org/zh-CN/guide/design.html'
           }
         ]
+      },
+      {
+        name: 'WhyJavaSucks',
+        description: '个人十分赞同的一个网站',
+        links: [
+          {
+            name: 'link',
+            url: 'https://tech.jonathangardner.net/wiki/Why_Java_Sucks'
+          }
+        ]
       }
     ]
   },
@@ -335,7 +346,7 @@ const switchItemShow = (item: PageContent) => {
         flex-direction: column;
         align-items: baseline;
         padding-bottom: 10px;
-        border-radius: 10px;
+        border-radius: 5px;
         overflow: hidden;
         transition: scale 0.15s ease;
         user-select: none;
