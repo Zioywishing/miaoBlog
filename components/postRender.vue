@@ -1,6 +1,7 @@
 <template>
     <div class="md-render-wrapper markdown-body">
         <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
+        <!-- 虽然没设置key，但是测试起来运行正常，那就不管了 -->
         <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD && props.data !== undefined"></component>
         <div v-else>
             <div v-html="renderedData"></div>
@@ -9,6 +10,7 @@
 </template>
 
 <script setup lang="ts">
+import type { VNode } from 'vue';
 import useCodedisplayMiddleware from '~/hooks/h2v/codemirrorMiddleware';
 import useImgDisplayMiddleware from '~/hooks/h2v/imgMiddleware';
 // import useMarkdownit from '~/hooks/useMarkdownit';
@@ -19,7 +21,7 @@ const props = defineProps<{
     disableSkeleton?: boolean
 }>()
 
-const VNodeMD = shallowRef<any>()
+const VNodeMD = shallowRef<VNode[]>()
 
 const renderedData = ref<string>()
 
@@ -28,11 +30,7 @@ h2v.use(useCodedisplayMiddleware())
 h2v.use(useImgDisplayMiddleware())
 
 watch(() => props.data, async () => {
-    if (!props.data) {
-        return
-    }
-    renderedData.value = props.data
-    const res = await h2v.render(renderedData.value!)
+    const res = await h2v.render(props.data)
     VNodeMD.value = res
 }, {
     immediate: true
