@@ -134,10 +134,7 @@ const isCompressing = ref(false);
 
 const isProcessingDownload = ref(false);
 
-const workerPool = import.meta.client ? new WorkerPool(compressImgWorker, {
-    MaxTaskPerWorker: 5,
-    MaxWorkerCount: 16,
-}) : null;
+const workerPool = import.meta.client ? new WorkerPool(compressImgWorker, {}) : null;
 
 const compressImgByWorker = async (file: File, options: { quality: number }) =>
     workerPool ? (await workerPool.postMessage({ file, ...options })).file : null;
@@ -229,14 +226,14 @@ const handleImages = async (files: File[]) => {
             file,
             originalUrl,
             processing: true,
-            display: true,
+            display: false,
         };
 
         imageList.unshift(imageItem);
 
         try {
             const compressedBlob = await compressImgByWorker(file, { quality: quality.value })!;
-            updateImageData(imageItem, compressedBlob);
+            updateImageData(imageItem, compressedBlob!);
         } catch (error) {
             console.error('图片压缩失败:', error);
             const index = imageList.findIndex(item => item.originalUrl === originalUrl);
@@ -284,7 +281,7 @@ const recompressAllImages = async () => {
     await Promise.all(imageList.map(async (imageItem) => {
         try {
             const compressedBlob = await compressImgByWorker(imageItem.file, { quality: quality.value })!;
-            updateImageData(imageItem, compressedBlob);
+            updateImageData(imageItem, compressedBlob!);
         } catch (error) {
             console.error('重新压缩失败:', error);
             imageItem.processing = false;

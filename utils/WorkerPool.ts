@@ -1,15 +1,27 @@
 import { throttle } from "lodash-es";
 
 export default class WorkerPool {
+    /**
+     * WorkerPool模式：尽可能创建更多的Worker
+     */
+    public static MODE_MoreWorker = Symbol('MoreWorker');
+
+    /**
+     * WorkerPool模式：仅在所有Worker都忙时才创建新的Worker
+     */
+    public static MODE_BusyWorker = Symbol('BusyWorker');
+
     constructor(workerConstructor: new () => Worker, option?: {
         MaxTaskPerWorker?: number;
         MaxWorkerCount?: number;
         MinWorkerCount?: number;
+        Mode?: typeof WorkerPool.MODE_MoreWorker | typeof WorkerPool.MODE_BusyWorker;
     }) {
         this.workerConstructor = workerConstructor;
-        this.MaxTaskPerWorker = option?.MaxTaskPerWorker ?? 5;
-        this.MaxWorkerCount = option?.MaxWorkerCount ?? Infinity;
+        this.MaxTaskPerWorker = option?.MaxTaskPerWorker ?? 2;
+        this.MaxWorkerCount = option?.MaxWorkerCount ?? 16;
         this.MinWorkerCount = option?.MinWorkerCount ?? 0;
+        this.mode = option?.Mode ?? WorkerPool.MODE_MoreWorker;
         new Array(this.MinWorkerCount).fill(null).forEach(() => {
             this.newWorker();
         });
@@ -29,15 +41,20 @@ export default class WorkerPool {
     private MaxWorkerCount: number;
     private MinWorkerCount: number;
 
+    private mode: typeof WorkerPool.MODE_MoreWorker | typeof WorkerPool.MODE_BusyWorker;
     private _idCounter = 0;
 
     private get isWorkerAllBusy() {
         return this.workerPool.every(worker => this.workerTaskCountMap.get(worker)! >= this.MaxTaskPerWorker);
     }
 
+    private get isPoolFull() {
+        return this.workerPool.length >= this.MaxWorkerCount;
+    }
+
     private getAvailableWorker() {
-        if (this.workerPool.length === 0 || this.isWorkerAllBusy === true) {
-            if (this.workerPool.length >= this.MaxWorkerCount) { // 达到池上限
+        if (this.workerPool.length === 0 || (this.mode === WorkerPool.MODE_BusyWorker ? this.isWorkerAllBusy : !this.isPoolFull)) {
+            if (this.mode === WorkerPool.MODE_BusyWorker && this.isPoolFull) {
                 return null;
             }
             this.newWorker();
@@ -87,7 +104,7 @@ export default class WorkerPool {
         const InactivityWorkers = this.workerPool.filter(worker => this.workerTaskCountMap.get(worker) === 0)
         for (const worker of InactivityWorkers) {
             if (this.workerPool.length <= this.MinWorkerCount) {
-                return;
+                break;
             }
             worker.terminate();
             this.workerPool = this.workerPool.filter(w => w !== worker);

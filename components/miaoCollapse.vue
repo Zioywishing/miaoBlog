@@ -19,7 +19,12 @@ const props = defineProps({
 })
 const cwRef = ref<HTMLDivElement>()
 const cRef = ref<HTMLDivElement>()
-const cwStyle = ref<{ [key: string]: string | number }>({})
+const cwStyle = ref<{ [key: string]: string | number }>(props.show ? {} : {
+    maxHeight: 0,
+    display: 'none',
+    opacity: props.fade ? 0 : 1,
+    pointerEvents: 'none',
+})
 const cStyle = ref<{ [key: string]: string | number }>({})
 
 let originHeight = -1
@@ -108,14 +113,6 @@ watch(() => props.show, (newVal) => {
 
 onMounted(() => {
     calcOriginHeight()
-    if (!props.show) {
-        cwStyle.value = {
-            maxHeight: 0,
-            display: 'none',
-            opacity: props.fade ? 0 : 1,
-            pointerEvents: 'none',
-        }
-    }
 })
 </script>
 
