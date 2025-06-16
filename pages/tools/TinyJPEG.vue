@@ -12,7 +12,7 @@
             </label>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 sticky top-2 z-20">
             <div class="flex items-center justify-between mb-2 select-none">
                 <label class="text-gray-700 font-medium">压缩质量</label>
                 <span class="text-gray-500 text-sm">{{ `${quality}` }}</span>
@@ -65,7 +65,7 @@
                                 :disabled="!image.compressedFile || isCompressing">删除</el-button>
                         </div>
                         <button @click="image.display = !image.display"
-                            class="p-1.5 rounded-sm hover:bg-gray-100 transition-colors duration-200 w-10 cursor-pointer z-20">
+                            class="p-1.5 rounded-sm hover:bg-gray-100 transition-colors duration-200 w-10 cursor-pointer z-10">
                             <i class="text-lg">
                                 <span>{{ image.display ? '👓' : '🕶️' }}</span>
                             </i>
