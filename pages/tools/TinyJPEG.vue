@@ -45,7 +45,7 @@
             <div v-for="(image, index) in imageList" :key="image.file.name"
                 class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg w-full">
                 <div class="p-6 border-b border-gray-100 flex items-center justify-between">
-                    <el-scrollbar class="min-w-20">
+                    <el-scrollbar class="min-w-40">
                         <h3 class="font-semibold text-gray-800">
                             {{ image.file.name }}
                         </h3>
@@ -56,16 +56,14 @@
                                 1024).toFixed(2)}KB` : '-' }}
                         </h3>
                         <h3 class="font-semibold text-[#15aa87] mr-2 whitespace-nowrap">
-                            {{ image.percent ? `- ${((image.file.size - (image.compressedSize ?? image.file.size)) /
-                                1024).toFixed(2)}KB` : '-' }}
-                        </h3>
-                        <h3 class="font-semibold text-[#15aa87] mr-2 whitespace-nowrap">
                             压缩率：{{ image.percent ? `${((image.percent) * 100).toFixed(2)}%` : '-' }}
                         </h3>
-                        <el-button class=" ml-0!" @click="downloadFile(image.compressedFile!)"
-                            :disabled="!image.compressedFile || isCompressing">保存</el-button>
-                        <el-button class=" ml-0!" @click="deleteFile(image)"
-                            :disabled="!image.compressedFile || isCompressing">删除</el-button>
+                        <div class="flex gap-2">
+                            <el-button class=" ml-0!" @click="downloadFile(image.compressedFile!)"
+                                :disabled="!image.compressedFile || isCompressing">保存</el-button>
+                            <el-button class=" ml-0!" @click="deleteFile(image)"
+                                :disabled="!image.compressedFile || isCompressing">删除</el-button>
+                        </div>
                         <button @click="image.display = !image.display"
                             class="p-1.5 rounded-sm hover:bg-gray-100 transition-colors duration-200 w-10 cursor-pointer z-20">
                             <i class="text-lg">
