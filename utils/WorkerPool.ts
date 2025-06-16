@@ -49,11 +49,13 @@ export default class WorkerPool {
             this.newWorker();
         }
         // 选择任务数量未达到上限且任务数最多的Worker执行，方便后续对不活跃Worker进行清理
-        return this.workerPool.sort((a, b) => {
+        const sortedWorkers = this.workerPool.sort((a, b) => {
             const countA = this.workerTaskCountMap.get(a)!;
             const countB = this.workerTaskCountMap.get(b)!;
             return -(countA - countB);
-        }).filter(worker => this.workerTaskCountMap.get(worker)! < this.MaxTaskPerWorker)[0]!;
+        });
+        // 找到任务数未达到上限的任务数最多的Worker，若没有则说明已达到worker池的容量上限，故返回任务数最少的Worker
+        return sortedWorkers.find(worker => this.workerTaskCountMap.get(worker)! < this.MaxTaskPerWorker) ?? sortedWorkers[sortedWorkers.length - 1];
     }
 
     private terminateInactivityWorker = throttle(() => {
