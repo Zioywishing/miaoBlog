@@ -134,7 +134,10 @@ const isCompressing = ref(false);
 
 const isProcessingDownload = ref(false);
 
-const workerPool = import.meta.client ? new WorkerPool(compressImgWorker) : null;
+const workerPool = import.meta.client ? new WorkerPool(compressImgWorker, {
+    MaxTaskPerWorker: 5,
+    MaxWorkerCount: 16,
+}) : null;
 
 const compressImgByWorker = async (file: File, options: { quality: number }) =>
     workerPool ? (await workerPool.postMessage({ file, ...options })).file : null;

@@ -20,26 +20,35 @@ export default class WorkerPool {
     private workerTaskMap: Map<number, { resolve: (f: File) => void, reject: (error: any) => void }> = new Map();
     private workerTaskCountMap = new WeakMap<Worker, number>();
 
+    private taskRequestBuffer: {
+        message: { [k: string]: any },
+        transfer: Transferable[]
+    }[] = [];
+
     private MaxTaskPerWorker: number;
     private MaxWorkerCount: number;
     private MinWorkerCount: number;
+
+    private _idCounter = 0;
 
     private get isWorkerAllBusy() {
         return this.workerPool.every(worker => this.workerTaskCountMap.get(worker)! >= this.MaxTaskPerWorker);
     }
 
-    private getInactivityWorker() {
+    private getAvailableWorker() {
         if (this.workerPool.length === 0 || this.isWorkerAllBusy === true) {
+            if (this.workerPool.length >= this.MaxWorkerCount) { // 达到池上限
+                return null;
+            }
             this.newWorker();
         }
-        // 选择任务数量未达到上限且任务数最多的Worker执行，方便后续对不活跃Worker进行清理
-        const sortedWorkers = this.workerPool.sort((a, b) => {
+
+        // 性能差不多行了
+        return this.workerPool.sort((a, b) => {
             const countA = this.workerTaskCountMap.get(a)!;
             const countB = this.workerTaskCountMap.get(b)!;
-            return -(countA - countB);
-        });
-        // 找到任务数未达到上限的任务数最多的Worker，若没有则说明已达到worker池的容量上限，故返回任务数最少的Worker
-        return sortedWorkers.find(worker => this.workerTaskCountMap.get(worker)! < this.MaxTaskPerWorker) ?? sortedWorkers[sortedWorkers.length - 1];
+            return countA - countB;
+        })[0];
     }
 
     private newWorker() {
@@ -53,7 +62,13 @@ export default class WorkerPool {
             if (task) {
                 task.resolve(event.data);
                 this.workerTaskMap.delete(id);
-                this.workerTaskCountMap.set(newWorker, this.workerTaskCountMap.get(newWorker)! - 1);
+                if (this.taskRequestBuffer.length > 0) {
+                    const request = this.taskRequestBuffer.shift()!;
+                    newWorker.postMessage(request.message, request.transfer);
+                    // console.log(`WorkerPool: Task from buffer sent to worker, current task request buffer length: ${this.taskRequestBuffer.length}`);
+                } else {
+                    this.workerTaskCountMap.set(newWorker, this.workerTaskCountMap.get(newWorker)! - 1);
+                }
                 this.terminateInactivityWorker();
             } else {
                 console.error(`WorkerPool: No task found for worker message with id: ${id}`);
@@ -79,7 +94,7 @@ export default class WorkerPool {
             this.workerTaskCountMap.delete(worker);
         }
         // console.log(`WorkerPool: Inactivity workers terminated, current worker count: ${this.workerPool.length}`);
-    }, 1000, {
+    }, 500, {
         trailing: true,
     });
 
@@ -92,13 +107,17 @@ export default class WorkerPool {
         this.workerTaskMap.clear();
     }
 
-    public postMessage(message: { [k: string]: any }) {
-        const id = Math.random();
-        const worker = this.getInactivityWorker();
+    public postMessage(message: { [k: string]: any }, transfer?: Transferable[]): Promise<any> {
+        const id = this._idCounter++;
+        const worker = this.getAvailableWorker();
         return new Promise<any>((resolve, reject) => {
             this.workerTaskMap.set(id, { resolve, reject });
-            this.workerTaskCountMap.set(worker, this.workerTaskCountMap.get(worker)! + 1);
-            worker.postMessage({ ...message, id });
+            if (worker) {
+                this.workerTaskCountMap.set(worker, this.workerTaskCountMap.get(worker)! + 1);
+                worker.postMessage({ ...message, id }, transfer ?? []);
+            } else {
+                this.taskRequestBuffer.push({ message: { ...message, id }, transfer: transfer ?? [] });
+            }
         });
     }
 }
