@@ -59,6 +59,9 @@ export default class WorkerPool {
             }
             this.newWorker();
         }
+        if (this.mode === WorkerPool.MODE_MoreWorker && this.isWorkerAllBusy) {
+            return null;
+        }
 
         // 性能差不多行了
         return this.workerPool.sort((a, b) => {
