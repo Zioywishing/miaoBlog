@@ -17,7 +17,7 @@ export default class WorkerPool {
 
     private workerConstructor: new () => Worker;
     private workerPool: Worker[] = [];
-    private workerTaskMap: Map<number, { resolve: (f: File) => void, reject: (error: any) => void }> = new Map();
+    private workerTaskMap: Map<number, { resolve: (...args: any[]) => void, reject: (error: any) => void }> = new Map();
     private workerTaskCountMap = new WeakMap<Worker, number>();
 
     private taskRequestBuffer: {
