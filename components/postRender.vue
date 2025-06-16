@@ -1,10 +1,7 @@
 <template>
     <div class="md-render-wrapper markdown-body">
         <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
-        <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD && props.data !== undefined"></component>
-        <div v-else>
-            <div v-html="renderedData"></div>
-        </div>
+        <component v-for="vnode in VNodeMD" :is="vnode"></component>
     </div>
 </template>
 
@@ -109,7 +106,6 @@ watch(() => props.data, async () => {
     /* 恢复段落样式 */
     p {
         margin-top: 0;
-        margin-bottom: 1em;
         line-height: 1.6;
     }
 
