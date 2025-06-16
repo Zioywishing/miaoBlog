@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 import ImageIcon from '~/components/icons/image.vue'
+import compressImg from '~/utils/compressImg';
 
 const _props = defineProps<{
     disabled?: boolean
@@ -116,24 +117,6 @@ const insertTextAtCursor = (textToInsert: string) => {
     content.value = currentText.substring(0, start) + textToInsert + currentText.substring(end);
 };
 
-// 使用Compressor压缩图片
-const compressImage = async (file: File): Promise<File> => {
-    const Compressor = (await import('compressorjs')).default;
-    return new Promise((resolve, reject) => {
-        new Compressor(file, {
-            quality: 0.4,
-            success(result) {
-                // 对比压缩效果
-                resolve(result as File);
-            },
-            error(err) {
-                console.error('图片压缩失败:', err);
-                resolve(file);
-            }
-        });
-    });
-};
-
 const uploadImage = async (file: File) => {
     const loadingMessage = ElMessage({
         message: '图片上传中...',
@@ -142,8 +125,7 @@ const uploadImage = async (file: File) => {
     });
 
     try {
-        // 压缩图片
-        const compressedFile = await compressImage(file);
+        const compressedFile = new File([await compressImg(file, .35)], file.name, { type: "image/jpeg" });
 
         const formData = new FormData();
         formData.append('file', compressedFile);
