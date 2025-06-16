@@ -3,8 +3,7 @@
         <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
         <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD && props.data !== undefined"></component>
         <div v-else>
-            <div v-html="renderedData" v-if="renderedData"></div>
-            <el-skeleton v-else :rows="12" />
+            <div v-html="renderedData"></div>
         </div>
     </div>
 </template>
