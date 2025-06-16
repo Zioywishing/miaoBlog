@@ -45,10 +45,16 @@
             <div v-for="(image, index) in imageList" :key="image.file.name"
                 class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg w-full">
                 <div class="p-6 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-800">
-                        {{ image.file.name }}
-                    </h3>
+                    <el-scrollbar class="min-w-20">
+                        <h3 class="font-semibold text-gray-800">
+                            {{ image.file.name }}
+                        </h3>
+                    </el-scrollbar>
                     <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="font-semibold text-[#15aa87] mr-2 whitespace-nowrap">
+                            {{ image.percent ? `- ${((image.file.size - (image.compressedSize ?? image.file.size)) /
+                                1024).toFixed(2)}KB` : '-' }}
+                        </h3>
                         <h3 class="font-semibold text-[#15aa87] mr-2 whitespace-nowrap">
                             {{ image.percent ? `- ${((image.file.size - (image.compressedSize ?? image.file.size)) /
                                 1024).toFixed(2)}KB` : '-' }}
