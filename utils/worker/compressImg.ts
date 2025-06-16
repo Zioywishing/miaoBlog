@@ -1,3 +1,5 @@
+import compressImg from "../compressImg";
+
 self.onmessage = async (event: MessageEvent<FileMessage>) => {
     let { file, quality, type, id } = event.data;
 
