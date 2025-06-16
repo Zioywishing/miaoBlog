@@ -92,6 +92,10 @@ const handleShow = () => {
     }))
 }
 
+const calcOriginHeight = () => {
+    originHeight = cRef.value!.clientHeight
+}
+
 watch(() => props.show, (newVal) => {
     if (cwRef.value && cRef.value) {
         if (newVal) {
@@ -102,12 +106,16 @@ watch(() => props.show, (newVal) => {
     }
 })
 
-const calcOriginHeight = () => {
-    originHeight = cRef.value!.clientHeight
-}
-
 onMounted(() => {
     calcOriginHeight()
+    if (!props.show) {
+        cwStyle.value = {
+            maxHeight: 0,
+            display: 'none',
+            opacity: props.fade ? 0 : 1,
+            pointerEvents: 'none',
+        }
+    }
 })
 </script>
 

@@ -125,7 +125,7 @@ const uploadImage = async (file: File) => {
     });
 
     try {
-        const compressedFile = new File([await compressImg(file, .35)], file.name, { type: "image/jpeg" });
+        const compressedFile = new File([await compressImg(file, { quality: .35 })], file.name, { type: "image/jpeg" });
 
         const formData = new FormData();
         formData.append('file', compressedFile);

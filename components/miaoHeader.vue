@@ -2,7 +2,7 @@
     <section id="miao-header-wrapper">
         <header id="miao-header">
             <div class="miao-header-title">
-                <a href="https://nj.miaospring.top:3001/" target="_blank" title="喵">
+                <a href="https://github.com/Zioywishing" target="_blank" title="喵">
                     <span class="miao-header-title-miao">杪</span>
                     <span class="miao-header-title-blog">Blog</span></a>
             </div>

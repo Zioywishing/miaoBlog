@@ -133,6 +133,16 @@ const pageContent = reactive<PageContent[]>([
     show: true,
     content: [
       {
+        name: 'TinyJPEG',
+        description: '利用OffscreenCanvas实现图片压缩，灵感来源Compressor.js，但是支持worker故表现更佳。',
+        nuxtLinks: [
+          {
+            name: 'link',
+            to: `/tools/TinyJPEG`
+          }
+        ]
+      },
+      {
         name: '自解压制作',
         description: '仅适用windows，将若干文件/文件夹打包为自解压程序，随手写的。',
         nuxtLinks: [
