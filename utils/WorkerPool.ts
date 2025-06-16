@@ -7,7 +7,7 @@ export default class WorkerPool {
         MinWorkerCount?: number;
     }) {
         this.workerConstructor = workerConstructor;
-        this.MaxTaskPerWorker = option?.MaxTaskPerWorker ?? 3;
+        this.MaxTaskPerWorker = option?.MaxTaskPerWorker ?? 5;
         this.MaxWorkerCount = option?.MaxWorkerCount ?? Infinity;
         this.MinWorkerCount = option?.MinWorkerCount ?? 0;
         new Array(this.MinWorkerCount).fill(null).forEach(() => {
@@ -66,15 +66,18 @@ export default class WorkerPool {
     }
 
     private terminateInactivityWorker = throttle(() => {
-        this.workerPool.filter(w => this.workerTaskCountMap.get(w) === 0).forEach(worker => {
+        if (this.workerPool.length <= this.MinWorkerCount) {
+            return;
+        }
+        const InactivityWorkers = this.workerPool.filter(worker => this.workerTaskCountMap.get(worker) === 0)
+        for (const worker of InactivityWorkers) {
             if (this.workerPool.length <= this.MinWorkerCount) {
                 return;
             }
             worker.terminate();
             this.workerPool = this.workerPool.filter(w => w !== worker);
             this.workerTaskCountMap.delete(worker);
-        });
-
+        }
         // console.log(`WorkerPool: Inactivity workers terminated, current worker count: ${this.workerPool.length}`);
     }, 1000, {
         trailing: true,

@@ -33,7 +33,7 @@
                         0) / 1024).toFixed(2)}KB`}}</p>
                 <p>{{`压缩率：${((imageList.reduce((acc, item) => acc + (item.compressedSize ??
                     item.file.size), 0) / imageList.reduce((acc, item) => acc + item.file.size, 0)) *
-                    100).toFixed(2)}% === 节省：${((imageList.reduce((acc, item) => acc + item.file.size, 0) -
+                    100).toFixed(2)}% ===> 节省：${((imageList.reduce((acc, item) => acc + item.file.size, 0) -
                         imageList.reduce((acc, item) => acc + (item.compressedSize ?? 0), 0)) /
                         1024).toFixed(2)}KB`}}</p>
             </div>
@@ -47,7 +47,7 @@
                 <div class="p-6 border-b border-gray-100 flex items-center justify-between">
                     <el-scrollbar class="min-w-40">
                         <h3 class="font-semibold text-gray-800">
-                            {{ image.file.name }}
+                            {{ `${index + 1}. ${image.file.name}` }}
                         </h3>
                     </el-scrollbar>
                     <div class="flex items-center gap-2 flex-wrap">
