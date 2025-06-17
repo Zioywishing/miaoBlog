@@ -19,7 +19,7 @@ export default class WorkerPool {
     }) {
         this.workerConstructor = workerConstructor;
         this.MaxTaskPerWorker = option?.MaxTaskPerWorker ?? 2;
-        this.MaxWorkerCount = option?.MaxWorkerCount ?? 16;
+        this.MaxWorkerCount = option?.MaxWorkerCount ?? 4;
         this.MinWorkerCount = option?.MinWorkerCount ?? 0;
         this.mode = option?.Mode ?? WorkerPool.MODE_MoreWorker;
         new Array(this.MinWorkerCount).fill(null).forEach(() => {
@@ -93,10 +93,28 @@ export default class WorkerPool {
                 } else {
                     this.workerTaskCountMap.set(newWorker, this.workerTaskCountMap.get(newWorker)! - 1);
                 }
-                this.terminateInactivityWorker();
             } else {
                 console.error(`WorkerPool: No task found for worker message with id: ${id}`);
             }
+            this.terminateInactivityWorker();
+        };
+        newWorker.onerror = (event) => {
+            const { id } = JSON.parse(event.message)
+            const task = this.workerTaskMap.get(id);
+            if (task) {
+                task.resolve(event.message);
+                this.workerTaskMap.delete(id);
+                if (this.taskRequestBuffer.length > 0) {
+                    const request = this.taskRequestBuffer.shift()!;
+                    newWorker.postMessage(request.message, request.transfer);
+                    // console.log(`WorkerPool: Task from buffer sent to worker, current task request buffer length: ${this.taskRequestBuffer.length}`);
+                } else {
+                    this.workerTaskCountMap.set(newWorker, this.workerTaskCountMap.get(newWorker)! - 1);
+                }
+            } else {
+                console.error(`WorkerPool: No task found for worker message with id: ${id}`);
+            }
+            this.terminateInactivityWorker();
         };
         this.workerPool.push(newWorker);
         this.workerTaskCountMap.set(newWorker, 0);

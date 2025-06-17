@@ -37,7 +37,7 @@
                         imageList.reduce((acc, item) => acc + (item.compressedSize ?? 0), 0)) /
                         1024).toFixed(2)}KB`}}</p>
             </div>
-            <el-button @click="downloadAll" :disabled="isProcessingDownload || isCompressing">{{ isCompressing ?
+            <el-button @click="downloadAll" :disabled="isProcessingDownload || isCompressing" type="success">{{ isCompressing ?
                 `处理中...` : `保存所有图片` }}</el-button>
         </div>
 
@@ -60,9 +60,9 @@
                         </h3>
                         <div class="flex gap-2">
                             <el-button class=" ml-0!" @click="downloadFile(image.compressedFile!)"
-                                :disabled="!image.compressedFile || isCompressing">保存</el-button>
+                                :disabled="!image.compressedFile || isCompressing" type="success">保存</el-button>
                             <el-button class=" ml-0!" @click="deleteFile(image)"
-                                :disabled="!image.compressedFile || isCompressing">删除</el-button>
+                                :disabled="!image.compressedFile || isCompressing" type="danger">删除</el-button>
                         </div>
                         <button @click="image.display = !image.display"
                             class="p-1.5 rounded-sm hover:bg-gray-100 transition-colors duration-200 w-10 cursor-pointer z-10">
@@ -71,8 +71,10 @@
                             </i>
                         </button>
                     </div>
-                    <div v-if="image.isError">
+                    <div v-if="image.isError" class="flex items-center gap-2">
                         <p class="text-sm text-red-500">压缩失败，请检查图片</p>
+                        <el-button class=" ml-0!" @click="deleteFile(image)"
+                            :disabled="isCompressing" type="danger">删除</el-button>
                     </div>
                 </div>
                 <miao-collapse :show="image.display && !image.isError">
@@ -138,7 +140,12 @@ const isCompressing = ref(false);
 
 const isProcessingDownload = ref(false);
 
-const workerPool = import.meta.client ? new WorkerPool(compressImgWorker) : null;
+const workerPool = import.meta.client ? new WorkerPool(compressImgWorker, {
+    MaxWorkerCount: 4,
+    // MaxTaskPerWorker: Infinity,
+    // Mode: WorkerPool.MODE_MoreWorker
+    // MaxTaskPerWorker: Infinity
+}) : null;
 
 const compressImgByWorker: (file: File, options: { quality: number }) => Promise<File> = workerPool ? async (file: File, options: { quality: number }) => {
     const res =
@@ -229,6 +236,9 @@ const handleFileSelect = (e: Event) => {
 
 const handleImages = async (files: File[]) => {
     isCompressing.value = true;
+
+    const timeStart = Date.now();
+
     const _c = async (file: File) => {
         const isDuplicate = imageList.some(item => item.file.name === file.name && item.file.size === file.size);
         if (isDuplicate) return;
@@ -248,7 +258,7 @@ const handleImages = async (files: File[]) => {
             const compressedBlob = await compressImgByWorker(file, { quality: quality.value })!;
             updateImageData(imageItem, compressedBlob!);
         } catch (error) {
-            console.error( `${file.name} 压缩失败，请检查图片`, error);
+            console.error(`${file.name} 压缩失败，请检查图片`, error);
             ElMessage({
                 message: `${file.name} 压缩失败，请检查图片`,
                 type: 'error',
@@ -262,6 +272,12 @@ const handleImages = async (files: File[]) => {
         item.display = false;
     });
     imageList[0].display = true;
+
+    const timeEnd = Date.now();
+    timeEnd - timeStart > 1000 && ElMessage({
+        message: `压缩完成，耗时 ${timeEnd - timeStart}ms`,
+        type: 'success',
+    });
     isCompressing.value = false;
 };
 
@@ -288,6 +304,8 @@ const updateImageData = (imageItem: ImageItem, compressedBlob: Blob) => {
 const recompressAllImages = async () => {
     if (imageList.length === 0) return;
 
+    const timeStart = Date.now();
+
     isCompressing.value = true;
 
     imageList.forEach(item => {
@@ -299,7 +317,7 @@ const recompressAllImages = async () => {
             const compressedBlob = await compressImgByWorker(imageItem.file, { quality: quality.value })!;
             updateImageData(imageItem, compressedBlob!);
         } catch (error) {
-            console.error( `${imageItem.file.name} 压缩失败，请检查图片`, error);
+            console.error(`${imageItem.file.name} 压缩失败，请检查图片`, error);
             ElMessage({
                 message: `${imageItem.file.name} 压缩失败，请检查图片`,
                 type: 'error',
@@ -308,6 +326,13 @@ const recompressAllImages = async () => {
             imageItem.isError = true;
         }
     }));
+    
+    const timeEnd = Date.now();
+
+    timeEnd - timeStart > 1000 && ElMessage({
+        message: `压缩完成，耗时 ${timeEnd - timeStart}ms`,
+        type: 'success',
+    });
 
     isCompressing.value = false;
 };
