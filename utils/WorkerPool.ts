@@ -7,7 +7,7 @@ export default class WorkerPool {
     public static MODE_MoreWorker = Symbol('MoreWorker');
 
     /**
-     * WorkerPool模式：仅在所有Worker都忙时才创建新的Worker
+     * WorkerPool模式：尽可能让已有Worker忙
      */
     public static MODE_BusyWorker = Symbol('BusyWorker');
 
@@ -64,11 +64,15 @@ export default class WorkerPool {
         }
 
         // 性能差不多行了
-        return this.workerPool.sort((a, b) => {
+        this.workerPool.sort((a, b) => {
             const countA = this.workerTaskCountMap.get(a)!;
             const countB = this.workerTaskCountMap.get(b)!;
             return countA - countB;
-        })[0];
+        });
+
+        return this.mode === WorkerPool.MODE_BusyWorker
+            ? (this.workerPool.filter(worker => this.workerTaskCountMap.get(worker)! < this.MaxTaskPerWorker).toReversed()[0] || null)
+            : this.workerPool[0];
     }
 
     private newWorker() {
@@ -104,8 +108,8 @@ export default class WorkerPool {
         if (this.workerPool.length <= this.MinWorkerCount) {
             return;
         }
-        const InactivityWorkers = this.workerPool.filter(worker => this.workerTaskCountMap.get(worker) === 0)
-        for (const worker of InactivityWorkers) {
+        const inactivityWorkers = this.workerPool.filter(worker => this.workerTaskCountMap.get(worker) === 0)
+        for (const worker of inactivityWorkers) {
             if (this.workerPool.length <= this.MinWorkerCount) {
                 break;
             }

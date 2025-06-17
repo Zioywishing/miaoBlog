@@ -50,7 +50,7 @@
                             {{ `${index + 1}. ${image.file.name}` }}
                         </h3>
                     </el-scrollbar>
-                    <div class="flex items-center gap-2 flex-wrap">
+                    <div class="flex items-center gap-2 flex-wrap" v-if="!image.isError">
                         <h3 class="font-semibold text-[#15aa87] mr-2 whitespace-nowrap">
                             {{ image.percent ? `- ${((image.file.size - (image.compressedSize ?? image.file.size)) /
                                 1024).toFixed(2)}KB` : '-' }}
@@ -71,8 +71,11 @@
                             </i>
                         </button>
                     </div>
+                    <div v-if="image.isError">
+                        <p class="text-sm text-red-500">压缩失败，请检查图片</p>
+                    </div>
                 </div>
-                <miao-collapse :show="image.display">
+                <miao-collapse :show="image.display && !image.isError">
                     <div class="flex flex-col md:flex-row">
                         <div class="w-full md:w-1/2 p-6 border-b md:border-b-0 md:border-r border-gray-100">
                             <div class="flex items-center justify-between">
@@ -125,6 +128,7 @@ interface ImageItem {
     processing: boolean;
     percent?: number;
     display: boolean;
+    isError?: boolean;
 }
 
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -134,10 +138,18 @@ const isCompressing = ref(false);
 
 const isProcessingDownload = ref(false);
 
-const workerPool = import.meta.client ? new WorkerPool(compressImgWorker, {}) : null;
+const workerPool = import.meta.client ? new WorkerPool(compressImgWorker) : null;
 
-const compressImgByWorker = async (file: File, options: { quality: number }) =>
-    workerPool ? (await workerPool.postMessage({ file, ...options })).file : null;
+const compressImgByWorker: (file: File, options: { quality: number }) => Promise<File> = workerPool ? async (file: File, options: { quality: number }) => {
+    const res =
+        (await workerPool.postMessage({ file, ...options }));
+    if (res && res.error) {
+        throw new Error(res.error);
+    }
+    return res!.file;
+} : async (file: File) => {
+    return file
+};
 
 const replaceSuffix = (filename: string, suffix: string) => {
     const dotIndex = filename.lastIndexOf('.');
@@ -166,6 +178,7 @@ const downloadAll = async () => {
     const zip = new JSZip.default();
 
     imageList.forEach((imageItem) => {
+        if (imageItem.isError || !imageItem.compressedFile) return;
         zip.file(imageItem.compressedFile!.name, imageItem.compressedFile!);
     });
 
@@ -235,11 +248,13 @@ const handleImages = async (files: File[]) => {
             const compressedBlob = await compressImgByWorker(file, { quality: quality.value })!;
             updateImageData(imageItem, compressedBlob!);
         } catch (error) {
-            console.error('图片压缩失败:', error);
-            const index = imageList.findIndex(item => item.originalUrl === originalUrl);
-            if (index !== -1) {
-                imageList[index].processing = false;
-            }
+            console.error( `${file.name} 压缩失败，请检查图片`, error);
+            ElMessage({
+                message: `${file.name} 压缩失败，请检查图片`,
+                type: 'error',
+            });
+            imageItem.processing = false;
+            imageItem.isError = true;
         }
     };
     await Promise.all(files.map(item => _c(item)));
@@ -266,6 +281,7 @@ const updateImageData = (imageItem: ImageItem, compressedBlob: Blob) => {
         imageList[index].compressedFile = new File([compressedBlob], replaceSuffix(imageItem.file.name, '.jpeg'), {
             type: 'image/jpeg',
         });
+        imageList[index].isError = false;
     }
 };
 
@@ -283,8 +299,13 @@ const recompressAllImages = async () => {
             const compressedBlob = await compressImgByWorker(imageItem.file, { quality: quality.value })!;
             updateImageData(imageItem, compressedBlob!);
         } catch (error) {
-            console.error('重新压缩失败:', error);
+            console.error( `${imageItem.file.name} 压缩失败，请检查图片`, error);
+            ElMessage({
+                message: `${imageItem.file.name} 压缩失败，请检查图片`,
+                type: 'error',
+            });
             imageItem.processing = false;
+            imageItem.isError = true;
         }
     }));
 
