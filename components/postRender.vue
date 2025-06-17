@@ -1,7 +1,9 @@
 <template>
     <div class="md-render-wrapper markdown-body">
         <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
-        <component v-for="vnode in VNodeMD" :is="vnode"></component>
+        <!-- 好吧我承认不写key确实影响很大 -->
+        <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD" :key="vnode.key"></component>
+        <div v-else v-html="props.data"></div>
     </div>
 </template>
 

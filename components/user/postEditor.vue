@@ -51,8 +51,8 @@
                 class="markdown-textarea w-full min-h-[300px] p-3 resize-none border-1 border-gray-300 rounded-sm outline-none font-mono text-base "
                 @keydown.tab.prevent="handleTab" @paste="handlePaste"></textarea>
             <div style="flex: 1;" class="border-1 border-gray-300 rounded-sm w-0" v-if="isPreviewing">
-                <el-scrollbar max-height="63vh">
-                    <div class="pb-32">
+                <el-scrollbar max-height="63vh" ref="scrollbarRef">
+                    <div class="pb-32" ref="postRenderRef">
                         <post-render :data="content_mdit_rendered ?? ''" :disable-skeleton="false" />
                     </div>
                 </el-scrollbar>
@@ -64,6 +64,9 @@
 <script setup lang="ts">
 import ImageIcon from '~/components/icons/image.vue'
 import compressImg from '~/utils/compressImg';
+import { ElScrollbar } from 'element-plus';
+import PostRender from '~/components/postRender.vue'
+import { debounce } from 'lodash-es';
 
 const _props = defineProps<{
     disabled?: boolean
@@ -81,6 +84,8 @@ const isEditing = ref(true)
 const isPreviewing = ref(false)
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
+const scrollbarRef = ref<InstanceType<typeof ElScrollbar> | null>(null)
+const postRenderRef = ref<HTMLDivElement | null>(null)
 
 let isUnmounted = false;
 
@@ -191,9 +196,45 @@ onMounted(() => {
         }
     }
     window.addEventListener('keydown', handleKeyDown)
+
+
+    let postRenderObserver: MutationObserver | undefined
+
+    watch(() => postRenderRef.value, (newVal) => {
+        if (newVal !== null) {
+            const target = newVal;
+            postRenderObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.target.nodeName === "#text") {
+                        const targetElement = mutation.target.parentElement
+                        if (targetElement && scrollbarRef.value) {
+                            const container = scrollbarRef.value.$el.querySelector('.el-scrollbar__wrap');
+                            if (container) {
+                                const targetRect = targetElement.getBoundingClientRect();
+                                const containerRect = container.getBoundingClientRect();
+                                const scrollTop = targetRect.top - containerRect.top + container.scrollTop - 50;
+                                
+                                scrollbarRef.value.scrollTo({
+                                    top: scrollTop,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    }
+                });
+            });
+            postRenderObserver.observe(target, { childList: false, subtree: true, characterData: true, characterDataOldValue: true });
+        } else {
+            postRenderObserver?.disconnect()
+            postRenderObserver = undefined
+        }
+    })
+
     onUnmounted(() => {
         isUnmounted = true;
         window.removeEventListener('keydown', handleKeyDown)
+
+        postRenderObserver?.disconnect()
     })
 })
 </script>

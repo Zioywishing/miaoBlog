@@ -44,7 +44,18 @@ export default class Html2VNode {
         // console.log({ _wrinklesResult, wrinklesResult })
         const vnodes = await this.render2VNode(wrinklesResult, _ => this.filterMiddleware(_)!);
         // (async _ => console.log(await vnodes, wrinklesResult, html2ObjResult))()
-        return vnodes.filter(item => typeof item !== 'string');
+
+        const result = vnodes.filter(item => typeof item !== 'string') as VNode[]
+        
+        const _keyMap = new Map<string, number>()
+        
+        result.forEach(item => {
+            if (typeof item.type === 'string') {
+                _keyMap.set(item.type, (_keyMap.get(item.type) ?? 0) + 1)
+                item.key = item.key ?? `${item.type}-${_keyMap.get(item.type)}`
+            }
+        })
+        return result;
     }
 
     private buildMiaoVNodeFromDoc = (nodes: NodeListOf<ChildNode>): miaoVNodeType[] => {
@@ -84,22 +95,19 @@ export default class Html2VNode {
         wrinklesResult: (miaoVNodeType | string)[],
         filterMiddleware: (tagName: string) => middlewareType
     ): Promise<(VNode | string)[]> => {
-        return Promise.all(wrinklesResult.map((async (item: miaoVNodeType | string): Promise<VNode | string> => {
+        return Promise.all(wrinklesResult.map((async (item: miaoVNodeType | string): Promise<(VNode | string)> => {
             if (typeof item === 'string') {
                 return item;
             }
             const { tagName = '', tagAttrs } = item
             const middleware = filterMiddleware(tagName);
-            const _res = middleware.render({
+            const _res = await middleware.render({
                 item,
                 tagName,
                 tagAttrs,
                 filterMiddleware
             })
-            if (_res) {
-                return await _res
-            }
-            return ''
+            return _res
         })))
     }
 
