@@ -153,6 +153,9 @@ watch(() => props.data, async () => {
         color: #fff;
         user-select: none;
         transition:all .25s ease;
+        position: sticky;
+        top: 0;
+        z-index: 20;
 
         .cm-header-controls {
             display: flex;
