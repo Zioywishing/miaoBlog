@@ -16,7 +16,7 @@
         </div>
         <miao-collapse v-if="!inline" :show="show" :fade="true" style="overflow: hidden;">
             <el-scrollbar class="bg-[#eff1f5] rounded-b-[10px]">
-                <div class="bg-[#eff1f5] pr-0.5 pb-1.5 w-fit">
+                <div class="bg-[#eff1f5] pr-0.5 pb-1.5 pl-3 pt-1 w-fit">
                     <div ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
                 </div>
                 <!-- <div v-if="!inline" class="bg-[#eff1f5] rounded-b-[10px] w-full h-3"></div> -->

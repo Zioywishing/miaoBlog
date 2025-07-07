@@ -107,7 +107,8 @@ watch(() => props.data, async () => {
 
     /* 恢复段落样式 */
     p {
-        margin-top: 0;
+        // margin-top: 0;
+        margin: 5px 0;
         line-height: 1.6;
     }
 
@@ -214,7 +215,7 @@ watch(() => props.data, async () => {
 
     /* 恢复预格式化文本样式 */
     pre {
-        padding: 0px 15px;
+        // padding: 0px 15px;
         white-space: pre-wrap;
         // word-wrap: break-word;
         // overflow-wrap: break-word;
