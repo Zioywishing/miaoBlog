@@ -3,7 +3,7 @@
         <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
         <!-- 好吧我承认不写key确实影响很大 -->
         <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD" :key="vnode.key"></component>
-        <div v-else v-html="props.data"></div>
+        <div v-else v-html="props.data" class="md-render-html-fix"></div>
     </div>
 </template>
 
@@ -38,6 +38,56 @@ watch(() => props.data, async () => {
 })
 
 </script>
+
+<style lang="scss">
+// 尽量使渲染前的页面与渲染后的保持一致
+.md-render-html-fix {
+
+    :not(pre) {
+        code {
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            margin: 0;
+            border: none;
+            white-space: normal;
+
+            background-color: rgb(239, 241, 245);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #111;
+
+        }
+    }
+
+    pre:has(> code:only-child) {
+        --spacing: .25rem;
+        overflow-x: hidden;
+        background-color: rgb(239, 241, 245);
+        // padding: calc(var(--spacing) * 1) calc(var(--spacing) * .5) calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);
+        border-radius: 10px 10px;
+
+
+        &::before {
+            content: ' loading';
+            width: 100%;
+            height: 25px;
+            display: flex;
+            background-color: #15aa87;
+            border-radius: 10px 10px 0 0;
+            color: #fff;
+            font-size: small;
+            align-items: center;
+        }
+
+        code {
+            display: block;
+            padding: calc(var(--spacing) * 1) calc(var(--spacing) * .5) calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);
+
+        }
+    }
+}
+</style>
 
 <style lang="scss">
 .md-render-wrapper {
