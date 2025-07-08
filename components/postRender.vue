@@ -37,11 +37,21 @@ watch(() => props.data, async () => {
     immediate: true
 })
 
+
 </script>
 
 <style lang="scss">
 // 尽量使渲染前的页面与渲染后的保持一致
 .md-render-html-fix {
+
+    img {
+        border-radius: .25rem;
+        margin: 5px 0;
+        // margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+    }
 
     :not(pre) {
         code {
