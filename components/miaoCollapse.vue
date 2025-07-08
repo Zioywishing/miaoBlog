@@ -1,5 +1,5 @@
 <template>
-    <div class="miao-collapse-warpper" ref="cwRef" :style="cwStyle">
+    <div class="miao-collapse-warpper" ref="cwRef" :style="{...cwStyle, ...cwStyleBase}">
         <div class="miao-collapse" ref="cRef" :style="cStyle" v-if="rC">
             <slot></slot>
         </div>
@@ -17,6 +17,15 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    end: {
+        type: Boolean,
+        default: true,
+    },
+    // todo: duration
+    // duration: {
+    //     type: Number,
+    //     default: 300,
+    // },
 })
 const cwRef = ref<HTMLDivElement>()
 const cRef = ref<HTMLDivElement>()
@@ -26,6 +35,10 @@ const cwStyle = ref<{ [key: string]: string | number }>(props.show ? {} : {
     display: 'none',
     opacity: props.fade ? 0 : 1,
     pointerEvents: 'none',
+})
+
+const cwStyleBase = shallowRef({
+    justifyContent: props.end ? 'flex-end' : 'flex-start',
 })
 const cStyle = ref<{ [key: string]: string | number }>({})
 
@@ -127,7 +140,7 @@ onMounted(() => {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    // justify-content: end;
     opacity: 1;
     // transition: all 0.3s ease-in-out, opacity 0.15s linear;
 

@@ -331,6 +331,8 @@ if (import.meta.server) {
           cursor: pointer;
           color: #535353;
 
+          z-index: 10;
+
           // &:hover {
           //   color: #000000;
           // }
