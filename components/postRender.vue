@@ -3,6 +3,14 @@
         <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
         <!-- 好吧我承认不写key确实影响很大 -->
         <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD || 1" :key="vnode.key"></component>
+        <span>{{ VNodeMD.length }}</span>
+        <!-- <span v-if="isServer">server</span>
+        <div>
+            <p>
+                1232313
+                <img src="http://localhost:7058/api/tools/imgBed/download/ef2af7d850e91a94d8775942c284fe0c" alt="">
+            </p>
+        </div> -->
         <!-- <div v-else v-html="props.data" class="md-render-html-fix"></div>  -->
     </div>
 </template>
@@ -14,6 +22,8 @@ import useImgDisplayMiddleware from '~/hooks/h2v/imgMiddleware';
 import Html2VNodeSSR from '~/utils/html2VNode_SSR';
 // import Html2VNode from '~/utils/html2VNode';
 
+const isServer = shallowRef(import.meta.server)
+
 const props = defineProps<{
     data: string
 }>()
@@ -21,6 +31,9 @@ const props = defineProps<{
 const VNodeMD = shallowRef<any>()
 
 const h2v = new Html2VNodeSSR()
+// if (import.meta.server) {
+    await h2v.useHtmlparser2()
+// }
 
 
 h2v.use(useCodedisplayMiddleware())
@@ -33,9 +46,6 @@ const renderHTML = async () => {
     VNodeMD.value = await h2v.render(props.data!)
 }
 
-if (import.meta.server) {
-    await h2v.useHtmlparser2()
-}
 
 watch(() => props.data, renderHTML)
 

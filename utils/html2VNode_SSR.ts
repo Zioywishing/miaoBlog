@@ -54,22 +54,13 @@ export default class Html2VNodeSSR {
 
 
     public async render(htmlString: string) {
-        // if (!this.domParser) {
-        //     return h(htmlString);
-        // }
-        // const doc = (this.domParser(htmlString, "text/html") as any).body;
-        // const docTest = htmlparser2.parseDocument(htmlString);
-        // console.log({ docTest, doc })
-        // if (!doc) {
-        //     throw new Error('htmlString is not a valid html string')
-        // }
-        // const wrinklesResult = this.buildMiaoVNodeFromDoc(doc.childNodes);
-        // const wrinklesResultTest = this.buildMiaoVNodeFromDocTest(docTest.children);
-        // console.log({ wrinklesResult, wrinklesResultTest })
+        console.log(htmlString)
         const miaoNodes = this.parseDocument(htmlString);
         const vnodes = await this.render2VNode(miaoNodes, _ => this.filterMiddleware(_)!);
         // const vnodes = await this.render2VNode(wrinklesResult, _ => this.filterMiddleware(_)!);
         const result = vnodes.filter(item => typeof item !== 'string') as VNode[]
+        console.log(JSON.stringify(result))
+
 
         // const _keyMap = new Map<string, number>()
 
