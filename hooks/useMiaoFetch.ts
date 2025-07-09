@@ -1,4 +1,3 @@
-import needRegister from "~/server/api/user/needRegister";
 import useUserStore from "./pinia/useUserStore"
 
 
