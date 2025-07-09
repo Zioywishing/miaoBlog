@@ -1,11 +1,18 @@
 import type { VNode } from "vue";
-// import * as htmlparser2 from "htmlparser2";
+
+// tod0: client不应该加载这个
+import * as htmlparser2 from "htmlparser2";
 
 // 得重构了
 export default class Html2VNodeSSR {
     private middlewareList: middlewareType[] = []
     private middlewareMap: Map<string, middlewareType> = new Map();
-    private domParser = window && DOMParser !== undefined ? new DOMParser() : null;
+    // @ts-ignore
+    private domParser: ((...args: any[]) => unknown) | undefined = window && DOMParser !== undefined ? (...args: any[]) => (new DOMParser()).parseFromString(...args) : undefined;
+
+
+
+    private parserType: "window" | "htmlparser2" = "window";
 
     constructor() {
         this.use(this.defaultMiddleware)
@@ -14,6 +21,14 @@ export default class Html2VNodeSSR {
 
     public use(middleware: middlewareType) {
         this.middlewareList.unshift(middleware)
+    }
+
+    public async useHtmlparser2(){
+        this.parserType = 'htmlparser2'
+        this.domParser = htmlparser2.parseDocument
+        // return import("htmlparser2").then(res => {
+        //     this.domParser = res.parseDocument
+        // })
     }
 
     private filterMiddleware = (tagName: string) => {
@@ -27,30 +42,79 @@ export default class Html2VNodeSSR {
         }
     }
 
+    private parseDocument(htmlString: string): miaoVNodeType[] {
+        if (this.parserType === 'window') {
+            const doc =  (this.domParser!(htmlString, "text/html")as any).body as any
+            return this.buildMiaoVNodeFromDoc(doc.childNodes);
+        }
+        // const doc = htmlparser2.parseDocument(htmlString)
+        const doc = this.domParser!(htmlString) as any
+        return this.buildMiaoVNodeFromDocTest(doc.children);
+    }
+
 
     public async render(htmlString: string) {
-        if (!this.domParser) {
-            return h(htmlString);
-        }
-        const doc = this.domParser.parseFromString(htmlString, "text/html").body;
-        // const docTest = htmlparser2.parseDocument(doc);
-        // console.log({docTest})
-        if (!doc) {
-            throw new Error('htmlString is not a valid html string')
-        }
-        const wrinklesResult = this.buildMiaoVNodeFromDoc(doc.childNodes);
-        const vnodes = await this.render2VNode(wrinklesResult, _ => this.filterMiddleware(_)!);
+        // if (!this.domParser) {
+        //     return h(htmlString);
+        // }
+        // const doc = (this.domParser(htmlString, "text/html") as any).body;
+        // const docTest = htmlparser2.parseDocument(htmlString);
+        // console.log({ docTest, doc })
+        // if (!doc) {
+        //     throw new Error('htmlString is not a valid html string')
+        // }
+        // const wrinklesResult = this.buildMiaoVNodeFromDoc(doc.childNodes);
+        // const wrinklesResultTest = this.buildMiaoVNodeFromDocTest(docTest.children);
+        // console.log({ wrinklesResult, wrinklesResultTest })
+        const miaoNodes = this.parseDocument(htmlString);
+        const vnodes = await this.render2VNode(miaoNodes, _ => this.filterMiddleware(_)!);
+        // const vnodes = await this.render2VNode(wrinklesResult, _ => this.filterMiddleware(_)!);
         const result = vnodes.filter(item => typeof item !== 'string') as VNode[]
-        
-        const _keyMap = new Map<string, number>()
-        
-        result.forEach(item => {
-            if (typeof item.type === 'string') {
-                _keyMap.set(item.type, (_keyMap.get(item.type) ?? 0) + 1)
-                item.key = item.key ?? `${item.type}-${_keyMap.get(item.type)}`
-            }
-        })
+
+        // const _keyMap = new Map<string, number>()
+
+        // result.forEach(item => {
+        //     if (typeof item.type === 'string') {
+        //         _keyMap.set(item.type, (_keyMap.get(item.type) ?? 0) + 1)
+        //         item.key = item.key ?? `${item.type}-${_keyMap.get(item.type)}`
+        //     }
+        // })
         return result;
+    }
+
+    private isTextChild = (node: any) => {
+        return node.children.length === 1 && node.children[0].type === "text"
+    }
+
+    private buildMiaoVNodeFromDocTest = (doc: any[]): miaoVNodeType[] => {
+        const vnodes: miaoVNodeType[] = [];
+        for (const node of doc) {
+            if (node.type === "text" && node.data === "\n") {
+                continue
+            }
+            if (!node.name) {
+                vnodes.push({
+                    tagName: "",
+                    tagAttrs: {},
+                    children: node.data
+                });
+                continue
+            }
+            const tagName = node.name.toLowerCase();
+            const tagAttrs = node.attribs
+            const children = this.isTextChild(node) ? [{
+                tagName: "",
+                tagAttrs: {},
+                children: node.children[0].data
+            }] :
+                this.buildMiaoVNodeFromDocTest(node.children)
+            vnodes.push({
+                tagName,
+                tagAttrs,
+                children,
+            });
+        }
+        return vnodes;
     }
 
     private buildMiaoVNodeFromDoc = (nodes: NodeListOf<ChildNode>): miaoVNodeType[] => {

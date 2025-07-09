@@ -1,3 +1,5 @@
+<!-- todo: ssr有问题 -->
+
 <template>
     <el-image :src="src" :alt="alt" :preview-src-list="realPreviewSrcList" class=" rounded-sm">
     </el-image>
@@ -14,6 +16,7 @@ const mounted = ref(false)
 
 // 有点蠢
 const realPreviewSrcList = computed(() => {
+    if(import.meta.server) return []
     if (!mounted.value) return []
     const list = [...props.previewSrcList]
     const index = list.indexOf(props.src)

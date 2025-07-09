@@ -2,8 +2,8 @@
     <div class="md-render-wrapper markdown-body">
         <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
         <!-- 好吧我承认不写key确实影响很大 -->
-        <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD" :key="vnode.key"></component>
-        <div v-else v-html="props.data" class="md-render-html-fix"></div>
+        <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD || 1" :key="vnode.key"></component>
+        <!-- <div v-else v-html="props.data" class="md-render-html-fix"></div>  -->
     </div>
 </template>
 
@@ -11,31 +11,35 @@
 import useCodedisplayMiddleware from '~/hooks/h2v/codemirrorMiddleware';
 import useImgDisplayMiddleware from '~/hooks/h2v/imgMiddleware';
 // import useMarkdownit from '~/hooks/useMarkdownit';
-import Html2VNode from '~/utils/html2VNode';
+import Html2VNodeSSR from '~/utils/html2VNode_SSR';
+// import Html2VNode from '~/utils/html2VNode';
 
 const props = defineProps<{
     data: string
-    disableSkeleton?: boolean
 }>()
 
 const VNodeMD = shallowRef<any>()
 
-const renderedData = ref<string>()
+const h2v = new Html2VNodeSSR()
 
-const h2v = new Html2VNode()
+
 h2v.use(useCodedisplayMiddleware())
 h2v.use(useImgDisplayMiddleware())
 
-watch(() => props.data, async () => {
+const renderHTML = async () => {
     if (!props.data) {
-        return
+        VNodeMD.value = h('div', {}, "empty")
     }
-    renderedData.value = props.data
-    const res = await h2v.render(renderedData.value!)
-    VNodeMD.value = res
-}, {
-    immediate: true
-})
+    VNodeMD.value = await h2v.render(props.data!)
+}
+
+if (import.meta.server) {
+    await h2v.useHtmlparser2()
+}
+
+watch(() => props.data, renderHTML)
+
+await renderHTML()
 
 
 </script>

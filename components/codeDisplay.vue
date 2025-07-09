@@ -38,7 +38,6 @@ const props = defineProps<{
 const show = ref(true)
 const codeContainer = ref<HTMLElement>()
 const highlightedCode = ref('')
-// const isLoading = ref(true)
 
 const wrapperClass = computed(() => {
     return ['cm-rander-wrapper', props.inline === true ? 'cm-rander-wrapper-inline' : '']
@@ -47,14 +46,6 @@ const wrapperClass = computed(() => {
 const headerStyle = computed(() => ({
     borderRadius: show.value ? "10px 10px 0 0" : "10px 5px 10px 5px"
 }))
-
-// const rows = computed(() => {
-//     if (!props.data) {
-//         return 5
-//     }
-//     const lines = props.data.split('\n')
-//     return lines.length - 2 > 0 ? lines.length - 2 : 1
-// })
 
 const highlightCode = async () => {
     // isLoading.value = false
@@ -95,7 +86,7 @@ const highlightCode = async () => {
             // theme: 'github-dark'
         })
     } catch (error) {
-        // console.error('代码高亮失败:', error)
+        console.error('代码高亮失败:', error)
         // 降级处理：如果高亮失败，直接使用pre和code标签
         highlightedCode.value = `<pre style="background-color: #eff1f5;color: #4c4f69;"><code>${escapeHtml(props.data)}</code></pre>`
     } finally {
@@ -118,9 +109,11 @@ const copyCode = () => {
     ElMessage.success('复制成功')
 }
 
-onMounted(async () => {
-    await highlightCode()
-})
+// onMounted(async () => {
+//     await highlightCode()
+// })
+
+await highlightCode()
 
 watch(() => props.data, async () => {
     await highlightCode()
