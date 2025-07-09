@@ -1,0 +1,134 @@
+import type { VNode } from "vue";
+// import * as htmlparser2 from "htmlparser2";
+
+// 得重构了
+export default class Html2VNodeSSR {
+    private middlewareList: middlewareType[] = []
+    private middlewareMap: Map<string, middlewareType> = new Map();
+    private domParser = window && DOMParser !== undefined ? new DOMParser() : null;
+
+    constructor() {
+        this.use(this.defaultMiddleware)
+        // this.use(this.preMiddleware)
+    }
+
+    public use(middleware: middlewareType) {
+        this.middlewareList.unshift(middleware)
+    }
+
+    private filterMiddleware = (tagName: string) => {
+        if (this.middlewareMap.has(tagName)) {
+            return this.middlewareMap.get(tagName)
+        }
+        else {
+            const mid = this.middlewareList.filter(middleware => middleware.filter(tagName))[0]!
+            this.middlewareMap.set(tagName, mid)
+            return mid;
+        }
+    }
+
+
+    public async render(htmlString: string) {
+        if (!this.domParser) {
+            return h(htmlString);
+        }
+        const doc = this.domParser.parseFromString(htmlString, "text/html").body;
+        // const docTest = htmlparser2.parseDocument(doc);
+        // console.log({docTest})
+        if (!doc) {
+            throw new Error('htmlString is not a valid html string')
+        }
+        const wrinklesResult = this.buildMiaoVNodeFromDoc(doc.childNodes);
+        const vnodes = await this.render2VNode(wrinklesResult, _ => this.filterMiddleware(_)!);
+        const result = vnodes.filter(item => typeof item !== 'string') as VNode[]
+        
+        const _keyMap = new Map<string, number>()
+        
+        result.forEach(item => {
+            if (typeof item.type === 'string') {
+                _keyMap.set(item.type, (_keyMap.get(item.type) ?? 0) + 1)
+                item.key = item.key ?? `${item.type}-${_keyMap.get(item.type)}`
+            }
+        })
+        return result;
+    }
+
+    private buildMiaoVNodeFromDoc = (nodes: NodeListOf<ChildNode>): miaoVNodeType[] => {
+        const vnodes: miaoVNodeType[] = [];
+        for (const node of nodes) {
+            const tagName = node.nodeName.toLowerCase();
+            if (tagName === '#text' || tagName === 'text') {
+                vnodes.push({
+                    tagName: '',
+                    tagAttrs: {},
+                    // @ts-ignore
+                    children: node.data as string,
+                });
+                continue;
+            }
+            const childNodes = node.childNodes;
+            // @ts-ignore
+            const data = node.data as string | undefined;
+            // @ts-ignore
+            const attributes = node.attributes as NamedNodeMap | undefined;
+            const tagAttrs = {} as Record<string, string>;
+            if (attributes) {
+                for (const attr of attributes) {
+                    tagAttrs[attr.name] = attr.value;
+                }
+            }
+            vnodes.push({
+                tagName,
+                tagAttrs,
+                children: node.childNodes.length ? this.buildMiaoVNodeFromDoc(childNodes) : data ?? "",
+            })
+        }
+        return vnodes;
+    }
+
+    private render2VNode = async (
+        wrinklesResult: (miaoVNodeType | string)[],
+        filterMiddleware: (tagName: string) => middlewareType
+    ): Promise<(VNode | string)[]> => {
+        return Promise.all(wrinklesResult.map((async (item: miaoVNodeType | string): Promise<(VNode | string)> => {
+            if (typeof item === 'string') {
+                return item;
+            }
+            const { tagName = '', tagAttrs } = item
+            const middleware = filterMiddleware(tagName);
+            const _res = await middleware.render({
+                item,
+                tagName,
+                tagAttrs,
+                filterMiddleware
+            })
+            return _res
+        })))
+    }
+
+    private defaultMiddleware: middlewareType = {
+        filter: (_: string) => {
+            return true;
+        },
+        render: async ({
+            item, tagName, tagAttrs, filterMiddleware
+        }) => {
+            if (!tagName) {
+                return item.children as string;
+            }
+            let child: string | (string | VNode)[] = item.children as string
+            if (typeof item.children !== 'string') {
+                child = await this.render2VNode(item.children, filterMiddleware)
+                // if (tagName === "table") debugger
+            }
+            return h(tagName ?? 'span', tagAttrs, child)
+        }
+    }
+}
+
+type miaoVNodeType = {
+    // tag: string,
+    tagName: string,
+    tagAttrs: { [key: string]: string },
+    children: string | miaoVNodeType[],
+}
