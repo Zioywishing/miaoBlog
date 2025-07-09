@@ -1,13 +1,17 @@
 <template>
     <div class="md-wrapper">
-        <div v-if="status === 'pending' && !postData" class="h-[70vh] flex justify-center items-center w-full">
-            <miao-loading></miao-loading>
-        </div>
-        <div v-else class="md">
-            <div class="md-title">{{ postData?.title ?? "未知文章" }}</div>
-            <div class="md-divider"></div>
-            <post-render v-if="postData" :data="postData.data"></post-render>
-        </div>
+        <Transition name="fade">
+            <div v-if="isLoading" class="h-[70vh] flex justify-center items-center w-full absolute top-0 left-0">
+                <miao-loading></miao-loading>
+            </div>
+        </Transition>
+        <Transition name="fadein">
+            <div v-if="!isLoading" class="md">
+                <div class="md-title">{{ postData?.title ?? "未知文章" }}</div>
+                <div class="md-divider"></div>
+                <post-render v-if="postData" :data="postData.data"></post-render>
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -25,6 +29,18 @@ const { status, data: postData } = await useLazyFetch("/api/posts/getPostContent
     server: true,
     key: `post-content-${id}`,
 })
+
+// const test = ref(false)
+
+// setTimeout(() => {
+//     test.value = true
+// }, 1000)
+
+const isLoading = computed(() => 
+status.value === 'pending' 
+    || !postData 
+    // || !test.value
+)
 
 if (import.meta.server) {
     function extractFirstImage(html: string): { url: string; alt: string } | null {
@@ -92,5 +108,25 @@ if (import.meta.server) {
     height: 1px;
     background-color: #e8e8e8;
     margin: 30px 0;
+}
+
+.fade-leave-active {
+    transition: opacity 0.1s linear;
+}
+
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fadein-enter-active {
+    transition: opacity 0.1s linear;
+}
+
+.fadein-enter-from {
+    opacity: 0;
+}
+
+.fadein-enter-to {
+    opacity: 1;
 }
 </style>
