@@ -30,7 +30,6 @@ const useCodedisplayMiddleware: () => middlewareType = () => ({
                 // @ts-ignore
                 data: item.children[0].children.trim(),
                 type: codeType,
-                inline,
             },
         )
     },

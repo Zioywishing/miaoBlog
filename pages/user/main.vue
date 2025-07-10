@@ -252,9 +252,9 @@ const handleLogout = () => {
 }
 </style>
 
-<style lang="scss">
+<style scoped lang="scss">
 .user-main {
-    .user-sidebar {
+    :deep(.user-sidebar) {
         .sidebar-item {
             .sidebar-item-icon {
                 svg {
@@ -295,7 +295,7 @@ const handleLogout = () => {
         }
     }
 
-    .user-bottom-bar {
+    :deep(.user-bottom-bar) {
         .bottom-item {
             .bottom-item-icon {
                 svg {

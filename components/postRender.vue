@@ -1,7 +1,8 @@
 <template>
     <div class="md-render-wrapper markdown-body">
         <!-- todo: 更新场景下的差分更新diff优化 -->
-        <component v-for="vnode in VNodeMD" :is="vnode"></component>
+        <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD.length && 1"></component>
+        <div class="md-render-html-fix" v-html="props.data" v-else></div>
     </div>
 </template>
 
@@ -9,7 +10,7 @@
 import type { VNode } from 'vue';
 import useCodedisplayMiddleware from '~/hooks/h2v/codemirrorMiddleware';
 import useImgDisplayMiddleware from '~/hooks/h2v/imgMiddleware';
-import Html2VNodeSSR from '~/utils/html2VNode_SSR';
+import Html2VNode from '~/utils/html2VNode';
 
 const props = defineProps<{
     data: string
@@ -17,7 +18,7 @@ const props = defineProps<{
 
 const VNodeMD = shallowRef<VNode[]>([])
 
-const h2v = new Html2VNodeSSR()
+const h2v = new Html2VNode()
 
 h2v.use(useCodedisplayMiddleware())
 h2v.use(useImgDisplayMiddleware())
@@ -26,7 +27,7 @@ const renderHTML = async () => {
     if (!props.data) {
         VNodeMD.value = [h('span', {}, "empty")]
     }
-    VNodeMD.value = await h2v.render(props.data!)
+    VNodeMD.value = await h2v.render(props.data!) as VNode[]
 }
 
 
@@ -37,11 +38,11 @@ await renderHTML()
 
 </script>
 
-<!-- <style lang="scss">
+<style scoped lang="scss">
 // 尽量使渲染前的页面与渲染后的保持一致
 .md-render-html-fix {
 
-    img {
+    :deep(img) {
         border-radius: .25rem;
         margin: 5px 0;
         // margin-block-start: 1em;
@@ -50,7 +51,7 @@ await renderHTML()
         margin-inline-end: 0px;
     }
 
-    :not(pre) {
+    :deep(:not(pre)) {
         code {
             font-family: inherit;
             font-size: inherit;
@@ -67,12 +68,13 @@ await renderHTML()
         }
     }
 
-    pre:has(> code:only-child) {
+    :deep(pre:has(> code:only-child)) {
         --spacing: .25rem;
         overflow-x: hidden;
         background-color: rgb(239, 241, 245);
         // padding: calc(var(--spacing) * 1) calc(var(--spacing) * .5) calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);
         border-radius: 10px 10px;
+        margin-bottom: .5rem;
 
 
         &::before {
@@ -90,11 +92,10 @@ await renderHTML()
         code {
             display: block;
             padding: calc(var(--spacing) * 1) calc(var(--spacing) * .5) calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);
-
         }
     }
 }
-</style> -->
+</style>
 
 <style lang="scss">
 .md-render-wrapper {

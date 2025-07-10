@@ -1,6 +1,6 @@
 <template>
-    <div :class="wrapperClass" class="mb-2">
-        <div class="cm-header" v-if="!inline" :style="headerStyle">
+    <div class="cm-rander-wrapper mb-2">
+        <div class="cm-header"  :style="headerStyle">
             <div class="cm-header-title">
                 <span>{{ props.type ?? 'Code' }}</span>
             </div>
@@ -14,15 +14,13 @@
                 </div>
             </div>
         </div>
-        <miao-collapse v-if="!inline" :show="show" :fade="false" :end="false" style="overflow: hidden;">
+        <miao-collapse :show="show" :fade="false" :end="false" style="overflow: hidden;">
             <el-scrollbar class="bg-[#eff1f5] rounded-b-[10px]">
                 <div class="bg-[#eff1f5] pr-0.5 pb-1.5 pl-3 pt-1 w-fit">
-                    <div ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
+                    <div class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
                 </div>
-                <!-- <div v-if="!inline" class="bg-[#eff1f5] rounded-b-[10px] w-full h-3"></div> -->
             </el-scrollbar>
         </miao-collapse>
-        <div v-else ref="codeContainer" class="rounded-b-[10px] bg-[#e7e7e7]" v-html="highlightedCode"></div>
     </div>
 </template>
 
@@ -32,16 +30,10 @@ import { codeToHtml } from 'shiki'
 const props = defineProps<{
     data: string,
     type?: string,
-    inline?: boolean,
 }>()
 
 const show = ref(true)
-const codeContainer = ref<HTMLElement>()
 const highlightedCode = ref('')
-
-const wrapperClass = computed(() => {
-    return ['cm-rander-wrapper', props.inline === true ? 'cm-rander-wrapper-inline' : '']
-})
 
 const headerStyle = computed(() => ({
     borderRadius: show.value ? "10px 10px 0 0" : "10px 5px 10px 5px"
@@ -109,11 +101,11 @@ const copyCode = () => {
     ElMessage.success('复制成功')
 }
 
-// onMounted(async () => {
-//     await highlightCode()
-// })
+onMounted(async () => {
+    await highlightCode()
+})
 
-await highlightCode()
+// await highlightCode()
 
 watch(() => props.data, async () => {
     await highlightCode()
@@ -121,7 +113,7 @@ watch(() => props.data, async () => {
 
 </script>
 
-<style lang="scss">
+<style scpoed lang="scss">
 .cm-rander-wrapper {
     &-inline {
         display: inline-block;
@@ -145,7 +137,7 @@ watch(() => props.data, async () => {
         background-color: #15aa87;
         color: #fff;
         user-select: none;
-        transition:all .25s ease;
+        transition: all .25s ease;
         position: sticky;
         top: 0;
         z-index: 20;
