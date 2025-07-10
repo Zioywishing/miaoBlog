@@ -1,5 +1,5 @@
 <template>
-    <div class="miao-collapse-warpper" ref="cwRef" :style="{...cwStyle, ...cwStyleBase}">
+    <div class="miao-collapse-warpper" ref="cwRef" :style="{ ...cwStyle, ...cwStyleBase }">
         <div class="miao-collapse" ref="cRef" :style="cStyle" v-if="rC">
             <slot></slot>
         </div>
@@ -82,6 +82,17 @@ const handleHide = () => {
 
 const handleShow = async () => {
     clearTimer()
+    if (rC.value) {
+        cwStyle.value = {
+            maxHeight: `${originHeight}px`,
+            opacity: 1,
+            transition: "all .2s ease-in-out, opacity .15s ease-in .07s"
+        }
+        nextTick(() => {
+            calcOriginHeight()
+        })
+        return;
+    }
     rC.value = true
     nextTick(() => {
         cwStyle.value = {
@@ -104,9 +115,6 @@ const handleShow = async () => {
                     transition: "all .2s ease-in-out, opacity .15s ease-in .07s"
                 }
                 timer.push(setTimeout(() => {
-                    cwStyle.value = {
-                        opacity: 1,
-                    }
                     nextTick(() => {
                         calcOriginHeight()
                     })
