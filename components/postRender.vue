@@ -1,47 +1,30 @@
 <template>
     <div class="md-render-wrapper markdown-body">
-        <!-- <VNodeMD v-if="VNodeMD && props.data !== undefined"></VNodeMD> -->
-        <!-- 好吧我承认不写key确实影响很大 -->
-        <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD || 1" :key="vnode.key"></component>
-        <span>{{ VNodeMD.length }}</span>
-        <!-- <span v-if="isServer">server</span>
-        <div>
-            <p>
-                1232313
-                <img src="http://localhost:7058/api/tools/imgBed/download/ef2af7d850e91a94d8775942c284fe0c" alt="">
-            </p>
-        </div> -->
-        <!-- <div v-else v-html="props.data" class="md-render-html-fix"></div>  -->
+        <!-- todo: 更新场景下的差分更新diff优化 -->
+        <component v-for="vnode in VNodeMD" :is="vnode"></component>
     </div>
 </template>
 
 <script setup lang="ts">
+import type { VNode } from 'vue';
 import useCodedisplayMiddleware from '~/hooks/h2v/codemirrorMiddleware';
 import useImgDisplayMiddleware from '~/hooks/h2v/imgMiddleware';
-// import useMarkdownit from '~/hooks/useMarkdownit';
 import Html2VNodeSSR from '~/utils/html2VNode_SSR';
-// import Html2VNode from '~/utils/html2VNode';
-
-const isServer = shallowRef(import.meta.server)
 
 const props = defineProps<{
     data: string
 }>()
 
-const VNodeMD = shallowRef<any>()
+const VNodeMD = shallowRef<VNode[]>([])
 
 const h2v = new Html2VNodeSSR()
-// if (import.meta.server) {
-    await h2v.useHtmlparser2()
-// }
-
 
 h2v.use(useCodedisplayMiddleware())
 h2v.use(useImgDisplayMiddleware())
 
 const renderHTML = async () => {
     if (!props.data) {
-        VNodeMD.value = h('div', {}, "empty")
+        VNodeMD.value = [h('span', {}, "empty")]
     }
     VNodeMD.value = await h2v.render(props.data!)
 }
@@ -54,7 +37,7 @@ await renderHTML()
 
 </script>
 
-<style lang="scss">
+<!-- <style lang="scss">
 // 尽量使渲染前的页面与渲染后的保持一致
 .md-render-html-fix {
 
@@ -111,7 +94,7 @@ await renderHTML()
         }
     }
 }
-</style>
+</style> -->
 
 <style lang="scss">
 .md-render-wrapper {

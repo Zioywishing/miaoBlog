@@ -8,7 +8,7 @@
     "aftbuild": "bash ./aftBuild.sh",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
+    "preview": "rm -rf ./.output/userData && cp -r ./userData ./.output && nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {

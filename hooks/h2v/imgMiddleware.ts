@@ -5,18 +5,18 @@ const useImgDisplayMiddleware: () => middlewareType = () => {
             return tagName === 'img'
         },
         async render({
-            item,
+            item: _item,
             tagAttrs,
         }) {
             const imgDisplay = await cachedPromise('component:md-image-display', async () => {
-                const component = markRaw((await import('~/components/h2v/image.vue')).default)
+                const component = markRaw((await import('~/components/h2v/miaoPostImage.vue')).default)
                 return component
             })
             return h(
                 imgDisplay,
                 {
-                    src: tagAttrs?.src!,
-                    alt: tagAttrs?.alt! ?? "",
+                    src: tagAttrs.src!,
+                    alt: tagAttrs.alt! ?? "",
                     previewSrcList,
                 },
             )

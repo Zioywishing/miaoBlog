@@ -1,7 +1,7 @@
 import type { VNode } from "vue";
 
-// tod0: client不应该加载这个
-import * as htmlparser2 from "htmlparser2";
+// todo: client不应该加载这个
+// import * as htmlparser2 from "htmlparser2";
 
 // 得重构了
 export default class Html2VNodeSSR {
@@ -25,10 +25,10 @@ export default class Html2VNodeSSR {
 
     public async useHtmlparser2(){
         this.parserType = 'htmlparser2'
-        this.domParser = htmlparser2.parseDocument
-        // return import("htmlparser2").then(res => {
-        //     this.domParser = res.parseDocument
-        // })
+        // this.domParser = htmlparser2.parseDocument
+        return import("htmlparser2").then(res => {
+            this.domParser = res.parseDocument
+        })
     }
 
     private filterMiddleware = (tagName: string) => {
@@ -54,12 +54,13 @@ export default class Html2VNodeSSR {
 
 
     public async render(htmlString: string) {
-        console.log(htmlString)
+        if (import.meta.server && !this.domParser) {
+            await this.useHtmlparser2()
+        }
         const miaoNodes = this.parseDocument(htmlString);
         const vnodes = await this.render2VNode(miaoNodes, _ => this.filterMiddleware(_)!);
         // const vnodes = await this.render2VNode(wrinklesResult, _ => this.filterMiddleware(_)!);
         const result = vnodes.filter(item => typeof item !== 'string') as VNode[]
-        console.log(JSON.stringify(result))
 
 
         // const _keyMap = new Map<string, number>()
