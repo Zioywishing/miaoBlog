@@ -34,7 +34,7 @@
     "nuxt": "^3.17.6",
     "pinia": "^3.0.3",
     "qrcode": "^1.5.4",
-    "shiki": "^3.6.0",
+    "shiki": "^3.7.0",
     "tailwindcss": "^4.0.5",
     "unplugin-auto-import": "^19.0.0",
     "unplugin-vue-components": "^28.0.0",

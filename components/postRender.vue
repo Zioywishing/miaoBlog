@@ -1,7 +1,8 @@
 <template>
+    <!-- :class="isRendered ? `md-render-html-fix` : ``" -->
     <div class="md-render-wrapper markdown-body">
         <!-- todo: 更新场景下的差分更新diff优化 -->
-        <component v-for="vnode in VNodeMD" :is="vnode" v-if="VNodeMD.length && 1"></component>
+        <component v-for="vnode in VNodeMD" :is="vnode" v-if="isRendered" :key="vnode.key"></component>
         <div class="md-render-html-fix" v-html="props.data" v-else></div>
     </div>
 </template>
@@ -16,24 +17,66 @@ const props = defineProps<{
     data: string
 }>()
 
-const VNodeMD = shallowRef<VNode[]>([])
+const VNodeMD = shallowRef<VNode[]>([h(props.data)])
+
+const isRendered = ref(false)
 
 const h2v = new Html2VNode()
 
 h2v.use(useCodedisplayMiddleware())
 h2v.use(useImgDisplayMiddleware())
 
+const buildVNodeKey = (vnodeArr: VNode[]) => {
+    const _map = new Map<any, number>()
+    const _build = (vnode: VNode) => {
+        const type = typeof vnode.type === "string" ? vnode.type : (vnode as any).type.__name
+        // console.log(type, vnode)
+        _map.set(type, (_map.get(type) || 0) + 1)
+        const _key = `miaoRender-${type}-${_map.get(type)}`
+        if (vnode.key === null || vnode.key === undefined) {
+            vnode.key = _key
+        }
+        vnode.props = vnode.props || {}
+        if(!vnode.props.id) {
+            vnode.props.id = _key
+        }
+    }
+    const _buildEach = (vnodeArr: VNode[]) => {
+        for (const vnode of vnodeArr) {
+            if (!vnode.type) {
+                continue
+            }
+            _build(vnode)
+            // if (vnode.children) {
+            //     if (Array.isArray(vnode.children)) {
+            //         _buildEach(vnode.children as VNode[])
+            //     } else if (typeof vnode.children !== "string" && vnode.children.type) {
+            //         _build(vnode.children as unknown as VNode)
+            //     }
+            // }
+        }
+    }
+    _buildEach(vnodeArr)
+}
+
 const renderHTML = async () => {
     if (!props.data) {
         VNodeMD.value = [h('span', {}, "empty")]
+        isRendered.value = true
     }
     VNodeMD.value = await h2v.render(props.data!) as VNode[]
+    if (import.meta.client) {
+        buildVNodeKey(VNodeMD.value)
+        isRendered.value = true
+    }
 }
 
 
-watch(() => props.data, renderHTML)
+watch(() => props.data, renderHTML, {
+    immediate: true,
+})
 
-await renderHTML()
+// await renderHTML()
 
 
 </script>
