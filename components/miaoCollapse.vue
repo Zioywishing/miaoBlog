@@ -82,7 +82,7 @@ const handleHide = () => {
 
 const handleShow = async () => {
     clearTimer()
-    if (rC.value) {
+    if (rC.value && originHeight !== -1) {
         cwStyle.value = {
             maxHeight: `${originHeight}px`,
             opacity: 1,
@@ -139,7 +139,8 @@ watch(() => props.show, (newVal) => {
 })
 
 onMounted(() => {
-    calcOriginHeight()
+    props.show &&
+        calcOriginHeight()
 })
 </script>
 
