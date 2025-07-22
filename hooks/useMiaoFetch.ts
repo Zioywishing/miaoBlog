@@ -119,7 +119,89 @@ export default function useFetch() {
                     'Authorization': `Bearer ${userStore.token}`
                 }
             })
-        }
+        },
+        essay: {
+            uploadEssay: (body: {
+                content: string,
+                contentHtml: string,
+                images: string[]
+            }) => $fetch('/api/essays/uploadEssay', {
+                method: 'POST',
+                body,
+                headers: {
+                    'Authorization': `Bearer ${userStore.token}`
+                }
+            }),
+            updateEssay: (body: {
+                id: number,
+                content: string,
+                contentHtml: string,
+                images: string[]
+            }) => $fetch('/api/essays/editEssay', {
+                method: 'POST',
+                body,
+                headers: {
+                    'Authorization': `Bearer ${userStore.token}`
+                }
+            }),
+            getEssayList: () => $fetch('/api/essays/getEssayList', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${userStore.token}`
+                }
+            }),
+            deleteEssay: (id: number) => $fetch('/api/essays/deleteEssay', {
+                body: { id },
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${userStore.token}`
+                }
+            })
+        },
+        // user: {
+        //     login: (body: {
+        //         username: string,
+        //         password: string
+        //     }) => $fetch('/api/user/login', {
+        //         method: 'POST',
+        //         body
+        //     }),
+        //     register: (body: {
+        //         username: string,
+        //         password: string
+        //     }) => $fetch('/api/user/register', {
+        //         method: 'POST',
+        //         body
+        //     }),
+        //     needRegister: () => $fetch('/api/user/needRegister'),
+        //     refreshToken: () => $fetch('/api/user/refreshToken', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Authorization': `Bearer ${userStore.token}`
+        //         }
+        //     }),
+        //     updatePassword: (body: {
+        //         oldPassword: string,
+        //         newPassword: string
+        //     }) => $fetch('/api/user/updatePassword', {
+        //         method: 'POST',
+        //         body,
+        //         headers: {
+        //             'Authorization': `Bearer ${userStore.token}`
+        //         }
+        //     })
+        // },
+        // system: {
+        //     updateFromGithub: (url: string) => $fetch('/api/system/updateFromGithub', {
+        //         body: {
+        //             url
+        //         },
+        //         method: 'POST',
+        //         headers: {
+        //             'Authorization': `Bearer ${userStore.token}`
+        //         }
+        //     })
+        // }
     }
 }
 

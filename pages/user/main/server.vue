@@ -110,7 +110,7 @@ const handleExceed = (files: UploadUserFile[]) => {
 
 const handleUploadChange = (_file: UploadUserFile, files: UploadUserFile[]) => {
     for (let i = files.length - 1; i >= 0; i--) {
-        if (!files[i].name.endsWith('.tar.gz')) {
+        if (!files[i]!.name.endsWith('.tar.gz')) {
             files.splice(i, 1);
         }
     }

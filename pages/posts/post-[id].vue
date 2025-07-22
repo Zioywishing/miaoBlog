@@ -61,7 +61,7 @@ if (import.meta.server) {
         const src = srcMatch ? srcMatch[1] : '';
         const alt = altMatch ? altMatch[1] : '';
 
-        return src ? { url: src, alt } : null;
+        return src ? { url: src, alt: alt as string } : null;
     }
     const imgData = extractFirstImage(postData.value!.data as string)
     useServerSeoMeta({

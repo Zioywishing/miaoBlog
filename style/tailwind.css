@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+@theme {
+    --color-spring: #15aa87;
+    --color-spring-light: #1ad0a6;
+    --color-spring-dark: #0c5e4a;
+}

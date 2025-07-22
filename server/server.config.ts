@@ -10,7 +10,11 @@ export default {
             '/api/system/update',
             '/api/system/updateFromGithub',
             '/api/system/info',
-            '/api/system/performance'
+            '/api/system/performance',
+            '/api/essays/uploadEssay',
+            '/api/essays/editEssay',
+            '/api/essays/deleteEssay',
+            // '/api/essays/getEssayList'
         ])
     }
 }

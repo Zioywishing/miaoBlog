@@ -1,9 +1,9 @@
 <template>
     <div class="box-border p-3 h-full flex flex-col items-center">
-        <div
+        <!-- <div
             class="w-full text-center pb-2.5 text-4xl font-bold mb-4 tracking-wider no-underline border-b border-gray-300 my-3 mx-0 font-serif">
             文章列表
-        </div>
+        </div> -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
             <!-- 新文章卡片 -->
             <div class="bg-white rounded-md shadow-md hover:shadow-lg transition-shadow cursor-pointer flex flex-col items-center justify-center p-4"

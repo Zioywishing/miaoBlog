@@ -92,6 +92,20 @@ const createPostsDB = () => {
             tag15 TEXT
         );
     `);
+    
+    // 添加随笔表
+    postsDB.exec(`
+        CREATE TABLE IF NOT EXISTS essays (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL,
+            contentHtml TEXT NOT NULL,
+            images TEXT, -- JSON格式存储图片URL数组
+            userId INTEGER NOT NULL,
+            createTime INTEGER NOT NULL,
+            updateTime INTEGER NOT NULL
+        );
+    `);
+    
     postsDB.close();
 }
 

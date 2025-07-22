@@ -231,7 +231,12 @@ const handleUpdate = async () => {
 }
 
 const handleBack = () => {
-    router.back()
+    if (window.history.length > 1) {
+        router.back()
+    } else {
+        // 如果没有历史记录，跳转到文章列表页
+        router.push('/user/main/post')
+    }
 }
 
 watch(content, (_) => {
