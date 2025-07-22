@@ -10,7 +10,7 @@
                 <el-input class="login-form-input" @keyup.enter="handleLogin" v-model="password" placeholder="密码" type="password" show-password />
                 <div :class="['login-form-message', `login-form-message-${message.type}`]">
                     <span>{{ message.message }}</span>
-                    <nuxt-link to="/user/register">注册账户</nuxt-link>
+                    <!-- <nuxt-link to="/user/register">注册账户</nuxt-link> -->
                 </div>
                 <div class="login-form-button-warpper">
                     <el-button class="login-form-button" @click="handleLogin">
