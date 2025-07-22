@@ -27,8 +27,6 @@ onBeforeMount(async () => {
                 if(route.path === '/user') {
                     router.replace('/user/main')
                 }
-            } else {
-                throw new Error('token is not valid')
             }
         } catch (error) {
             console.error(error)
