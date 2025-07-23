@@ -1,25 +1,25 @@
 <template>
-    <article class=" not-last:border-b-1 border-b-[#e8e8e8] m-5">
+    <article class="border-b-[#e8e8e8] m-5 mb-10">
         <div class="flex justify-between">
-            <div class="flex items-center gap-0.5">
+            <div class="flex items-center gap-1 mb-5">
                 <time-icon style="height: 16px; color: #999999;" />
                 <span class="text-sm text-[#999999]">{{ formatDate(essay.createTime, 'yyyy-MM-dd HH:mm:ss')
                     }}</span>
             </div>
         </div>
-        <div>
-            <section class="mb-2 essay-content">
+        <main>
+            <section class="mb-5 essay-content">
                 <div v-html="essay.contentHtml"></div>
             </section>
-            <div v-if="essay.images && essay.images.length > 0" ref="imgListRef">
+            <div v-if="essay.images && essay.images.length > 0" ref="imgListRef" class="rounded-b-md overflow-hidden">
                 <el-scrollbar ref="scrollbarRef">
                     <div class="flex gap-2 items-center pb-3">
                         <img v-for="(image, index) in essay.images" :key="index" :src="image" :alt="`图片${index + 1}`"
-                            loading="lazy" class="h-20 rounded-sm" />
+                            loading="lazy" class="h-40 rounded-sm" />
                     </div>
                 </el-scrollbar>
             </div>
-        </div>
+        </main>
     </article>
 </template>
 
@@ -48,7 +48,11 @@ onMounted(() => {
             if (!scrollbar) return;
             
             // 根据滚轮方向调整滚动位置
-            const delta = e.deltaY || e.detail;
+            let delta = e.deltaY || e.detail;
+
+            if(!delta) return;
+
+            // delta = (delta > 0 ? 1 : -1) * Math.max(Math.abs(delta), 10);
             
             // 获取当前滚动位置
             const currentScrollLeft = scrollbar.wrapRef?.scrollLeft || 0;
