@@ -11,7 +11,7 @@
             </header>
             <p class="post-summary">{{ post.summary }}...</p>
             <footer class="post-footer">
-                <div class="post-date">
+                <div class="post-date items-center">
                     <time-icon class="post-date-icon" />
                     <span>
                         {{ formatDate(post.date, 'yy-MM-dd HH:mm:ss') }}

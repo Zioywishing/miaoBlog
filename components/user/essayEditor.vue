@@ -18,7 +18,7 @@
             
             <!-- 图片上传区域 -->
             <div class="image-area">
-                <div class="image-upload-zone" 
+                <div class="image-upload-zone flex items-center justify-center flex-col" 
                      @click="handleSelectImages"
                      @drop="handleDrop"
                      @dragover.prevent
@@ -60,12 +60,14 @@ import AddIcon from '~/components/icons/add.vue';
 import compressImg from '~/utils/compressImg';
 import useMarkdownit from '~/hooks/useMarkdownit';
 import { FilePicker } from '~/utils/filePicker';
+import type { essayItem } from '~/types/essay';
 
 const props = defineProps<{
     disabled?: boolean;
     isEdit?: boolean;
     initialContent?: string;
     initialImages?: string[];
+    essay?: essayItem;
 }>();
 
 const emit = defineEmits(['submit', 'cancel']);
@@ -180,6 +182,13 @@ const handleSubmit = async () => {
 const handleCancel = () => {
     emit('cancel');
 };
+
+onBeforeMount(() => {
+    if (props.essay) {
+        content.value = props.essay.content;
+        images.value = props.essay.images;
+    }
+});
 
 onMounted(async () => {
     mdit.value = await useMarkdownit();

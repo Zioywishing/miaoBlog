@@ -19,6 +19,7 @@
     "@vue/server-renderer": "^3.5.16",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "11.3.0",
+    "bun": "^1.2.19",
     "codemirror": "^6.0.1",
     "dayjs": "^1.11.13",
     "htmlparser2": "^10.0.0",
