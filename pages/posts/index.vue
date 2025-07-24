@@ -1,6 +1,6 @@
 <template>
     <div class="posts-wrapper">
-        <div class="posts-skeleton" v-if="status === 'pending' && !data">
+        <div class="posts-skeleton" v-if="!data">
             <div class="posts-skeleton-item" v-for="_ in range(5)">
                 <el-skeleton :rows="2" />
             </div>
@@ -27,17 +27,35 @@
 </template>
 
 <script setup lang="ts">
-// import useDefaultStore from '~/hooks/pinia/useDefaultStore';
+import useDefaultStore from '~/hooks/pinia/useDefaultStore';
 import timeIcon from '~/components/icons/time.vue'
 import bookmark from '~/components/icons/tag.vue'
 import type { postItem } from '~/types/post';
 
-// const store = useDefaultStore()
+const store = useDefaultStore()
 
-// 使用useFetch在服务器端获取数据
-const { status, data } = await useLazyFetch<{ code: number, data: postItem[] }>('/api/posts/getPostList', {
-    key: 'posts-list',
+const { status: _status, data } = await useLazyFetch<{ code: number, data: postItem[] }>('/api/posts/getPostList', {
+    default() {
+        if (import.meta.server) {
+            return undefined
+        }
+        return store.getCache("/api/posts/getPostList")
+    },
 })
+
+if (import.meta.client) {
+    const unwatchData = watch(data, (newData) => {
+        if (newData) {
+            store.setCache("/api/posts/getPostList", newData)
+            // nextTick(() => {
+            //     unwatchData()
+            // })
+        }
+    }, {
+        immediate: true,
+    })
+}
+
 // 从响应中提取文章列表
 const posts = computed(() => data.value?.data || []) as ComputedRef<postItem[]>
 </script>
@@ -93,6 +111,7 @@ const posts = computed(() => data.value?.data || []) as ComputedRef<postItem[]>
             .post-date {
                 display: flex;
                 font-size: 12px;
+
                 &-icon {
                     height: 16px;
                     margin-right: 5px;

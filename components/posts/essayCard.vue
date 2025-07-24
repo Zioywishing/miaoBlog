@@ -1,11 +1,12 @@
 <template>
     <article class="border-b-[#e8e8e8] m-5 mb-10">
-        <div class="flex justify-between">
-            <div class="flex items-center gap-1 mb-5">
+        <div class="flex justify-between items-center mb-5">
+            <div class="flex items-center gap-1 ">
                 <time-icon style="height: 16px; color: #999999;" />
                 <span class="text-sm text-[#999999]">{{ formatDate(essay.createTime, 'yyyy-MM-dd HH:mm:ss')
                     }}</span>
             </div>
+            <div class="flex-1 h-0 border-b-1 border-[#e8e8e8] mx-3"></div>
         </div>
         <main>
             <section class="mb-5 essay-content">

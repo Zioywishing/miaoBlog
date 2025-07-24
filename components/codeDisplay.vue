@@ -68,7 +68,7 @@ const highlightCode = async () => {
         }
 
         if (langMap[lang]) {
-            lang = langMap[lang]
+            lang = langMap[lang] || lang
         }
 
         // 使用 codeToHtml 直接高亮代码

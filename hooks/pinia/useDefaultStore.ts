@@ -7,8 +7,10 @@ export const useDefaultStore = defineStore("default", () => {
 		cache.value.set(key, { value });
 	};
 
-	const getCache = (key: string) => {
-		return cache.value.get(key)?.value ?? undefined;
+	const getCache = (key: string, option?: {
+		default: any,
+	}) => {
+		return toRaw(cache.value.get(key))?.value ?? option?.default ?? undefined;
 	};
 
 	const deleteCache = (key: string) => {

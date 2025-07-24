@@ -45,7 +45,10 @@ export default defineNuxtConfig({
 	nitro: {
 		compressPublicAssets: true,
 	},
-	experimental: { appManifest: false },
+	experimental: { 
+		appManifest: false,
+		// payloadExtraction: true,
+	 },
 	// 添加SSR配置，确保服务端渲染
 	ssr: true,
 	// // 数据获取策略配置
