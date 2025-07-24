@@ -113,7 +113,7 @@ importers:
         version: 6.1.2
       '@element-plus/nuxt':
         specifier: ^1.1.1
-        version: 1.1.1(@element-plus/icons-vue@2.3.1(vue@3.5.17(typescript@5.7.3)))(element-plus@2.9.3(vue@3.5.17(typescript@5.7.3)))(magicast@0.3.5)
+        version: 1.1.1(@element-plus/icons-vue@2.3.1(vue@3.5.17(typescript@5.7.3)))(element-plus@2.10.4(vue@3.5.17(typescript@5.7.3)))(magicast@0.3.5)
       '@tailwindcss/vite':
         specifier: ^4.1.11
         version: 4.1.11(vite@7.0.5(@types/node@20.19.9)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.83.1)(terser@5.37.0)(yaml@2.8.0))
@@ -139,8 +139,8 @@ importers:
         specifier: ^1.5.5
         version: 1.5.5
       element-plus:
-        specifier: ^2.9.3
-        version: 2.9.3(vue@3.5.17(typescript@5.7.3))
+        specifier: ^2.10.4
+        version: 2.10.4(vue@3.5.17(typescript@5.7.3))
       sass:
         specifier: ^1.83.1
         version: 1.83.1
@@ -2623,8 +2623,8 @@ packages:
   electron-to-chromium@1.5.180:
     resolution: {integrity: sha512-ED+GEyEh3kYMwt2faNmgMB0b8O5qtATGgR4RmRsIp4T6p7B8vdMbIedYndnvZfsaXvSzegtpfqRMDNCjjiSduA==}
 
-  element-plus@2.9.3:
-    resolution: {integrity: sha512-6tSLp5XytDS4TMZ0P3aGZnr7MXTagfNycepNfIDitd9IgwM9y01+Ssu6mglNi8RiXYhek6LBWNOd/cvpIO12+w==}
+  element-plus@2.10.4:
+    resolution: {integrity: sha512-UD4elWHrCnp1xlPhbXmVcaKFLCRaRAY6WWRwemGfGW3ceIjXm9fSYc9RNH3AiOEA6Ds1p9ZvhCs76CR9J8Vd+A==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -2701,7 +2701,7 @@ packages:
     engines: {node: '>=6'}
 
   escape-html@1.0.3:
-    resolution: {integrity: sha1-Aljq5NPQwJdN4cFpGI7wBR0dGYg=}
+    resolution: {integrity: sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==}
 
   escape-string-regexp@5.0.0:
     resolution: {integrity: sha1-RoMSa1ALYXYvLb66zhgG6L4xscg=}
@@ -3360,7 +3360,7 @@ packages:
     resolution: {integrity: sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=}
 
   lodash@4.17.21:
-    resolution: {integrity: sha1-Z5WRxWTDv/quhFTPCz3zcMPWkRw=}
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   logform@2.7.0:
     resolution: {integrity: sha512-TFYA4jnP7PVbmlBIfhlSe+WKxs9dklXMTEGcBCIvLhE/Tn3H6Gk1norupVW7m5Cnd4bLcr08AytbyV/xj7f/kQ==}
@@ -3414,7 +3414,7 @@ packages:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
   memoize-one@6.0.0:
-    resolution: {integrity: sha1-slkbhx7YKUiu5HJ9xqvO7qyMEEU=}
+    resolution: {integrity: sha512-rkpe71W0N0c0Xz6QD0eJETuWAJGnJ9afsl1srmwPrI+yBCkge5EycXXbYRyvL29zZVUWQCY7InPRCv3GDXuZNw==}
 
   merge-options@3.0.4:
     resolution: {integrity: sha1-hHCcKqKkskwZgfZsF5/lVlzG27c=}
@@ -5413,11 +5413,11 @@ snapshots:
     dependencies:
       vue: 3.5.17(typescript@5.7.3)
 
-  '@element-plus/nuxt@1.1.1(@element-plus/icons-vue@2.3.1(vue@3.5.17(typescript@5.7.3)))(element-plus@2.9.3(vue@3.5.17(typescript@5.7.3)))(magicast@0.3.5)':
+  '@element-plus/nuxt@1.1.1(@element-plus/icons-vue@2.3.1(vue@3.5.17(typescript@5.7.3)))(element-plus@2.10.4(vue@3.5.17(typescript@5.7.3)))(magicast@0.3.5)':
     dependencies:
       '@element-plus/icons-vue': 2.3.1(vue@3.5.17(typescript@5.7.3))
       '@nuxt/kit': 3.17.6(magicast@0.3.5)
-      element-plus: 2.9.3(vue@3.5.17(typescript@5.7.3))
+      element-plus: 2.10.4(vue@3.5.17(typescript@5.7.3))
       magic-string: 0.27.0
       unplugin: 1.16.1
     transitivePeerDependencies:
@@ -7610,7 +7610,7 @@ snapshots:
 
   electron-to-chromium@1.5.180: {}
 
-  element-plus@2.9.3(vue@3.5.17(typescript@5.7.3)):
+  element-plus@2.10.4(vue@3.5.17(typescript@5.7.3)):
     dependencies:
       '@ctrl/tinycolor': 3.6.1
       '@element-plus/icons-vue': 2.3.1(vue@3.5.17(typescript@5.7.3))

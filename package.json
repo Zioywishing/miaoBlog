@@ -57,7 +57,7 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^20.19.9",
     "@types/qrcode": "^1.5.5",
-    "element-plus": "^2.9.3",
+    "element-plus": "^2.10.4",
     "sass": "^1.83.1",
     "vite-plugin-mkcert": "^1.17.6"
   },
