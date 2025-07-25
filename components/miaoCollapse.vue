@@ -1,6 +1,6 @@
 <!-- todo:bug该修了 -->
 <template>
-    <div class="miao-collapse-warpper" ref="cwRef" :style="{ ...cwStyle, ...cwStyleBase }">
+    <div class="miao-collapse-warpper" ref="cwRef" :style="cwStyle">
         <div class="miao-collapse" ref="cRef" :style="cStyle" v-if="rC">
             <slot></slot>
         </div>
@@ -31,17 +31,27 @@ const props = defineProps({
 const cwRef = ref<HTMLDivElement>()
 const cRef = ref<HTMLDivElement>()
 const rC = ref(props.show)
-const cwStyle = ref<{ [key: string]: string | number }>(props.show ? {} : {
-    maxHeight: 0,
-    display: 'none',
-    opacity: props.fade ? 0 : 1,
-    pointerEvents: 'none',
+// 引入辅助 refs 来控制 cwStyle 的各个属性
+const maxHeight = ref<string | number | undefined>(props.show ? undefined : 0)
+const display = ref<string | undefined>(props.show ? undefined : 'none')
+const opacity = ref<number | undefined>(props.fade ? (props.show ? undefined : 0) : undefined)
+const pointerEvents = ref<string | undefined>(props.show ? undefined : 'none')
+const transition = ref<string | undefined>(undefined)
+
+const cwStyle = computed(() => {
+    const style: { [key: string]: string | number | undefined } = { ...cwStyleBase.value }
+    if (maxHeight.value !== undefined) style.maxHeight = typeof maxHeight.value === 'number' ? `${maxHeight.value}px` : maxHeight.value
+    if (display.value !== undefined) style.display = display.value
+    if (opacity.value !== undefined) style.opacity = opacity.value
+    if (pointerEvents.value !== undefined) style.pointerEvents = pointerEvents.value
+    if (transition.value !== undefined) style.transition = transition.value
+    return style
 })
 
-const cwStyleBase = shallowRef({
+const cwStyleBase = computed(() => ({
     justifyContent: props.end ? 'flex-end' : 'flex-start',
-})
-const cStyle = ref<{ [key: string]: string | number }>({})
+}))
+const cStyle = computed(() => ({}))
 
 let originHeight = -1
 
@@ -57,25 +67,15 @@ const clearTimer = () => {
 const handleHide = () => {
     clearTimer()
     calcOriginHeight();
-    cwStyle.value = {
-        maxHeight: `${originHeight}px`,
-        opacity: 1,
-        transition: "all 0.2s ease-in-out, opacity 0.1s ease-out",
-    }
+    maxHeight.value = originHeight
+    opacity.value = 1
+    transition.value = "all 0.2s ease-in-out, opacity 0.1s ease-out"
     timer.push(setTimeout(() => {
-        cwStyle.value = {
-            maxHeight: 0,
-            opacity: props.fade ? 0 : 1,
-            transition: "all 0.2s ease-in-out, opacity 0.1s ease-out",
-            pointerEvents: 'none',
-        }
+        maxHeight.value = 0
+        opacity.value = props.fade ? 0 : 1
+        pointerEvents.value = 'none'
         timer.push(setTimeout(() => {
-            cwStyle.value = {
-                maxHeight: 0,
-                display: 'none',
-                opacity: props.fade ? 0 : 1,
-                pointerEvents: 'none',
-            }
+            display.value = 'none'
             rC.value = false
         }, 300))
     }))
@@ -84,43 +84,29 @@ const handleHide = () => {
 const handleShow = async () => {
     clearTimer()
     if (rC.value && originHeight !== -1) {
-        cwStyle.value = {
-            maxHeight: `${originHeight}px`,
-            opacity: 1,
-            transition: "all .2s ease-in-out, opacity .15s ease-in .07s"
-        }
+        maxHeight.value = originHeight
+        opacity.value = 1
+        transition.value = "all .2s ease-in-out, opacity .15s ease-in .07s"
+
         nextTick(() => {
             calcOriginHeight()
         })
         return;
     }
     rC.value = true
+    display.value = undefined
     nextTick(() => {
-        cwStyle.value = {
-            maxHeight: 0,
-            opacity: props.fade ? 0 : 1,
-            pointerEvents: 'none',
-        }
+        maxHeight.value = 0
+        opacity.value = props.fade ? 0 : 1
+        pointerEvents.value = 'none'
         nextTick(() => {
-            cwStyle.value = {
-                maxHeight: 0,
-                opacity: props.fade ? 0 : 1,
-                transition: "all .2s ease-in-out, opacity .15s ease-in .07s",
-                pointerEvents: 'none',
-            }
+            transition.value = "all .2s ease-in-out, opacity .15s ease-in .07s"
             timer.push(setTimeout(() => {
                 calcOriginHeight();
-                cwStyle.value = {
-                    maxHeight: `${originHeight}px`,
-                    opacity: 1,
-                    transition: "all .2s ease-in-out, opacity .15s ease-in .07s"
-                }
+                maxHeight.value = originHeight
+                opacity.value = 1
                 timer.push(setTimeout(() => {
-                    cwStyle.value = {
-                        // maxHeight: `auto`,
-                        opacity: 1,
-                        transition: "all .2s ease-in-out, opacity .15s ease-in .07s",
-                    }
+                    maxHeight.value = undefined
                 }, 300))
             }))
         })
@@ -129,6 +115,7 @@ const handleShow = async () => {
 
 const calcOriginHeight = () => {
     originHeight = cRef.value!.clientHeight
+    console.log(originHeight)
 }
 
 watch(() => props.show, (newVal) => {
