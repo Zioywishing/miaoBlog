@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies for Git and Node.js
         run: |
           apt-get update
-          apt-get install -y git curl wget nodejs npm tar gzip unzip
+          apt-get install -y git curl wget nodejs npm tar gzip unzip jq
           
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,7 +55,10 @@ jobs:
         
       - name: Get version from package.json
         id: package-version
-        run: echo "VERSION=$(node -p \"require('./package.json').version || '0.1.0'\")" >> $GITHUB_ENV
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          VERSION=$(jq -r .version package.json || echo '0.1.0')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
         
       - name: Calculate build number
         id: build-number
