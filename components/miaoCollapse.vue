@@ -30,7 +30,7 @@ const props = defineProps({
 })
 const cwRef = ref<HTMLDivElement>()
 const cRef = ref<HTMLDivElement>()
-const rC = ref(true)
+const rC = ref(props.show)
 const cwStyle = ref<{ [key: string]: string | number }>(props.show ? {} : {
     maxHeight: 0,
     display: 'none',
@@ -102,7 +102,6 @@ const handleShow = async () => {
             pointerEvents: 'none',
         }
         nextTick(() => {
-            calcOriginHeight();
             cwStyle.value = {
                 maxHeight: 0,
                 opacity: props.fade ? 0 : 1,
@@ -110,15 +109,18 @@ const handleShow = async () => {
                 pointerEvents: 'none',
             }
             timer.push(setTimeout(() => {
+                calcOriginHeight();
                 cwStyle.value = {
                     maxHeight: `${originHeight}px`,
                     opacity: 1,
                     transition: "all .2s ease-in-out, opacity .15s ease-in .07s"
                 }
                 timer.push(setTimeout(() => {
-                    nextTick(() => {
-                        calcOriginHeight()
-                    })
+                    cwStyle.value = {
+                        // maxHeight: `auto`,
+                        opacity: 1,
+                        transition: "all .2s ease-in-out, opacity .15s ease-in .07s",
+                    }
                 }, 300))
             }))
         })
