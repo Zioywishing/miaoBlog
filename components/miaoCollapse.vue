@@ -115,7 +115,6 @@ const handleShow = async () => {
 
 const calcOriginHeight = () => {
     originHeight = cRef.value!.clientHeight
-    console.log(originHeight)
 }
 
 watch(() => props.show, (newVal) => {
