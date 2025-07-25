@@ -36,15 +36,22 @@ jobs:
         run: |
           curl -fsSL https://bun.sh/install | bash
           export PATH="$HOME/.bun/bin:$PATH"
+          bun --version  # 测试 Bun 是否可用
       
       - name: Install dependencies
-        run: bun install
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun install
         
       - name: Build project
-        run: bun build
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun run build
         
       - name: Execute aftbuild script
-        run: bun aftbuild
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun run aftbuild
         
       - name: Get version from package.json
         id: package-version
