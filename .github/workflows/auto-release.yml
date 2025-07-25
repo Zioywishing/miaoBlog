@@ -32,31 +32,39 @@ jobs:
         with:
           node-version: 'lts/*'
           
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
-          
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          export PATH="$HOME/.bun/bin:$PATH"
+      
       - name: Install dependencies
-        run: pnpm install
+        run: bun install
         
       - name: Build project
-        run: pnpm build
+        run: bun build
         
       - name: Execute aftbuild script
-        run: pnpm aftbuild
+        run: bun aftbuild
         
       - name: Get version from package.json
         id: package-version
-        run: echo "VERSION=$(node -p "require('./package.json').version || '0.1.0'")" >> $GITHUB_ENV
+        run: echo "VERSION=$(node -p \"require('./package.json').version || '0.1.0'\")" >> $GITHUB_ENV
         
-      - name: Get commit count
-        id: commit-count
-        run: echo "COUNT=$(git rev-list --count HEAD)" >> $GITHUB_ENV
+      - name: Calculate build number
+        id: build-number
+        run: |
+          BUILD_TAGS=$(git tag -l "v${{ env.VERSION }}.*")
+          if [ -z "$BUILD_TAGS" ]; then
+            echo "BUILD=1" >> $GITHUB_ENV
+          else
+            LATEST_BUILD=$(echo "$BUILD_TAGS" | sed 's/v${{ env.VERSION }}\.//' | sort -n | tail -1)
+            BUILD=$((LATEST_BUILD + 1))
+            echo "BUILD=$BUILD" >> $GITHUB_ENV
+          fi
         
       - name: Create release version
         id: release-version
-        run: echo "RELEASE_VERSION=v${{ env.VERSION }}.${{ env.COUNT }}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=v${{ env.VERSION }}.${{ env.BUILD }}" >> $GITHUB_ENV
         
       - name: Generate changelog
         id: changelog
@@ -81,4 +89,4 @@ jobs:
           files: |
             .output/output.tar.gz
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
