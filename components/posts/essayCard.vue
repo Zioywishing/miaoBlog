@@ -17,11 +17,13 @@
                     <div class="flex gap-2 items-center pb-3 w-max">
                         <el-image v-for="(image, index) in essay.images" :key="index" :src="image"
                             :alt="`图片${index + 1}`" loading="lazy" class="h-40 rounded-sm cursor-pointer"
-                            :preview-src-list="essay.images" :initial-index="index" fit="contain"
-                            style="width: auto; max-width: none;">
+                            :preview-src-list="essay.images" :initial-index="index" fit="contain" hide-on-click-modal
+                            style="width: auto; max-width: none; ">
 
                             <template #progress="{ activeIndex, total }">
-                                <span>{{ activeIndex + 1 + '-' + total }}</span>
+                                <div class="flex justify-center items-center p-2 px-4 rounded-full" style="background-color: #606266;">
+                                    <span>{{ `第 ${activeIndex + 1} / ${total} 张` }}</span>
+                                </div>
                             </template>
                         </el-image>
                     </div>
@@ -56,7 +58,7 @@ onMounted(() => {
             if (!scrollbar) return;
 
             // 根据滚轮方向调整滚动位置
-            let delta = e.deltaY || e.detail;
+            let delta = e.deltaX || e.deltaY || e.detail;
 
             if (!delta) return;
 
