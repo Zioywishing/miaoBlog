@@ -98,7 +98,7 @@ const handleShow = async () => {
     nextTick(() => {
         maxHeight.value = 0
         opacity.value = props.fade ? 0 : 1
-        pointerEvents.value = 'none'
+        pointerEvents.value = undefined
         nextTick(() => {
             transition.value = "all .2s ease-in-out, opacity .15s ease-in .07s"
             timer.push(setTimeout(() => {
