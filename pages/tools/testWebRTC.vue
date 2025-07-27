@@ -28,13 +28,31 @@
                 <p class="text-gray-700"><span class="font-semibold">Role:</span> {{ isSender ? 'Sender' : 'Receiver' }}
                 </p>
 
-                <video v-if="!isSender" ref="remoteVideo" autoplay playsinline class="w-full h-64 bg-black"></video>
+                <div v-if="!isSender">
+                    <div v-show="1 || hasVideo">
+                        <video ref="remoteVideo" autoplay playsinline class="w-full h-64 bg-black"></video>
+                        <button @click="toggleFullscreen" class="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2">
+                            {{ isFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}
+                        </button>
+                    </div>
+                    <p v-show="!hasVideo" class="text-gray-700">Only Audio</p>
+                </div>
                 <video v-if="isSender" ref="localVideo" autoplay playsinline muted class="w-full h-64 bg-black"></video>
 
-                <button v-if="isSender && joined" @click="startSharing"
-                    class="cursor-pointer bg-purple-500 text-white py-2 px-4 rounded-md hover:bg-purple-600">
-                    Start Sharing
-                </button>
+                <div v-if="isSender && joined">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="onlyAudio" />
+                        <span>只共享音频</span>
+                    </label>
+                    <button v-if="!isSharing" @click="startSharing"
+                        class="cursor-pointer bg-purple-500 text-white py-2 px-4 rounded-md hover:bg-purple-600">
+                        Start Sharing
+                    </button>
+                    <button v-else @click="stopSharing"
+                        class="cursor-pointer bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
+                        Stop Sharing
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -56,6 +74,10 @@ let es: EventSource | null = null;
 let heartbeatInterval: NodeJS.Timeout | null = null;
 let pc: RTCPeerConnection | null = null;
 let localStream: MediaStream | null = null;
+const onlyAudio = ref(false);
+const isSharing = ref(false);
+const hasVideo = ref(false);
+const isFullscreen = ref(false);
 
 function becomeSender() {
     isSender.value = true;
@@ -104,8 +126,16 @@ function initPeerConnection() {
         }
     };
     pc.ontrack = (event) => {
-        if (event.streams[0] && remoteVideo.value) {
-            remoteVideo.value.srcObject = event.streams[0];
+        if (event.streams[0]) {
+            if(!remoteVideo.value) return;
+            const stream = event.streams[0];
+            hasVideo.value = stream.getVideoTracks().length > 0;
+            if (hasVideo.value) {
+                remoteVideo.value.srcObject = stream;
+            } else {
+                // 尝试只有音频的情况
+                remoteVideo.value.srcObject = stream;
+            }
         }
     };
 }
@@ -118,13 +148,46 @@ async function createOffer() {
 }
 
 async function startSharing() {
-    localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-    if (localVideo.value) {
-        localVideo.value.srcObject = localStream;
+    try {
+        if (onlyAudio.value) {
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } else {
+            localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        }
+        if (localVideo.value) {
+            localVideo.value.srcObject = localStream;
+        }
+        localStream.getTracks().forEach(track => pc?.addTrack(track, localStream!));
+        if (receiverId.value) {
+            await createOffer();
+        }
+        isSharing.value = true;
+    } catch (error) {
+        console.error('Error starting sharing:', error);
     }
-    localStream.getTracks().forEach(track => pc?.addTrack(track, localStream!));
-    if (receiverId.value) {
-        await createOffer();
+}
+
+function stopSharing() {
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+    }
+    if (localVideo.value) {
+        localVideo.value.srcObject = null;
+    }
+    // Optionally reset peer connection if needed
+    isSharing.value = false;
+}
+
+function toggleFullscreen() {
+    if (!remoteVideo.value) return;
+    if (!document.fullscreenElement) {
+        remoteVideo.value.requestFullscreen();
+        // 显示判断有问题，临时这样处理
+        // isFullscreen.value = true;
+    } else {
+        document.exitFullscreen();
+        isFullscreen.value = false;
     }
 }
 
