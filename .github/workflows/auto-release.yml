@@ -32,31 +32,20 @@ jobs:
         with:
           node-version: 'lts/*'
           
-      - name: Install Bun
-        run: |
-          curl -fsSL https://bun.sh/install | bash
-          export PATH="$HOME/.bun/bin:$PATH"
-          bun --version  # 测试 Bun 是否可用
-      
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install dependencies
-        run: |
-          export PATH="$HOME/.bun/bin:$PATH"
-          bun install
+        run: pnpm install
         
       - name: Build project
-        run: |
-          export PATH="$HOME/.bun/bin:$PATH"
-          bun run build
+        run: pnpm run build
         
       - name: Execute aftbuild script
-        run: |
-          export PATH="$HOME/.bun/bin:$PATH"
-          bun run aftbuild
+        run: pnpm run aftbuild
         
       - name: Get version from package.json
         id: package-version
         run: |
-          export PATH="$HOME/.bun/bin:$PATH"
           VERSION=$(jq -r .version package.json || echo '0.1.0')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         
