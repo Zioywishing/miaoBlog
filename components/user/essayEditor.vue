@@ -129,7 +129,7 @@ const uploadImage = async (file: File) => {
         });
         
         if (response.code === 200 && 'hash' in response) {
-            const imageUrl = `/api/tools/imgBed/download/${response.hash}`;
+            const imageUrl = `/api/tools/imgBed/download/${response.hash}/${file.name}`;
             images.value.push(imageUrl);
             ElMessage.success('图片上传成功');
         } else {

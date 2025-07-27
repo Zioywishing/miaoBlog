@@ -142,7 +142,7 @@ const uploadImage = async (file: File) => {
         });
 
         if (response.code === 200 && 'hash' in response) {
-            const imageUrl = `/api/tools/imgBed/download/${response.hash}`;
+            const imageUrl = `/api/tools/imgBed/download/${response.hash}/${file.name}`;
             const imageMarkdown = `\n![${file.name}](${imageUrl})\n`;
             insertTextAtCursor(imageMarkdown);
             ElMessage.success('图片上传成功');
@@ -179,7 +179,7 @@ const handleInsertImage = async () => {
         });
 
         if (files.length > 0) {
-            await uploadImage(files[0]);
+            await uploadImage(files[0]!);
         }
     } catch (error) {
         // 用户取消文件选择时，FilePicker会抛出异常，这里静默处理
