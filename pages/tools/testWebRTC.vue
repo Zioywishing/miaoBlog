@@ -150,9 +150,9 @@ async function createOffer() {
 async function startSharing() {
     try {
         if (onlyAudio.value) {
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
         } else {
-            localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+            localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
         }
         if (localVideo.value) {
             localVideo.value.srcObject = localStream;
