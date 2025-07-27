@@ -1,4 +1,8 @@
-export default function useMiaoSSE(event: any) {
+export interface SSEHandler {
+    write: (data: { [key: string]: any }) => number
+}
+
+export default function useMiaoSSE(event: any): SSEHandler {
     setResponseHeader(event, 'Content-Type', 'text/event-stream')
     setResponseHeader(event, 'Cache-Control', 'no-cache')
     setResponseHeader(event, 'Connection', 'keep-alive')
