@@ -11,7 +11,7 @@
                     <!-- {{ '隐藏' }} -->
                 </div>
             </div>
-            <NuxtLink v-for="item in menuItem" class="sidebar-item" :to="item.to">
+.            <NuxtLink v-for="item in menuItem" :class="['sidebar-item', { active: item.active }]" :to="item.to">
                 <div class="sidebar-item-icon">
                     <component :class="item.iconFill ? 'sidebar-item-icon-noFill' : ''" :is="item.icon"></component>
                 </div>
@@ -26,7 +26,7 @@
             </el-scrollbar>
         </div>
         <div class="user-bottom-bar">
-            <NuxtLink v-for="item in menuItem" class="bottom-item" :to="item.to">
+            <NuxtLink v-for="item in menuItem" :class="['bottom-item', { active: item.active }]" :to="item.to">
                 <div class="bottom-item-icon">
                     <component :class="item.iconFill ? 'bottom-item-icon-noFill' : ''" :is="item.icon"></component>
                 </div>
@@ -47,35 +47,45 @@ import Home from '~/components/icons/home.vue';
 import Cloud from '~/components/icons/cloud.vue';
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 
-const menuItem = shallowReactive([
-    {
-        title: '主页',
-        icon: Home,
-        iconFill: true,
-        to: '/user/main'
-    }, {
-        title: '文章',
-        icon: Documents,
-        iconFill: true,
-        to: '/user/main/post'
-    }, {
-        title: '账户',
-        icon: Cat,
-        to: '/user/main/account'
-    }, {
-        title: '服务',
-        icon: Cloud,
-        iconFill: true,
-        to: '/user/main/server'
-    }, 
-    // {
-    //     title: '测试',
-    //     icon: Cat,
-    //     to: '/user/main/test'
-    // },
-])
+const menuItem = computed(() => {
+    const isActive = (item: { to: string }) => {
+        if (item.to === '/user/main') {
+            return route.path === item.to
+        }
+        console.log(route.path)
+        return route.path.startsWith(item.to)
+    }
+    return [
+        {
+            title: '主页',
+            icon: Home,
+            iconFill: true,
+            to: '/user/main'
+        }, {
+            title: '文章',
+            icon: Documents,
+            iconFill: true,
+            to: '/user/main/post'
+        }, {
+            title: '账户',
+            icon: Cat,
+            to: '/user/main/account'
+        }, {
+            title: '服务',
+            icon: Cloud,
+            iconFill: true,
+            to: '/user/main/server'
+        },
+    ].map(item => {
+        return {
+            ...item,
+            active: isActive(item)
+        }
+    })
+})
 
 const showSidebar = ref(true)
 
@@ -273,7 +283,7 @@ const handleLogout = () => {
 
         }
 
-        .router-link-exact-active {
+        .active {
             .sidebar-item-icon {
                 svg {
                     path {
@@ -314,7 +324,7 @@ const handleLogout = () => {
 
         }
 
-        .router-link-exact-active {
+        .active {
             .bottom-item-icon {
                 svg {
                     path {
