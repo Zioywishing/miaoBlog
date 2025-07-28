@@ -30,10 +30,17 @@
 
                 <div v-if="!isSender">
                     <div v-show="1 || hasVideo">
-                        <video ref="remoteVideo" autoplay playsinline class="w-full h-64 bg-black"></video>
-                        <button @click="toggleFullscreen" class="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2">
-                            {{ isFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}
-                        </button>
+                        <video ref="remoteVideo" controls autoplay playsinline class="w-full h-64 bg-black"></video>
+                        <div class="flex justify-start items-center gap-3">
+                            <button @click="toggleFullscreen"
+                                class="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2">
+                                {{ isFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}
+                            </button>
+                            <!-- <button @click="toggleFullscreen"
+                                class="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2">
+                                {{ isFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}
+                            </button> -->
+                        </div>
                     </div>
                     <p v-show="!hasVideo" class="text-gray-700">Only Audio</p>
                 </div>
@@ -42,7 +49,7 @@
                 <div v-if="isSender && joined">
                     <label class="flex items-center space-x-2">
                         <input type="checkbox" v-model="onlyAudio" />
-                        <span>只共享音频</span>
+                        <span>Only Audio</span>
                     </label>
                     <button v-if="!isSharing" @click="startSharing"
                         class="cursor-pointer bg-purple-500 text-white py-2 px-4 rounded-md hover:bg-purple-600">
@@ -98,11 +105,14 @@ function setupConnection(targetRoomId: string) {
         const rawData = event.data;
         const parsedData = rawData.split('data: ')[1];
         const data = JSON.parse(parsedData);
+        if (data.close) {
+            stopEs();
+            return;
+        }
         if (data.roomid && data.menberid) {
             roomId.value = data.roomid;
             memberId.value = data.menberid;
             joined.value = true;
-            startHeartbeat();
             initPeerConnection();
             if (!isSender.value) {
                 sendSignalingData({ type: 'ready' });
@@ -114,8 +124,10 @@ function setupConnection(targetRoomId: string) {
 
     es.onerror = (error) => {
         console.error('SSE Error:', error);
-        cleanup();
+        stopEs()
     };
+
+    startHeartbeat();
 }
 
 function initPeerConnection() {
@@ -127,7 +139,7 @@ function initPeerConnection() {
     };
     pc.ontrack = (event) => {
         if (event.streams[0]) {
-            if(!remoteVideo.value) return;
+            if (!remoteVideo.value) return;
             const stream = event.streams[0];
             hasVideo.value = stream.getVideoTracks().length > 0;
             if (hasVideo.value) {
@@ -136,6 +148,21 @@ function initPeerConnection() {
                 // 尝试只有音频的情况
                 remoteVideo.value.srcObject = stream;
             }
+
+            setTimeout(() => {
+                fetch('/api/tools/webRTC/broadcast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        roomid: roomId.value,
+                        menberid: memberId.value,
+                        data: {
+                            close: true,
+                        }
+                    }),
+                });
+                stopEs();
+            }, 5000);
         }
     };
 }
@@ -237,9 +264,20 @@ function startHeartbeat() {
     }, 30000);
 }
 
+function stopEs() {
+    console.log('stopEs');
+    if (es) {
+        es.close();
+        es = null;
+    }
+    if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+    }
+}
+
 function cleanup() {
-    if (es) es.close();
-    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    stopEs();
     if (pc) pc.close();
     if (localStream) localStream.getTracks().forEach(track => track.stop());
     joined.value = false;
