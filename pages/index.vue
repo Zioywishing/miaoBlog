@@ -133,6 +133,16 @@ const pageContent = reactive<PageContent[]>([
     show: true,
     content: [
       {
+        name: 'P2PMedia',
+        description: '通过webRTC实现P2P连接，在设备间共享音视频。主要用于作为电脑的外放。',
+        nuxtLinks: [
+          {
+            name: 'link',
+            to: `/tools/webRTCShare`
+          }
+        ]
+      },
+      {
         name: 'TinyJPEG',
         description: '利用OffscreenCanvas实现图片压缩，灵感来源Compressor.js，但是支持worker故表现更佳。',
         nuxtLinks: [
