@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>抽奖模拟器</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 44, 87, 0.1), 0 4px 6px -2px rgba(0, 44, 87, 0.05);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(to right, #15aa87, #1eaaaf);
+            color: #ffffff;
+            padding: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .header h1 i {
+            margin-right: 0.75rem;
+            color: #bfdbfe;
+        }
+
+        .header p {
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .main-content {
+            padding: 1.5rem;
+        }
+
+        .header-actions-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mr-3 {
+            margin-right: 0.75rem;
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+
+        .ml-auto {
+            margin-left: auto;
+        }
+
+        .h2-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+
+        .h3-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 0.5rem;
+            border: 1px solid #e0e7ff;
+        }
+
+        .prob-table {
+            width: 100%;
+            text-align: left;
+            border-collapse: collapse;
+        }
+
+        .prob-table th {
+            background-color: #f0f9ff;
+            color: #1e3a8a;
+            font-size: 0.875rem;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e0e7ff;
+            font-weight: 600;
+        }
+
+        .prob-table td {
+            /* color: #374151; */
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e0e7ff;
+        }
+
+        .prob-table tr:hover {
+            filter: brightness(0.98);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            padding: .5rem .75rem;
+            padding-left: .8rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            letter-spacing: 3px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background-color: #1e40af;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e3a8a;
+        }
+
+        .btn-legend {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .btn-legend:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-gray {
+            background-color: #64748b;
+            color: #ffffff;
+        }
+
+        .btn-gray:hover {
+            background-color: #334155;
+        }
+
+        .btn-edit {
+            background-color: #0d9488;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .stats-header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .draws-count {
+            font-size: 0.875rem;
+            color: #64748b;
+            background-color: #f1f5f9;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+        }
+
+        .sort-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .sort-btn {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            border: 1px solid #e0e7ff;
+            background-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .sort-btn-active {
+            background-color: #1e40af;
+            color: #ffffff;
+            border-color: #1e40af;
+        }
+
+        .stats-container {
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e0e7ff;
+            padding: 1rem;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .items-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .items-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .items-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .item-stat-card {
+            padding: 0.5rem;
+            background-color: #ffffff;
+            border-radius: 0.25rem;
+            border: 1px solid;
+        }
+
+        .item-stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .item-stat-count {
+            text-align: right;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .rarity-badge {
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.125rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .rarity-common {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .rarity-rare {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .rarity-epic {
+            background-color: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .rarity-legend {
+            background-color: #ffedd5;
+            color: #c2410c;
+        }
+
+        .rarity-high {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .border-common {
+            border-color: #d1d5db;
+        }
+
+        .border-rare {
+            border-color: #86efac;
+        }
+
+        .border-epic {
+            border-color: #c4b5fd;
+        }
+
+        .border-legend {
+            border-color: #fdba74;
+        }
+
+        .border-high {
+            border-color: #fecaca;
+        }
+
+        /* 产品名称颜色与稀有度对应 */
+        .name-common {
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .name-rare {
+            color: #166534;
+            font-weight: 500;
+        }
+
+        .name-epic {
+            color: #5b21b6;
+            font-weight: 600;
+        }
+
+        .name-legend {
+            color: #c2410c;
+            font-weight: 600;
+        }
+
+        .name-high {
+            color: #991b1b;
+            font-weight: 700;
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .record-count {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .record-container {
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e0e7ff;
+            padding: 1rem;
+            max-height: 24rem;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e7ff;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .record-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .record-time {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .time-text {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .record-number {
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            background-color: #dbeafe;
+            color: #1e40af;
+            border-radius: 9999px;
+        }
+
+        .prizes-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .prize-item {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .prize-common {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .prize-rare {
+            background-color: #dcfce7;
+            color: #166534;
+            font-weight: 500;
+        }
+
+        .prize-epic {
+            background-color: #ede9fe;
+            color: #5b21b6;
+            font-weight: 600;
+        }
+
+        .prize-legend {
+            background-color: #ffedd5;
+            color: #c2410c;
+            font-weight: 700;
+        }
+
+        .prize-high {
+            background-color: #fee2e2;
+            color: #991b1b;
+            font-weight: 800;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #94a3b8;
+            padding: 1rem;
+        }
+
+        .empty-state-large {
+            padding: 2rem;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.3;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e0e7ff;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #1e40af;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .copy-btn:hover {
+            background-color: #dbeafe;
+        }
+
+        .copy-btn i {
+            margin-right: 0.25rem;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .json-input {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            border: 1px solid #e0e7ff;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            /* resize: vertical; */
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: #fee2e2;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .format-hint {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background-color: #f1f5f9;
+            border-radius: 0.25rem;
+            line-height: 1.6;
+            max-height: 100px;
+            overflow-y: scroll;
+        }
+
+        .copy-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .copy-toast.success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .copy-toast.error {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        /* 抽奖分析部分样式 */
+        .analysis-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e0e7ff;
+        }
+
+        .analysis-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .draws-input {
+            flex: 0 0 150px;
+            padding: 0.5rem;
+            border: 1px solid #e0e7ff;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .calculate-btn {
+            padding: 0.5rem 1rem;
+            background-color: #1e40af;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            background-color: #1e3a8a;
+        }
+
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .analysis-table th,
+        .analysis-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e7ff;
+        }
+
+        .analysis-table th {
+            background-color: #f0f9ff;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        /* 分析表格行背景色 - 与稀有度对应 */
+        .analysis-row-common {
+            background-color: rgba(229, 231, 235, 0.2);
+        }
+
+        .analysis-row-rare {
+            background-color: rgba(220, 252, 231, 0.2);
+        }
+
+        .analysis-row-epic {
+            background-color: rgba(237, 233, 254, 0.2);
+        }
+
+        .analysis-row-legend {
+            background-color: rgba(255, 237, 213, 0.2);
+        }
+
+        .analysis-row-high {
+            background-color: rgba(254, 226, 226, 0.2);
+        }
+
+        .probability-text {
+            font-weight: 600;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                padding: 2rem;
+            }
+
+            .header {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fa fa-trophy mr-3"></i>抽奖模拟器
+            </h1>
+        </div>
+
+        <div class="main-content">
+            <div class="mb-8">
+                <div class="header-actions-row">
+                    <h2 class="h2-title">
+                        <i class="fa fa-pie-chart mr-2"></i>奖池概率信息
+                    </h2>
+                    <button id="editPrizePoolBtn" class="btn btn-edit">
+                        <i class="fa fa-pencil mr-1"></i>导入奖池
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="prob-table">
+                        <thead>
+                            <tr>
+                                <th>道具名称</th>
+                                <th>数量</th>
+                                <th>概率</th>
+                                <th>稀有度</th>
+                            </tr>
+                        </thead>
+                        <tbody id="probBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button id="btnSingle" class="btn btn-primary">
+                    单抽
+                </button>
+                <button id="btnTen" class="btn btn-legend">
+                    十连抽
+                </button>
+                <button id="btnClear" class="btn btn-gray ml-auto">
+                    <i class="fa fa-trash mr-2"></i>清空记录
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <div class="stats-header">
+                    <div class="stats-header-content">
+                        <h3 class="h3-title">
+                            <i class="fa fa-bar-chart mr-2"></i>道具获得统计
+                        </h3>
+                        <div class="draws-count">
+                            <i class="fa fa-refresh mr-1"></i>总抽奖次数: <span id="totalDraws">0</span>
+                        </div>
+                    </div>
+                    <div class="sort-buttons">
+                        <button id="sortByCount" class="sort-btn">
+                            <i class="fa fa-sort-numeric-desc mr-1"></i>按数量
+                        </button>
+                        <button id="sortByRarity" class="sort-btn sort-btn-active">
+                            <i class="fa fa-diamond mr-1"></i>按稀有度
+                        </button>
+                    </div>
+                </div>
+                <div id="itemStats" class="stats-container">
+                    <div class="empty-state">
+                        <p>暂无道具统计数据</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="record-header">
+                    <h3 class="h3-title">
+                        <i class="fa fa-history mr-2"></i>抽奖记录
+                    </h3>
+                    <span class="record-count" id="recordCount">0条记录</span>
+                </div>
+                <div id="drawRecord" class="record-container">
+                    <div class="empty-state empty-state-large">
+                        <i class="fa fa-inbox"></i>
+                        <p>暂无抽奖记录，开始你的抽奖吧！</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 抽奖分析部分 -->
+            <div class="analysis-section">
+                <div class="header-actions-row">
+                    <h2 class="h2-title">
+                        <i class="fa fa-calculator mr-2"></i>抽奖概率分析
+                    </h2>
+                </div>
+                <div class="analysis-controls">
+                    <span>抽奖次数：</span>
+                    <input type="number" id="analysisDrawsInput" class="draws-input" placeholder="输入抽奖次数" min="1"
+                        value="100">
+                    <!-- <button id="calculateBtn" class="calculate-btn">
+                        <i class="fa fa-calculator mr-1"></i>计算概率
+                    </button> -->
+                    <!-- <div class="format-hint ml-auto">
+                        理论计算，非实际抽奖结果
+                    </div> -->
+                </div>
+                <div class="table-container">
+                    <table class="prob-table" id="analysisTable">
+                        <thead>
+                            <tr>
+                                <th>奖品名称</th>
+                                <th>单次概率</th>
+                                <th>至少抽到1次的概率</th>
+                                <th>期望抽到次数</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analysisBody">
+                            <tr>
+                                <td colspan="4" class="empty-state">请输入抽奖次数并点击计算按钮</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="prizePoolModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑奖池配置</h3>
+                <div class="modal-actions">
+                    <button id="copyPromptBtn" class="copy-btn">
+                        <i class="fa fa-copy"></i>复制prompt
+                    </button>
+                    <button id="closeModalBtn" class="modal-close">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="format-hint" id="promptText">
+                    <p><i class="fa fa-info-circle mr-1"></i>请你将提供的奖池概率截图转换为特定格式的 JSON 数据，用于抽奖模拟器项目。格式要求如下：<br>
+                        整体是一个 JSON 数组，每个元素代表一个可抽取的物品<br>
+                        每个物品必须包含以下字段：<br>
+                        "title"：物品的完整显示名称（例如 "积分 x10000"）<br>
+                        "name"：物品的基础名称（例如 "积分"）<br>
+                        "count"：物品数量（整数，大于 0）<br>
+                        "prob"：抽取概率（数字，大于 0，单位 %）<br>
+                        "rarity"：稀有度（1-5 的整数，越高代表越稀有）<br>
+                        示例格式：<br>
+                        [
+                        {"title": "积分 x10000", "name": "积分", "count": 10000, "prob": 1, "rarity": 2},
+                        {"title": "荣耀王者之心", "name": "荣耀王者之心", "count": 1, "prob": 0.05, "rarity": 5}
+                        ]<br>
+                        请根据截图中的物品名称、数量、概率和稀有度信息，严格转换为符合上述格式的 JSON
+                        数据。确保截图中的所有物品都要包含在内，确保概率数值准确，稀有度对应正确。其中稀有度仅仅根据概率进行判断，概率越低稀有度越高，稀有度应具有区分度。同name下稀有度以最低稀有度为准。
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: space-between; margin-bottom: 10px;">
+                    <div style="display: flex; gap: 10px;">
+                        <button id="doubaoBtn" class="btn" onclick="window.open('https://www.doubao.com')">豆包</button>
+                        <button id="yuanbaoBtn" class="btn" onclick="window.open('https://yuanbao.tencent.com')">元宝</button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="cancelEditBtn" class="btn btn-gray">取消</button>
+                        <button id="confirmEditBtn" class="btn btn-primary">确认</button>
+                    </div>
+                </div>
+                <div id="jsonError" class="error-message">JSON格式错误，请检查后重试。</div>
+                <textarea id="prizePoolJson" class="json-input"></textarea>
+            </div>
+            <!-- <div class="modal-footer">
+                <button id="cancelEditBtn" class="btn btn-gray">取消</button>
+                <button id="confirmEditBtn" class="btn btn-primary">确认修改</button>
+            </div> -->
+        </div>
+    </div>
+
+    <div id="copyToast" class="copy-toast">提示已复制到剪贴板</div>
+
+    <script>
+        // 奖池数据
+        let prizePool = [
+            {
+                "title": "未设置奖池",
+                "name": "未设置奖池",
+                "count": 1,
+                "prob": 100,
+                "rarity": 1
+            }
+        ];
+
+        // 统计数据
+        let itemStats = {};
+        let probRanges = [];
+        let totalProb = 0;
+        let totalDraws = 0;
+        let recordCount = 0;
+        let sortBy = 'rarity';
+
+        // DOM元素
+        const probBody = document.getElementById('probBody');
+        const btnSingle = document.getElementById('btnSingle');
+        const btnTen = document.getElementById('btnTen');
+        const btnClear = document.getElementById('btnClear');
+        const drawRecord = document.getElementById('drawRecord');
+        const recordCountEl = document.getElementById('recordCount');
+        const itemStatsEl = document.getElementById('itemStats');
+        const sortByCountBtn = document.getElementById('sortByCount');
+        const sortByRarityBtn = document.getElementById('sortByRarity');
+        const totalDrawsEl = document.getElementById('totalDraws');
+
+        const prizePoolModal = document.getElementById('prizePoolModal');
+        const editPrizePoolBtn = document.getElementById('editPrizePoolBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const confirmEditBtn = document.getElementById('confirmEditBtn');
+        const prizePoolJson = document.getElementById('prizePoolJson');
+        const jsonError = document.getElementById('jsonError');
+        const copyPromptBtn = document.getElementById('copyPromptBtn');
+        const promptText = document.getElementById('promptText');
+        const copyToast = document.getElementById('copyToast');
+
+        // 抽奖分析相关元素
+        const analysisDrawsInput = document.getElementById('analysisDrawsInput');
+        // const calculateBtn = document.getElementById('calculateBtn');
+        const analysisBody = document.getElementById('analysisBody');
+
+        // 初始化
+        function init() {
+            initItemStats();
+            initProbRanges();
+            renderProbTable();
+            updateTotalDrawsDisplay();
+            // 初始化时计算一次分析结果
+            calculateAnalysis();
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            btnSingle.addEventListener('click', () => handleDraw(1));
+            btnTen.addEventListener('click', () => handleDraw(10));
+            btnClear.addEventListener('click', clearRecords);
+            sortByCountBtn.addEventListener('click', () => switchSortMode('count'));
+            sortByRarityBtn.addEventListener('click', () => switchSortMode('rarity'));
+
+            editPrizePoolBtn.addEventListener('click', openPrizePoolModal);
+            closeModalBtn.addEventListener('click', closePrizePoolModal);
+            cancelEditBtn.addEventListener('click', closePrizePoolModal);
+            confirmEditBtn.addEventListener('click', confirmPrizePoolEdit);
+            copyPromptBtn.addEventListener('click', copyPromptText);
+
+            // 抽奖分析事件绑定 - 实时计算
+            // calculateBtn.addEventListener('click', calculateAnalysis);
+            analysisDrawsInput.addEventListener('input', debounce(calculateAnalysis, 50));
+            analysisDrawsInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') calculateAnalysis();
+            });
+
+            prizePoolModal.addEventListener('click', (e) => {
+                if (e.target === prizePoolModal) closePrizePoolModal();
+            });
+        }
+
+        // 防抖函数 - 防止输入时频繁计算
+        function debounce(func, wait) {
+            let timeout;
+            return function () {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        // 初始化道具统计
+        function initItemStats() {
+            itemStats = {};
+            prizePool.forEach(item => {
+                itemStats[item.name] = {
+                    title: item.title,
+                    name: item.name,
+                    totalCount: 0,
+                    rarity: Math.min(itemStats[item.name]?.rarity || Infinity, item.rarity)
+                };
+            });
+        }
+
+        // 初始化概率范围
+        function initProbRanges() {
+            totalProb = 0;
+            probRanges = prizePool.map(item => {
+                totalProb += item.prob;
+                return { ...item, cumulative: totalProb };
+            });
+        }
+
+        // 更新总抽奖次数显示
+        function updateTotalDrawsDisplay() {
+            totalDrawsEl.textContent = totalDraws;
+        }
+
+        // 稀有度样式处理
+        function getRarityClass(rarity) {
+            switch (rarity) {
+                case 5: return 'prize-high';
+                case 4: return 'prize-legend';
+                case 3: return 'prize-epic';
+                case 2: return 'prize-rare';
+                default: return 'prize-common';
+            }
+        }
+
+        function getRarityBadge(rarity) {
+            const classes = ['rarity-common', 'rarity-rare', 'rarity-epic', 'rarity-legend', 'rarity-high'];
+            const texts = ['普通', '稀有', '史诗', '传说', '至高'];
+            return `<span class="rarity-badge ${classes[rarity - 1]}">${texts[rarity - 1]}</span>`;
+        }
+
+        function getBorderClass(rarity) {
+            switch (rarity) {
+                case 5: return 'border-high';
+                case 4: return 'border-legend';
+                case 3: return 'border-epic';
+                case 2: return 'border-rare';
+                default: return 'border-common';
+            }
+        }
+
+        // 获取分析表格行的背景色类
+        function getAnalysisRowClass(rarity) {
+            switch (rarity) {
+                case 5: return 'analysis-row-high';
+                case 4: return 'analysis-row-legend';
+                case 3: return 'analysis-row-epic';
+                case 2: return 'analysis-row-rare';
+                default: return 'analysis-row-common';
+            }
+        }
+
+        // 获取产品名称的颜色类
+        function getNameColorClass(rarity) {
+            switch (rarity) {
+                case 5: return 'name-high';
+                case 4: return 'name-legend';
+                case 3: return 'name-epic';
+                case 2: return 'name-rare';
+                default: return 'name-common';
+            }
+        }
+
+        // 根据概率值计算颜色（从红到绿）
+        function getProbabilityColor(probability) {
+            // 概率值范围是0-1
+            // HSL颜色：红色是0度，绿色是120度
+            const hue = probability * 120;
+            return `hsl(${hue}, 70%, 45%)`;
+        }
+
+        // 渲染概率表格
+        function renderProbTable() {
+            probBody.innerHTML = '';
+
+            prizePool.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+          <td class="${getNameColorClass(item.rarity)}">${item.title}</td>
+          <td>${item.count}</td>
+          <td>${item.prob}%</td>
+          <td>${getRarityBadge(item.rarity)}</td>
+        `;
+                probBody.appendChild(tr);
+            });
+        }
+
+        // 更新道具统计显示
+        function updateItemStats() {
+            let itemsWithStats = Object.values(itemStats).filter(item => item.totalCount > 0);
+
+            if (itemsWithStats.length === 0) {
+                itemStatsEl.innerHTML = '<div class="empty-state"><p>暂无道具统计数据</p></div>';
+                return;
+            }
+
+            // 排序
+            if (sortBy === 'count') {
+                itemsWithStats.sort((a, b) => b.totalCount - a.totalCount);
+            } else {
+                itemsWithStats.sort((a, b) => {
+                    if (a.rarity !== b.rarity) return b.rarity - a.rarity;
+                    return b.totalCount - a.totalCount;
+                });
+            }
+
+            // 生成统计HTML
+            let statsHtml = '<div class="items-grid">';
+            itemsWithStats.forEach(item => {
+                statsHtml += `
+          <div class="item-stat-card ${getBorderClass(item.rarity)}">
+            <div class="item-stat-header">
+              <span class="${getNameColorClass(item.rarity)}">${item.name}</span>
+              ${getRarityBadge(item.rarity)}
+            </div>
+            <div class="item-stat-count">x ${item.totalCount}</div>
+          </div>
+        `;
+            });
+            statsHtml += '</div>';
+            itemStatsEl.innerHTML = statsHtml;
+        }
+
+        // 切换排序模式
+        function switchSortMode(mode) {
+            sortBy = mode;
+            sortByCountBtn.classList.toggle('sort-btn-active', mode === 'count');
+            sortByRarityBtn.classList.toggle('sort-btn-active', mode === 'rarity');
+            updateItemStats();
+        }
+
+        // 单次抽奖
+        function drawOnce() {
+            const rand = Math.random() * 100;
+            for (const item of probRanges) {
+                if (rand < item.cumulative) {
+                    return item;
+                }
+            }
+            return { title: "未知道具", name: "unknown", count: 1, rarity: 1 };
+        }
+
+        // 处理抽奖
+        function handleDraw(count) {
+            const results = [];
+            totalDraws += count;
+
+            if (recordCount === 0) {
+                drawRecord.innerHTML = '';
+            }
+
+            for (let i = 0; i < count; i++) {
+                const result = drawOnce();
+                results.push(result);
+                if (itemStats[result.name]) {
+                    itemStats[result.name].totalCount += result.count;
+                }
+            }
+
+            recordCount++;
+            recordCountEl.textContent = `${recordCount}条记录`;
+            updateTotalDrawsDisplay();
+            updateItemStats();
+
+            // 创建记录项
+            const recordItem = document.createElement('div');
+            recordItem.className = 'record-item';
+            const timeStr = new Date().toLocaleTimeString();
+
+            const prizesHtml = results.map(item =>
+                `<span class="prize-item ${getRarityClass(item.rarity)}">${item.title}</span>`
+            ).join('');
+
+            recordItem.innerHTML = `
+        <div class="record-time">
+          <div class="time-text">
+            <i class="fa fa-clock-o mr-1"></i>${timeStr}
+            <span class="ml-2">${count > 1 ? '十连抽' : '单抽'}</span>
+          </div>
+          <div class="record-number">#${recordCount}</div>
+        </div>
+        <div class="prizes-container">${prizesHtml}</div>
+      `;
+
+            drawRecord.insertBefore(recordItem, drawRecord.firstChild);
+        }
+
+        // 清空记录
+        function clearRecords() {
+            recordCount = 0;
+            totalDraws = 0;
+            initItemStats();
+            recordCountEl.textContent = `${recordCount}条记录`;
+            updateTotalDrawsDisplay();
+            drawRecord.innerHTML = `
+        <div class="empty-state empty-state-large">
+          <i class="fa fa-inbox"></i>
+          <p>暂无抽奖记录，开始你的抽奖吧！</p>
+        </div>
+      `;
+            updateItemStats();
+        }
+
+        // 复制提示文本
+        function copyPromptText() {
+            const textToCopy = promptText.textContent.trim();
+
+            // 方法1: 使用Clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showToast('提示已复制到剪贴板', false);
+                }).catch(err => {
+                    console.error('Clipboard API失败:', err);
+                    fallbackCopyText(textToCopy);
+                });
+            } else {
+                // 方法2: 备选方案
+                fallbackCopyText(textToCopy);
+            }
+        }
+
+        // 备选复制方法
+        function fallbackCopyText(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+
+            try {
+                textarea.select();
+                textarea.setSelectionRange(0, text.length);
+                const successful = document.execCommand('copy');
+                showToast(successful ? '提示已复制到剪贴板' : '复制失败，请手动复制', !successful);
+            } catch (err) {
+                console.error('复制失败:', err);
+                showToast('复制失败，请手动复制', true);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // 显示提示框
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('copyToast');
+            if (!toast) return;
+
+            toast.textContent = message;
+            toast.className = 'copy-toast';
+            toast.classList.add(isError ? 'error' : 'success');
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 奖池编辑模态框
+        function openPrizePoolModal() {
+            prizePoolJson.value = JSON.stringify(prizePool, null, 2);
+            jsonError.classList.remove('active');
+            prizePoolModal.classList.add('active');
+        }
+
+        function closePrizePoolModal() {
+            prizePoolModal.classList.remove('active');
+        }
+
+        function confirmPrizePoolEdit() {
+            try {
+                jsonError.classList.remove('active');
+                const newPrizePool = JSON.parse(prizePoolJson.value);
+
+                if (!Array.isArray(newPrizePool) || newPrizePool.length === 0) {
+                    throw new Error('奖池必须是一个非空数组');
+                }
+
+                const name_rare_map = {};
+
+                newPrizePool.forEach((item, index) => {
+                    const required = ['title', 'name', 'count', 'prob', 'rarity'];
+                    required.forEach(field => {
+                        if (item[field] === undefined) {
+                            throw new Error(`第${index + 1}个物品缺少字段: ${field}`);
+                        }
+                    });
+
+                    if (typeof item.prob !== 'number' || item.prob <= 0) {
+                        throw new Error(`第${index + 1}个物品的prob必须是正数`);
+                    }
+
+                    if (typeof item.rarity !== 'number' || item.rarity < 1 || item.rarity > 5) {
+                        throw new Error(`第${index + 1}个物品的rarity必须是1-5之间的整数`);
+                    }
+
+                    name_rare_map[item.name] = Math.min(name_rare_map[item.name] || Infinity, item.rarity);
+                })
+
+                newPrizePool.forEach(item => {
+                    item.rarity = name_rare_map[item.name];
+                })
+                
+                newPrizePool.sort((a, b) => b.rarity - a.rarity || a.prob - b.prob);
+
+                prizePool = newPrizePool;
+                init();
+                clearRecords();
+                closePrizePoolModal();
+
+            } catch (error) {
+                jsonError.textContent = `错误: ${error.message}`;
+                jsonError.classList.add('active');
+            }
+        }
+
+        // 抽奖概率分析计算
+        function calculateAnalysis() {
+            const draws = parseInt(analysisDrawsInput.value);
+
+            if (isNaN(draws) || draws < 1) {
+                analysisBody.innerHTML = '<tr><td colspan="4" class="empty-state">请输入有效的抽奖次数（至少1次）</td></tr>';
+                return;
+            }
+
+            analysisBody.innerHTML = '';
+
+            const prizeGroups = new Map();
+            prizePool.forEach(item => {
+                if (!prizeGroups.has(item.name)) {
+                    prizeGroups.set(item.name, {
+                        items: [],
+                        totalProb: 0,
+                        weightProb: 0,
+                        rarity: Infinity,
+                        name: item.name
+                    });
+                }
+                const group = prizeGroups.get(item.name);
+                group.items.push(item);
+                group.totalProb += item.prob;
+                group.weightProb += item.prob * item.count
+                if (item.rarity < group.rarity) {
+                    group.rarity = item.rarity;
+                }
+            });
+
+            const sortedGroups = [...prizeGroups.values()].sort((a, b) => b.rarity - a.rarity || b.totalProb - a.totalProb);
+
+            sortedGroups.forEach(group => {
+                const pGroup = group.weightProb / 100;
+
+                const atLeastOnceProb = 1 - Math.pow(1 - group.totalProb / 100, draws);
+                console.log({group})
+                const expectedCount = draws * pGroup;
+
+                const probColor = getProbabilityColor(atLeastOnceProb);
+                const tr = document.createElement('tr');
+                tr.className = getAnalysisRowClass(group.rarity);
+                tr.innerHTML = `
+                    <td class="${getNameColorClass(group.rarity)}">${group.name}</td>
+                    <td>${group.totalProb.toFixed(4)}%</td>
+                    <td><span class="probability-text" style="color: ${probColor}">${(atLeastOnceProb * 100).toFixed(4)}%</span></td>
+                    <td>${expectedCount.toFixed(4)}</td>
+                `;
+                analysisBody.appendChild(tr);
+            });
+        }
+
+        // 启动应用
+        init();
+        bindEvents();
+    </script>
+</body>
+
+</html>

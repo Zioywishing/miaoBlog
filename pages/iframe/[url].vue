@@ -20,15 +20,18 @@ const iframeRef = ref<HTMLIFrameElement | null>(null);
 
 const isLoading = ref(true);
 
-// const handleIframeLoad = () => {
-//     console.log('iframe loaded');
-//     isLoading.value = false;
-// }
+let checkTimer: any
 
-onMounted(() => {
-    !iframeRef.value?.contentDocument ? (_ => isLoading.value = false)() : iframeRef.value!.addEventListener('load', () => {
+const checkIsLoaded = () => {
+    iframeRef.value?.contentDocument ? (_ => isLoading.value = false)() : iframeRef.value!.addEventListener('load', () => {
         isLoading.value = false;
     })
+    clearInterval(checkTimer)
+}
+
+onMounted(() => {
+    checkIsLoaded()
+    isLoading.value && (checkTimer = setInterval(checkIsLoaded, 1000))
 })
 </script>
 

@@ -222,8 +222,18 @@ const pageContent = reactive<PageContent[]>([
           }
         ]
 
-      },
-    ]
+        },
+        {
+          name: '抽奖模拟器',
+          description: '一个简单的抽奖模拟器，可以自定义奖池概率',
+          nuxtLinks: [
+            {
+              name: 'demo',
+              to: `/iframe/${encodeURIComponent('/iframe-source/lottery-simulator/index.html')}`
+            }
+          ]
+        }
+      ]
   }, {
     subTitle: '学习资料',
     show: true,
