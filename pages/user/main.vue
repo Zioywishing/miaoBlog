@@ -11,7 +11,7 @@
                     <!-- {{ '隐藏' }} -->
                 </div>
             </div>
-.            <NuxtLink v-for="item in menuItem" :class="['sidebar-item', { active: item.active }]" :to="item.to">
+            <NuxtLink v-for="item in menuItem" :class="['sidebar-item', { active: item.active }]" :to="item.to">
                 <div class="sidebar-item-icon">
                     <component :class="item.iconFill ? 'sidebar-item-icon-noFill' : ''" :is="item.icon"></component>
                 </div>
