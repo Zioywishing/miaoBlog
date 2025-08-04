@@ -138,7 +138,7 @@ const pageContent = reactive<PageContent[]>([
         nuxtLinks: [
           {
             name: 'link',
-            to: `/iframe/${encodeURIComponent('/iframe-source/mind-elixir')}`
+            to: `/iframe/${encodeURIComponent('/iframe-source/mind-elixir/index.html')}`
           }
         ]
       },
