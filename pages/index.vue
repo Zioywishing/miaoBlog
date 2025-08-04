@@ -133,6 +133,16 @@ const pageContent = reactive<PageContent[]>([
     show: true,
     content: [
       {
+        name: 'MiaoMindElixir',
+        description: '对MindElixir进行了一些包装，支持自动保存，数据保存本地。',
+        nuxtLinks: [
+          {
+            name: 'link',
+            to: `/iframe/${encodeURIComponent('/iframe-source/mind-elixir')}`
+          }
+        ]
+      },
+      {
         name: 'P2PMedia',
         description: '通过webRTC实现P2P连接，在设备间共享音视频。主要用于作为电脑的外放。',
         nuxtLinks: [
