@@ -9,7 +9,7 @@
 
         <!-- 随笔编辑器 -->
         <div v-if="showEssayEditor" class="essay-editor-container">
-            <essay-editor @submit="handleEssaySubmit" @cancel="showEssayEditor = false" />
+            <essay-editor @submit="handleEssaySubmit" @cancel="showEssayEditor = false" :disabled="isSubmittingNewEssay" />
         </div>
 
         <!-- 随笔列表 -->
@@ -18,7 +18,7 @@
                 <div v-if="!essay.editing">
                     <div class="essay-content" v-html="essay.contentHtml"></div>
                     <div class="essay-images" v-if="essay.images.length > 0">
-                        <img v-for="image in essay.images" :key="image" :src="image" class="essay-thumb" />
+                        <img v-for="image in essay.images" :key="image" :src="image" class="essay-thumb" loading="lazy" />
                     </div>
                     <div class="essay-actions">
                         <span class="essay-time">{{ formatDate(essay.createTime, 'yyyy-MM-dd HH:mm:ss') }}</span>
@@ -30,7 +30,7 @@
                 </div>
                 <div v-else>
                     <essay-editor :essay="essay" @submit="(args) => handleEssayEditSubmit(essay)(args)"
-                        @cancel="essay.editing = false" />
+                        @cancel="essay.editing = false" :disabled="essay.submitting" />
                 </div>
             </div>
         </div>
@@ -42,11 +42,12 @@ import EssayEditor from '~/components/user/essayEditor.vue';
 import useMiaoFetch from '~/hooks/useMiaoFetch';
 import formatDate from '~/utils/formatDate';
 import type { essayItem } from '~/types/essay';
-type essayItemWithEditing = essayItem & { editing?: boolean };
+type essayItemWithEditing = essayItem & { editing?: boolean; submitting?: boolean };
 
 const { essay: { getEssayList, uploadEssay, updateEssay, deleteEssay: deleteEssayAPI } } = useMiaoFetch();
 
 const showEssayEditor = ref(false);
+const isSubmittingNewEssay = ref(false);
 const essayList = ref<(essayItemWithEditing)[]>([]);
 
 const loadEssayList = async () => {
@@ -55,7 +56,8 @@ const loadEssayList = async () => {
         if (response.code === 200) {
             essayList.value = ((response as any).data as essayItem[]).map(essay => ({
                 ...essay,
-                editing: false
+                editing: false,
+                submitting: false
             }));
         }
     } catch (error) {
@@ -64,6 +66,7 @@ const loadEssayList = async () => {
 };
 
 const handleEssaySubmit = async (essayData: any) => {
+    isSubmittingNewEssay.value = true;
     try {
         const response = await uploadEssay(essayData);
         if (response.code === 200) {
@@ -76,10 +79,13 @@ const handleEssaySubmit = async (essayData: any) => {
     } catch (error) {
         console.error('发布随笔失败:', error);
         ElMessage.error('随笔发布失败');
+    } finally {
+        isSubmittingNewEssay.value = false;
     }
 };
 
 const handleEssayEditSubmit = (essay: essayItemWithEditing) => async (updatedEssay: { content: string; contentHtml: string; images: string[] }) => {
+    essay.submitting = true;
     try {
         const response = await updateEssay({
             id: essay.id,  // 假设 essay 是当前编辑的 essayItem
@@ -98,6 +104,8 @@ const handleEssayEditSubmit = (essay: essayItemWithEditing) => async (updatedEss
     } catch (error) {
         console.error('更新随笔失败:', error);
         ElMessage.error('随笔更新失败');
+    } finally {
+        essay.submitting = false;
     }
 };
 
