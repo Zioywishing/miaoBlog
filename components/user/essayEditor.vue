@@ -47,8 +47,8 @@
         
         <div class="editor-footer">
             <div class="editor-actions">
-                <el-button @click="handleCancel">取消</el-button>
-                <el-button type="primary" @click="handleSubmit" :loading="submitting">发布</el-button>
+                <el-button @click="handleCancel" :disabled="disabled">取消</el-button>
+                <el-button type="primary" @click="handleSubmit" :loading="submitting" :disabled="disabled">发布</el-button>
             </div>
         </div>
     </div>

@@ -140,8 +140,8 @@ watch(() => props.data, renderHTML, {
 }
 </style>
 
-<style lang="scss">
-.md-render-wrapper {
+<style scoped lang="scss">
+:deep(.md-render-wrapper) {
     code {
         white-space: pre;
         // box-sizing: border-box;
