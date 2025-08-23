@@ -1,7 +1,7 @@
-import DB from 'better-sqlite3';
-import cacheResult from '~/server/utils/cacheRes';
+﻿import DB from 'better-sqlite3';
+import cacheResult from '~~/server/utils/cacheRes';
 import jwt from 'jsonwebtoken';
-import getKey from '~/server/utils/getKey';
+import getKey from '~~/server/utils/getKey';
 import { defineEventHandler, readBody, getHeader } from 'h3'; // 添加必要的导入
 
 function prepareDB() {

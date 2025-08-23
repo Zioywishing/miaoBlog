@@ -1,8 +1,8 @@
-import { defineEventHandler, readBody, getHeader } from 'h3'; // 添加 getHeader
+﻿import { defineEventHandler, readBody, getHeader } from 'h3'; // 添加 getHeader
 import DB from 'better-sqlite3';
-import cacheResult from '~/server/utils/cacheRes';
+import cacheResult from '~~/server/utils/cacheRes';
 import jwt from 'jsonwebtoken';
-import getKey from '~/server/utils/getKey';
+import getKey from '~~/server/utils/getKey';
 
 function prepareDB() {
     const db = new DB('./userData/db/posts.db');

@@ -1,6 +1,6 @@
 // @ts-ignore
 import DB from 'better-sqlite3';
-import { postItem } from "~/types/post";
+import type { postItem } from "~/types/post";
 
 // 使用缓存函数获取文章Markdown内容
 const getPostMDContent = defineCachedFunction(
@@ -81,4 +81,4 @@ export default defineEventHandler(async (event) => {
     data: result.content,
     ...result.post
   };
-}) 
+})

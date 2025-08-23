@@ -1,6 +1,6 @@
-// miaoBlog/server/api/posts/deletePost.ts
+﻿// miaoBlog/server/api/posts/deletePost.ts
 import DB from 'better-sqlite3';
-import cacheResult from '~/server/utils/cacheRes';
+import cacheResult from '~~/server/utils/cacheRes';
 
 function prepareDB() {
     const db = new DB('./userData/db/posts.db');
