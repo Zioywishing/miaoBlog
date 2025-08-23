@@ -28,12 +28,12 @@
 
 <script setup lang="ts">
 import editor from '~/components/user/postEditor.vue';
-import useDefaultStore from '~/hooks/pinia/useDefaultStore';
-import useMiaoFetch from '~/hooks/useMiaoFetch';
+import useDefaultStore from '~/stores/useDefaultStore';
+import useMiaoFetch from '~/composables/useMiaoFetch';
 import type { postItem } from '~/types/post';
 import chevronDown from "~/components/icons/chevronDown.vue";
 import { debounce } from 'lodash-es';
-import useMarkdownit from '~/hooks/useMarkdownit';
+import useMarkdownit from '~/composables/useMarkdownit';
 // import type { Action } from 'element-plus/es/components/index.mjs';
 
 type resType = {

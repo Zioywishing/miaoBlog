@@ -58,7 +58,7 @@
 import ImageIcon from '~/components/icons/image.vue';
 import AddIcon from '~/components/icons/add.vue';
 import compressImg from '~/utils/compressImg';
-import useMarkdownit from '~/hooks/useMarkdownit';
+import useMarkdownit from '~/composables/useMarkdownit';
 import { FilePicker } from '~/utils/filePicker';
 import type { essayItem } from '~/types/essay';
 

@@ -1,7 +1,8 @@
-import useDefaultStore from "~/hooks/pinia/useDefaultStore"
-import usePostStore from "~/hooks/pinia/usePostStore"
-// import useMiaoFetch from "~/hooks/useMiaoFetch"
-// import usePostStore from "~/hooks/pinia/usePostStore"
+import useDefaultStore from "~/stores/useDefaultStore"
+import usePostStore from "~/stores/usePostStore"
+
+// import usePostStore from "~/stores/usePostStore"
+// import usePostStore from "~/stores/usePostStore"
 import type { postContent, postItem } from "~/types/post"
 
 export default async function getPostList() {

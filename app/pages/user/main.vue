@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import useUserStore from '~/hooks/pinia/useUserStore';
+import useUserStore from '~/stores/useUserStore';
 import Cat from '~/components/icons/cat.vue'
 import chevronDown from '~/components/icons/chevronDown.vue';
 import Documents from '~/components/icons/documents.vue';

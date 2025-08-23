@@ -1,4 +1,4 @@
-import useUserStore from "./pinia/useUserStore"
+import useUserStore from "~/stores/useUserStore"
 
 
 export default function useFetch() {

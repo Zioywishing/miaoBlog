@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import useUserStore from '~/hooks/pinia/useUserStore';
-import useMiaoFetch, { testAuth } from '~/hooks/useMiaoFetch';
+import useUserStore from '~/stores/useUserStore';
+import useMiaoFetch, { testAuth } from '~/composables/useMiaoFetch';
 import type { UploadProps, UploadUserFile } from 'element-plus'
 
 const { post: { uploadPost, updatePost } } = useMiaoFetch()

@@ -1,19 +1,26 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~": ["./app"],
+      "~/*": ["./app/*"],
+      "@": ["./app"],
+      "@/*": ["./app/*"],
+      "~~": ["."],
+      "~~/*": ["./*"],
+      "@@": ["."],
+      "@@/*": ["./*"]
+    }
+  },
   "include": [
-    "pages/**/*",
-    "hooks/**/*",
-    "components/**/*",
+    "app/**/*",
     "server/**/*",
-    "style/**/*",
-    "utils/**/*",
-    "types/**/*",
-    "plugins/**/*",
     ".nuxt/imports.d.ts",
-    ".nuxt/nuxt.d.ts",
+    ".nuxt/nuxt.d.ts"
   ],
   "exclude": [
-    ".nuxt/components.d.ts",
+    ".nuxt/components.d.ts"
   ]
 }

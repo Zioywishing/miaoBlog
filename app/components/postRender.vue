@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <!-- :class="isRendered ? `md-render-html-fix` : ``" -->
     <div class="md-render-wrapper markdown-body">
         <!-- todo: 更新场景下的差分更新diff优化 -->
@@ -9,8 +9,8 @@
 
 <script setup lang="ts">
 import type { VNode } from 'vue';
-import useCodedisplayMiddleware from '~/hooks/h2v/codemirrorMiddleware';
-import useImgDisplayMiddleware from '~/hooks/h2v/imgMiddleware';
+import useCodedisplayMiddleware from '~/composables/h2v/codemirrorMiddleware';
+import useImgDisplayMiddleware from '~/composables/h2v/imgMiddleware';
 import Html2VNode from '~/utils/html2VNode';
 
 const props = defineProps<{

@@ -1,4 +1,4 @@
-import useDefaultStore from "~/hooks/pinia/useDefaultStore"
+import useDefaultStore from "~/stores/useDefaultStore"
 
 export default async function cachedPromise<T>(key: string, promise: () =>Promise<T>): Promise<T> {
     if(import.meta.server) {

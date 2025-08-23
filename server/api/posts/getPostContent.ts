@@ -1,6 +1,6 @@
 // @ts-ignore
 import DB from 'better-sqlite3';
-import { postItem } from "~/types/post";
+import type { postItem } from "~/types/post";
 
 const emptyPost = {
   id: 0,

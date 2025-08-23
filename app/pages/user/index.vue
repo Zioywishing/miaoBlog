@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import useUserStore from '~/hooks/pinia/useUserStore';
+import useUserStore from '~/stores/useUserStore';
 
 if (import.meta.client) {
     const timer = setTimeout(() => {

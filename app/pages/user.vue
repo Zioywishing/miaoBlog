@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import useUserStore from '~/hooks/pinia/useUserStore';
+import useUserStore from '~/stores/useUserStore';
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()

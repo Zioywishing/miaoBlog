@@ -10,10 +10,10 @@
 </template>
 
 <script lang="ts" setup>
-import miaoHeader from './components/miaoHeader.vue';
-import miaoContentWrapper from './components/miaoContentWrapper.vue';
-import "/style/default.scss";
-import "/style/tailwind.css"
+import miaoHeader from '~/components/miaoHeader.vue';
+import miaoContentWrapper from '~/components/miaoContentWrapper.vue';
+import "~/assets/style/default.scss";
+import "~/assets/style/tailwind.css"
 
 // @ts-ignore
 useHead({
@@ -35,7 +35,7 @@ useHead({
 </style>
 
 <!-- <style lang="scss">
-@use '/style/default.scss';
+@use '~/assets/style/default.scss';
 </style> -->
 
 <style>

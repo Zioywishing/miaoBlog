@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import EssayEditor from '~/components/user/essayEditor.vue';
-import useMiaoFetch from '~/hooks/useMiaoFetch';
+import useMiaoFetch from '~/composables/useMiaoFetch';
 import formatDate from '~/utils/formatDate';
 import type { essayItem } from '~/types/essay';
 type essayItemWithEditing = essayItem & { editing?: boolean; submitting?: boolean };

@@ -9,9 +9,6 @@ import tailwindcss from '@tailwindcss/vite'
 // @ts-ignore
 export default defineNuxtConfig({
 	devtools: { enabled: false },
-	alias: {
-		"@": "/"
-	},
 	app: {
 		pageTransition: {
 			name: 'page',
@@ -41,6 +38,9 @@ export default defineNuxtConfig({
 		plugins: [mkcert(), tailwindcss()],
 	},
 	modules: ["@pinia/nuxt", '@element-plus/nuxt'],
+	pinia: {
+		storesDirs: ['./app/stores/**']
+	},
 	compatibilityDate: "2025-01-12",
 	nitro: {
 		compressPublicAssets: true,

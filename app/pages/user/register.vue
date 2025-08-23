@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import useUserStore from '~/hooks/pinia/useUserStore';
+import useUserStore from '~/stores/useUserStore';
 import cat from '~/components/icons/cat.vue';
-import useMiaoFetch from '~/hooks/useMiaoFetch';
+import useMiaoFetch from '~/composables/useMiaoFetch';
 
 const { user: { register } } = useMiaoFetch()
 const router = useRouter()

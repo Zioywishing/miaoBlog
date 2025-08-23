@@ -16,7 +16,7 @@
 import range from '~/utils/range';
 import type { essayItem } from '~/types/essay';
 import essayCard from '~/components/posts/essayCard.vue';
-import useDefaultStore from '~/hooks/pinia/useDefaultStore';
+import useDefaultStore from '~/stores/useDefaultStore';
 
 const store = useDefaultStore()
 

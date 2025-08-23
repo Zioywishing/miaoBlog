@@ -73,10 +73,10 @@
 
 <script lang="ts" setup>
 import type { UploadInstance, UploadRawFile, UploadUserFile } from 'element-plus/es/components/index.mjs';
-import useUserStore from '~/hooks/pinia/useUserStore';
+import useUserStore from '~/stores/useUserStore';
 import add from '~/components/icons/add.vue';
 import { genFileId } from 'element-plus'
-import useFetch from '~/hooks/useMiaoFetch';
+import useFetch from '~/composables/useMiaoFetch';
 
 
 const fileList = ref<UploadUserFile[]>([])

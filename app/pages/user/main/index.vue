@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import useUserStore from '~/hooks/pinia/useUserStore';
+import useUserStore from '~/stores/useUserStore';
 const systemStatus = ref<any>(null);
 const isLoading = ref(true);
 const error = ref('');

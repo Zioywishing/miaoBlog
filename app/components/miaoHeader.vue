@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import useUserStore from '~/hooks/pinia/useUserStore';
+import useUserStore from '~/stores/useUserStore';
 
 const route = useRoute()
 
@@ -84,7 +84,7 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-// @use '/style/miaoStyle.scss';
+// @use '~/assets/style/miaoStyle.scss';
 
 
 #miao-header-wrapper {

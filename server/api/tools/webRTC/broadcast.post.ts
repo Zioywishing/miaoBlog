@@ -1,4 +1,4 @@
-import SSESocketRoom from "~/server/utils/class/SSESocketRoom"
+﻿import SSESocketRoom from "~~/server/utils/class/SSESocketRoom"
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);

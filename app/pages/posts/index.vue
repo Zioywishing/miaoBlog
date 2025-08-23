@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import useDefaultStore from '~/hooks/pinia/useDefaultStore';
+import useDefaultStore from '~/stores/useDefaultStore';
 import timeIcon from '~/components/icons/time.vue'
 import bookmark from '~/components/icons/tag.vue'
 import type { postItem } from '~/types/post';

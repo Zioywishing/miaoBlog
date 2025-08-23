@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import useUserStore from '~/hooks/pinia/useUserStore';
+import useUserStore from '~/stores/useUserStore';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 
