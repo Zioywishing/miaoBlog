@@ -1,5 +1,5 @@
 <template>
-    <div class="cm-rander-wrapper mb-2">
+    <div class="cm-rander-wrapper mb-2" ref="root">
         <div class="cm-header"  :style="headerStyle">
             <div class="cm-header-title">
                 <span>{{ props.type ?? 'Code' }}</span>
@@ -25,8 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { codeToHtml } from 'shiki'
-
 const props = defineProps<{
     data: string,
     type?: string,
@@ -34,6 +32,7 @@ const props = defineProps<{
 
 const show = ref(true)
 const highlightedCode = ref('')
+const root = ref<HTMLDivElement | null>(null)
 
 const headerStyle = computed(() => ({
     borderRadius: show.value ? "10px 10px 0 0" : "10px 5px 10px 5px"
@@ -44,6 +43,7 @@ const highlightCode = async () => {
     highlightedCode.value = `<pre style="background-color: #eff1f5;color: #4c4f69;"><code>${escapeHtml(props.data)}</code></pre>`
 
     try {
+        const { codeToHtml } = await import('shiki')
         // 根据文件类型确定语言
         let lang = props.type || 'text'
 
@@ -102,7 +102,15 @@ const copyCode = () => {
 }
 
 onMounted(async () => {
-    await highlightCode()
+    const observer = new IntersectionObserver(async ([entry]) => {
+        if (entry?.isIntersecting) {
+            await highlightCode()
+            observer.disconnect()
+        }
+    }, {
+        rootMargin: '200px'
+    })
+    observer.observe(root.value!)
 })
 
 // await highlightCode()
@@ -110,7 +118,6 @@ onMounted(async () => {
 watch(() => props.data, async () => {
     await highlightCode()
 })
-
 </script>
 
 <style scpoed lang="scss">

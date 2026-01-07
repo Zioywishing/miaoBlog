@@ -98,6 +98,20 @@ const pageContent = reactive<PageContent[]>([
         ]
       },
       {
+        name: 'UVR-Web-SDK',
+        description: 'Ultimate Vocal Remover 的浏览器runtime实现。',
+        links: [
+          {
+            name: "demo",
+            url: "https://zioywishing.github.io/uvr-web-sdk/"
+          },
+          {
+            name: "github",
+            url: "https://github.com/Zioywishing/uvr-web-sdk"
+          }
+        ]
+      },
+      {
         name: 'Bobj',
         description: '效果类似msgpack，有时比msgpackr更有效率些。',
         links: [
